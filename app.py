@@ -1,117 +1,69 @@
 """
 CV Bot - conversational assistant about Eric C.'s professional profile
-Flask + LangChain + Groq llama-3.3-70b + HuggingFace embeddings (local)
+Flask + Groq llama-3.3-70b  (no embeddings, no torch, full profile in context)
 """
 
 import os, sys, json, re, secrets
-from operator import itemgetter
+from pathlib import Path
 from flask import Flask, request, jsonify, render_template_string
 from langchain_groq import ChatGroq
-from langchain_huggingface import HuggingFaceEmbeddings
-from langchain_community.document_loaders import DirectoryLoader, TextLoader
-from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_community.vectorstores import Chroma
-from langchain_core.prompts import PromptTemplate
-from langchain_core.output_parsers import StrOutputParser
-from langchain_core.runnables import RunnablePassthrough
+from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
 from dotenv import load_dotenv
 
 load_dotenv()
 
-DOCS_DIR      = "./docs"
-MODEL         = "llama-3.3-70b-versatile"
-EMBED_MODEL   = "sentence-transformers/all-MiniLM-L6-v2"
-CHUNK_SIZE    = 800
-CHUNK_OVERLAP = 80
-TOP_K         = 5
-MAX_HISTORY   = 6
+DOCS_DIR    = Path("./docs")
+MODEL       = "llama-3.3-70b-versatile"
+MAX_HISTORY = 8   # exchanges kept per session
 
-sessions = {}   # session_id -> [{"q": str, "a": str}]
+sessions: dict[str, list] = {}  # session_id -> [{"role":"user"|"assistant","content":str}]
 
-MAIN_PROMPT = (
-    "You are the CV assistant for Eric C., a Cloud & DevOps / AI professional.\n"
-    "Your job: answer questions about Eric as if you were him speaking in first person, "
-    "or as his representative when the recruiter asks in third person.\n\n"
-    "Rules:\n"
-    "- Detect the language of the question and respond in THAT same language (Spanish or English)\n"
-    "- ALWAYS give a useful answer. Never say 'I don't have that information' — instead, "
-    "reason from what you know: infer experience level from projects, depth from tech stack, "
-    "seniority from the breadth of domains covered\n"
-    "- Be specific: mention real project names, technologies, and concrete details from the profile\n"
-    "- If asked about something not in the profile (like exact years), give a reasonable, "
-    "honest estimate based on the evidence you have, and say it's an estimate\n"
-    "- For HR questions (strengths, weaknesses, salary, teamwork), give a confident, "
-    "well-structured answer — these are already prepared in the profile\n"
-    "- Be concise and punchy — think recruiter reading a strong candidate's profile\n"
-    "- Use conversation history to answer follow-ups correctly\n\n"
-    "Conversation so far:\n{history}\n\n"
-    "Relevant profile sections:\n{context}\n\n"
-    "Question: {question}\n"
-    "Answer:"
-)
-
-SUGGEST_PROMPT = (
-    "A recruiter is reading about a software professional named Eric C. "
-    "and just received this answer:\n\n"
-    "Q: {question}\n"
-    "A: {answer}\n\n"
-    "Generate exactly 3 short follow-up questions a recruiter might naturally ask next.\n"
-    "Respond in {lang}.\n"
-    "Return ONLY a valid JSON array of 3 strings - no explanation, no markdown, just the array.\n"
-    'Example: ["Question 1?", "Question 2?", "Question 3?"]'
-)
-
-# ── RAG pipeline ──────────────────────────────────────────────────────────────
-
-def build_pipeline():
-    if not os.getenv("GROQ_API_KEY"):
-        print("[!] Missing GROQ_API_KEY in .env")
-        sys.exit(1)
-
-    print("[~] Loading documents...")
-    loader = DirectoryLoader(DOCS_DIR, glob="**/*.txt", loader_cls=TextLoader,
-                             loader_kwargs={"encoding": "utf-8"})
-    docs = loader.load()
-    if not docs:
+def load_profile() -> str:
+    txts = list(DOCS_DIR.glob("**/*.txt"))
+    if not txts:
         print(f"[!] No .txt files found in '{DOCS_DIR}'")
         sys.exit(1)
-    print(f"[ok] {len(docs)} doc(s) loaded")
+    profile = "\n\n".join(p.read_text(encoding="utf-8") for p in txts)
+    print(f"[ok] Profile loaded ({len(profile)} chars from {len(txts)} file(s))")
+    return profile
 
-    chunks = RecursiveCharacterTextSplitter(
-        chunk_size=CHUNK_SIZE, chunk_overlap=CHUNK_OVERLAP
-    ).split_documents(docs)
-    print(f"[ok] {len(chunks)} chunks")
+SYSTEM_PROMPT = """\
+You are the CV assistant for Eric C., a Cloud & DevOps / AI professional.
+Answer questions about Eric's skills, projects, experience, and career.
 
-    print("[~] Loading embeddings (first run may take a minute)...")
-    embeddings = HuggingFaceEmbeddings(model_name=EMBED_MODEL)
-    vectorstore = Chroma.from_documents(chunks, embeddings)
-    print("[ok] Vector store ready")
+Rules:
+- Detect the language of the question and respond in THAT language (Spanish or English)
+- ALWAYS give a useful, concrete answer — never say "I don't have that information"
+- When something isn't explicit, reason from the evidence: infer from projects, stack depth, domains covered
+- Mention real project names, technologies, and concrete details from the profile
+- For HR questions (strengths, motivation, salary, teamwork) give a confident, structured answer
+- Be concise and punchy — a recruiter is reading this
 
-    llm       = ChatGroq(model=MODEL, temperature=0.15)
-    retriever = vectorstore.as_retriever(search_kwargs={"k": TOP_K})
-    prompt    = PromptTemplate(
-        input_variables=["history", "context", "question"],
-        template=MAIN_PROMPT,
-    )
+Eric's complete profile:
+{profile}"""
 
-    def fmt(docs):
-        return "\n\n".join(d.page_content for d in docs)
+SUGGEST_PROMPT = """\
+A recruiter just received this answer about a software professional named Eric C.:
 
-    chain = (
-        {
-            "context":  itemgetter("question") | retriever | fmt,
-            "question": itemgetter("question"),
-            "history":  itemgetter("history"),
-        }
-        | prompt
-        | llm
-        | StrOutputParser()
-    )
-    return chain, ChatGroq(model=MODEL, temperature=0.7)
+Q: {question}
+A: {answer}
+
+Generate exactly 3 short follow-up questions a recruiter would naturally ask next.
+Respond in {lang}.
+Return ONLY a valid JSON array of 3 strings, no extra text.
+Example: ["Question 1?", "Question 2?", "Question 3?"]"""
 
 
-print("\nCV Bot - building RAG pipeline...")
-chain, llm_suggest = build_pipeline()
+if not os.getenv("GROQ_API_KEY"):
+    print("[!] Missing GROQ_API_KEY")
+    sys.exit(1)
+
+print("[~] Loading profile...")
+PROFILE = load_profile()
+SYSTEM  = SYSTEM_PROMPT.format(profile=PROFILE)
+
+llm         = ChatGroq(model=MODEL, temperature=0.2)
+llm_suggest = ChatGroq(model=MODEL, temperature=0.7)
 print("[ok] Ready\n")
 
 # ── HTML ──────────────────────────────────────────────────────────────────────
@@ -263,7 +215,7 @@ HTML = """<!DOCTYPE html>
       "Que tecnologias de IA conoces?",
       "What Cloud & DevOps experience do you have?",
       "Sabes Kubernetes?",
-      "Tell me about your networking skills"
+      "Por que deberiamos contratarte?"
     ];
 
     function setChips(list) {
@@ -339,7 +291,8 @@ HTML = """<!DOCTYPE html>
 
     async function getSuggestions(q, a) {
       try {
-        const lang = /[a-z]/i.test(q) && !/[aeiou]{2}/i.test(q) ? 'English' : 'Spanish';
+        const hasSpanishChars = /[a-z]/i.test(q);
+        const lang = /[aeiou]{2,}|[nN][oO]|[qQ]ue|[cC]omo/i.test(q) ? 'Spanish' : 'English';
         const res  = await fetch('/suggest', {
           method: 'POST', headers: {'Content-Type':'application/json'},
           body: JSON.stringify({ question: q, answer: a, lang })
@@ -356,7 +309,7 @@ HTML = """<!DOCTYPE html>
 </body>
 </html>"""
 
-# ── Flask routes ──────────────────────────────────────────────────────────────
+# ── Flask ─────────────────────────────────────────────────────────────────────
 
 app = Flask(__name__)
 
@@ -377,15 +330,18 @@ def chat_route():
     if not question:
         return jsonify({'error': 'Empty question'}), 400
 
-    hist = sessions.get(sid, [])
-    history_text = "\n\n".join(
-        f"Human: {h['q']}\nAssistant: {h['a']}" for h in hist[-MAX_HISTORY:]
-    ) or "(No previous conversation)"
+    history = sessions.get(sid, [])
+
+    messages = [SystemMessage(content=SYSTEM)]
+    for h in history[-(MAX_HISTORY):]:
+        messages.append(HumanMessage(content=h['q']))
+        messages.append(AIMessage(content=h['a']))
+    messages.append(HumanMessage(content=question))
 
     try:
-        answer = chain.invoke({"question": question, "history": history_text})
-        hist.append({"q": question, "a": answer})
-        sessions[sid] = hist[-MAX_HISTORY:]
+        answer = llm.invoke(messages).content
+        history.append({"q": question, "a": answer})
+        sessions[sid] = history[-MAX_HISTORY:]
         return jsonify({"answer": answer, "session_id": sid})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
@@ -395,8 +351,9 @@ def suggest():
     data = request.get_json(silent=True) or {}
     q, a, lang = data.get('question',''), data.get('answer',''), data.get('lang','Spanish')
     try:
-        raw = llm_suggest.invoke(SUGGEST_PROMPT.format(question=q, answer=a, lang=lang)).content
-        m   = re.search(r'\[.*?\]', raw, re.DOTALL)
+        prompt = SUGGEST_PROMPT.format(question=q, answer=a, lang=lang)
+        raw    = llm_suggest.invoke([HumanMessage(content=prompt)]).content
+        m      = re.search(r'\[.*?\]', raw, re.DOTALL)
         return jsonify({"suggestions": json.loads(m.group())[:3] if m else []})
     except Exception:
         return jsonify({"suggestions": []})
