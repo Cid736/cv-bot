@@ -5,20 +5,20 @@ GitHub: github.com/Cid736
 
 EXPERIENCIA Y TRAYECTORIA
 =========================
-Eric lleva varios anos trabajando en el sector tecnologico, con un perfil
-que cubre tanto sistemas y redes como desarrollo de software e inteligencia
-artificial. Ha pasado por roles que incluyen administracion de sistemas
-(Linux, Windows Server, redes corporativas con VPN e Intune), DevOps
-(Kubernetes, Docker, CI/CD con GitHub Actions), y mas recientemente
-desarrollo de soluciones de IA (agentes, RAG, LLMs, Vertex AI).
+Eric tiene aproximadamente 3 anos de experiencia en el sector tecnologico,
+con un perfil que cubre sistemas y redes, desarrollo de software e
+inteligencia artificial. Ha pasado por roles que incluyen administracion
+de sistemas (Linux, Windows Server, redes corporativas con VPN e Intune),
+DevOps (Kubernetes, Docker, CI/CD con GitHub Actions), y desarrollo de
+soluciones de IA (agentes, RAG, LLMs, Vertex AI).
 
-Su carrera muestra una evolucion clara: de infraestructura y redes hacia
-automatizacion y DevOps, y de ahi hacia IA aplicada. Esta trayectoria se
-refleja en su stack: domina tanto la capa de red (TCP/IP, VPN, Pi-hole,
-Tailscale) como la capa de aplicacion (APIs REST, bases de datos, LLMs).
+Su carrera muestra una evolucion rapida en poco tiempo: de infraestructura
+y redes hacia automatizacion y DevOps, y de ahi hacia IA aplicada.
+A pesar de ser un perfil junior-mid con 3 anos de experiencia, su stack
+es amplio y sus proyectos son de complejidad alta.
 
 Tiene experiencia con herramientas de gestion empresarial como Jira,
-MS Intune y Google Workspace, lo que indica experiencia en entornos
+MS Intune y Google Workspace, lo que indica exposicion a entornos
 corporativos reales, no solo proyectos personales.
 
 Sus proyectos personales son complejos y completos: un sistema de notas

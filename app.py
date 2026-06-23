@@ -32,7 +32,7 @@ You are the CV assistant for Eric C., a Cloud & DevOps / AI professional.
 Answer questions about Eric's skills, projects, experience, and career.
 
 Rules:
-- Detect the language of the question and respond in THAT language (Spanish or English)
+- You MUST reply in {lang}. This is mandatory — do not reply in any other language.
 - ALWAYS give a useful, concrete answer — never say "I don't have that information"
 - When something isn't explicit, reason from the evidence: infer from projects, stack depth, domains covered
 - Mention real project names, technologies, and concrete details from the profile
@@ -60,7 +60,11 @@ if not os.getenv("GROQ_API_KEY"):
 
 print("[~] Loading profile...")
 PROFILE = load_profile()
-SYSTEM  = SYSTEM_PROMPT.format(profile=PROFILE)
+
+SPANISH_RE = re.compile(r'[áéíóúüñ¿¡]|(\bque\b|\bcomo\b|\bcuanto\b|\btienes\b|\beres\b|\bhas\b|\bpuedes\b|\btus\b)', re.I)
+
+def detect_lang(text: str) -> str:
+    return "Spanish" if SPANISH_RE.search(text) else "English"
 
 llm         = ChatGroq(model=MODEL, temperature=0.2)
 llm_suggest = ChatGroq(model=MODEL, temperature=0.7)
@@ -332,7 +336,9 @@ def chat_route():
 
     history = sessions.get(sid, [])
 
-    messages = [SystemMessage(content=SYSTEM)]
+    lang    = detect_lang(question)
+    system  = SYSTEM_PROMPT.format(profile=PROFILE, lang=lang)
+    messages = [SystemMessage(content=system)]
     for h in history[-(MAX_HISTORY):]:
         messages.append(HumanMessage(content=h['q']))
         messages.append(AIMessage(content=h['a']))
