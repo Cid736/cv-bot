@@ -3,93 +3,190 @@ PERFIL PROFESIONAL
 Nombre: Eric C.
 GitHub: github.com/Cid736
 
-HABILIDADES TÉCNICAS
+HABILIDADES TECNICAS
 ====================
 
 Cloud & DevOps:
 - Google Cloud Platform (GCP)
-- Kubernetes — orquestación de contenedores
+- Kubernetes — orquestacion de contenedores
 - Docker y Docker Compose
-- CI/CD con GitHub Actions — pipelines automáticos de test y despliegue
+- CI/CD con GitHub Actions — pipelines automaticos de test y despliegue
 
-IA & Automatización:
-- LLMs (Large Language Models) — diseño y uso de modelos de lenguaje
-- Prompt Engineering — optimización de prompts para distintos modelos
+IA & Automatizacion:
+- LLMs (Large Language Models) — diseno y uso de modelos de lenguaje
+- Prompt Engineering — optimizacion de prompts para distintos modelos
 - Vertex AI — plataforma de IA de Google Cloud
-- Agentes IA — construcción de agentes con herramientas y memoria
+- Agentes IA — construccion de agentes con herramientas y memoria
 - RAG (Retrieval-Augmented Generation) — chatbots con contexto de documentos
 - LangChain — framework para pipelines de IA
 
-Programación:
-- Python — lenguaje principal para automatización, IA y scripting
-- Bash — scripting y automatización de sistemas
+Programacion:
+- Python — lenguaje principal para automatizacion, IA y scripting
+- Bash — scripting y automatizacion de sistemas
 - SQL y NoSQL — bases de datos relacionales y no relacionales
 - JavaScript y Node.js — APIs REST, backends web
 
 Sistemas & Redes:
-- Linux / Ubuntu — administración de sistemas, servidores
+- Linux / Ubuntu — administracion de sistemas, servidores
 - Windows Server — entornos corporativos
 - TCP/IP — protocolos de red
-- VPN — configuración y gestión
+- VPN — configuracion y gestion
 - Pi-hole — filtrado de DNS y bloqueo de publicidad a nivel de red
 - Tailscale — red mesh VPN basada en WireGuard
 
 Herramientas:
 - Git / GitHub — control de versiones
 - VS Code — editor principal
-- Jira — gestión de proyectos ágiles
-- Google Workspace — Suite ofimática colaborativa
-- MS Intune — gestión de dispositivos móviles y endpoints
+- Jira — gestion de proyectos agiles
+- Google Workspace — Suite ofimatica colaborativa
+- MS Intune — gestion de dispositivos moviles y endpoints
 
 PROYECTOS PERSONALES
 ====================
 
 1. Smart Notes
    GitHub: github.com/Cid736/smart-notes
-   App de notas inspirada en Obsidian.
-   Funcionalidades: editor Markdown con vista dividida en tiempo real,
-   WikiLinks entre notas ([[Nombre de nota]]), vista de grafo de conexiones
-   con física de fuerzas, panel de backlinks, resumen IA con NLP extractivo
-   (TF-IDF sin API externa), barra de formato, auto-guardado, etiquetas,
-   búsqueda en tiempo real, barra de estado con contador de palabras.
-   Stack: Node.js, Express, SQLite (better-sqlite3), Vanilla JS, marked.js.
+   App de notas inspirada en Obsidian. Editor Markdown con vista dividida en
+   tiempo real, WikiLinks entre notas, vista de grafo con fisica de fuerzas,
+   panel de backlinks, resumen IA con NLP extractivo (TF-IDF sin API externa),
+   barra de formato, auto-guardado, etiquetas, busqueda en tiempo real.
+   Stack: Node.js, Express, SQLite, Vanilla JS, marked.js.
 
 2. RAG Chatbot
    GitHub: github.com/Cid736/rag-chatbot
-   Chatbot con arquitectura RAG (Retrieval-Augmented Generation).
-   Carga documentos .txt, los trocea, genera embeddings locales con
-   HuggingFace (sentence-transformers/all-MiniLM-L6-v2) y responde
-   preguntas usando Groq (llama-3.1-8b-instant) solo con información
-   de los documentos cargados. Sin GPU necesaria.
+   Chatbot con arquitectura RAG. Embeddings locales con HuggingFace,
+   responde usando Groq (llama-3.1-8b) solo con informacion de los documentos.
+   Sin GPU necesaria.
    Stack: Python, LangChain, ChromaDB, Groq API.
 
 3. CV Bot
    GitHub: github.com/Cid736/cv-bot
-   Asistente web conversacional que responde preguntas sobre el perfil
-   profesional de Eric. Interfaz de chat en el navegador, backend Flask,
-   RAG sobre este mismo documento. Se puede desplegar con Docker.
+   Asistente web conversacional que responde preguntas sobre el perfil de Eric.
+   Interfaz de chat, backend Flask, RAG, preguntas predictivas post-respuesta.
    Stack: Python, Flask, LangChain, ChromaDB, Groq API.
 
 4. Task API
    GitHub: github.com/Cid736/task-api
-   REST API de gestión de tareas con autenticación JWT (registro y login),
-   CRUD completo de tareas, filtros por estado y prioridad, estadísticas.
-   Tests automáticos con Node:test + Supertest (18 tests, 100% pasan).
-   CI/CD con GitHub Actions: tests → build Docker → smoke test del contenedor.
-   Stack: Node.js, Express, SQLite (better-sqlite3), bcryptjs, jsonwebtoken, Docker.
+   REST API de tareas con JWT, CRUD completo, 18 tests automaticos (100% pass),
+   CI/CD con GitHub Actions: tests, build Docker, smoke test del contenedor.
+   Stack: Node.js, Express, SQLite, bcryptjs, jsonwebtoken, Docker.
 
 5. Price Tracker
    GitHub: github.com/Cid736/price-tracker
-   CLI para rastrear precios en páginas web. Guarda historial en SQLite,
-   compara precios actuales con el mínimo histórico, muestra gráfico ASCII
-   de evolución. Comandos: add, list, check, history, run.
+   CLI para rastrear precios web con historial SQLite y alertas de precio.
    Stack: Python, BeautifulSoup, SQLite, argparse, requests.
 
 6. Dental Bot
    GitHub: github.com/Cid736/dental-bot
-   Chatbot para clínica dental. Procesamiento de lenguaje natural para
-   responder preguntas frecuentes de pacientes.
+   Chatbot para clinica dental con procesamiento de lenguaje natural.
    Stack: Python, FastAPI, Docker.
+
+PREGUNTAS FRECUENTES DE ENTREVISTA — RESPUESTAS DE ERIC
+========================================================
+
+P: Cuentame sobre ti / Tell me about yourself
+R: Soy un profesional enfocado en Cloud, DevOps e IA. Me especializo en
+automatizar infraestructura con Google Cloud y Kubernetes, y en construir
+sistemas de IA practicos: agentes, pipelines RAG, y herramientas de
+automatizacion. Disfruto resolver problemas complejos de sistemas y
+convertirlos en soluciones claras y escalables. Fuera del trabajo construyo
+proyectos propios — desde apps de notas tipo Obsidian hasta asistentes IA —
+porque aprender haciendo es lo que mejor me funciona.
+
+P: Por que te llama la atencion este sector / Why are you interested in this field?
+R: La interseccion entre infraestructura cloud e inteligencia artificial es
+donde esta ocurriendo el cambio mas relevante en tecnologia ahora mismo.
+No me interesa solo usar herramientas: quiero entender como funcionan por
+dentro y construir sobre ellas. El hecho de que pueda montar un pipeline RAG
+completo, desplegarlo en Cloud Run con CI/CD automatico, y que un reclutador
+lo pueda usar desde un link — eso es lo que me motiva.
+
+P: Cuales son tus puntos fuertes / What are your strengths?
+R: Primero, la verticalidad tecnica: puedo ir desde la configuracion de red
+(VPN, Pi-hole, Tailscale) hasta construir un agente IA, pasando por el
+despliegue en Kubernetes. Segundo, la autonomia: tengo varios proyectos
+funcionales en produccion que construi yo solo desde cero. Tercero, aprendo
+rapido — cuando empece con LangChain y RAG no tenia experiencia previa, y
+en poco tiempo tenia un chatbot funcionando con embeddings locales y LLM en la nube.
+
+P: Cuales son tus areas de mejora / What are your weaknesses?
+R: Tiendo a querer entender el sistema completo antes de empezar, lo que a
+veces ralentiza el inicio de una tarea. Lo compenso dividiendo el trabajo en
+incrementos pequenos y forzandome a tener algo funcionando pronto. Tambien
+estoy reforzando mis habilidades de presentacion y comunicacion hacia perfiles
+no tecnicos.
+
+P: Donde te ves en 5 anos / Where do you see yourself in 5 years?
+R: En un rol donde combine arquitectura cloud con sistemas de IA a escala.
+Me gustaria liderar proyectos tecnicos complejos y contribuir a decisiones
+de diseno en una organizacion que use tecnologia para resolver problemas
+reales. El objetivo a largo plazo es ser referente tecnico en el area de
+Cloud & AI.
+
+P: Por que deberiamos contratarte / Why should we hire you?
+R: Porque no solo conozco las tecnologias del stack que usan — las he aplicado
+en proyectos reales que estan en produccion. Tengo CI/CD funcionando, tests
+automatizados, agentes IA con memoria y RAG, y sistemas de redes desplegados.
+No tengo solo teoria: tengo codigo ejecutandose. Ademas, soy autonomo,
+aprendo rapido, y me interesa el problema de fondo, no solo la tarea.
+
+P: Cual es tu mayor logro / What is your biggest achievement?
+R: Haber construido un sistema de notas tipo Obsidian completamente desde cero,
+con WikiLinks, grafo de fuerzas en canvas, resumen IA local y auto-guardado,
+sin frameworks de frontend ni APIs externas de pago — todo con Vanilla JS,
+Node.js y SQLite. Ver un proyecto complejo funcionar de extremo a extremo,
+sabiendo que entiendo cada pieza, es lo que mas satisfaccion me da.
+
+P: Como trabajas bajo presion / How do you work under pressure?
+R: Me centro en lo que puedo controlar. En situaciones de presion priorizo:
+primero entender el problema real, luego identificar el minimo cambio que
+desbloquea la situacion, y despues itero. He resuelto bugs criticos en
+produccion (como bucles dobles en animaciones de grafo que consumian CPU)
+analizando el problema sistematicamente en vez de parchar a ciegas.
+
+P: Prefieres trabajar solo o en equipo / Do you prefer working alone or in a team?
+R: Disfruto las dos modalidades. Trabajo bien de forma autonoma — la mayoria
+de mis proyectos los he construido solo. Pero valoro mucho el trabajo en
+equipo cuando hay revision de codigo, discusion de arquitectura o cuando otro
+punto de vista acelera la solucion. La clave para mi es que el equipo tenga
+cultura tecnica solida.
+
+P: Como manejas el aprendizaje de nuevas tecnologias / How do you learn new technologies?
+R: Aprendiendo haciendo. Cuando quiero aprender algo nuevo, construyo un
+proyecto pequeno pero completo con esa tecnologia. Cuando aprendi LangChain,
+construi un chatbot RAG completo. Cuando aprendi CI/CD con GitHub Actions,
+lo integre en una API real con tests. Eso me da comprension profunda, no
+solo conocimiento superficial.
+
+P: Que tipo de entorno de trabajo prefieres / What kind of work environment do you prefer?
+R: Un entorno donde se valore la autonomia tecnica, donde haya desafios reales
+y donde el codigo importa. Me van bien los equipos pequenos con cultura de
+ingenieria fuerte, donde se premia resolver problemas bien en vez de rapido.
+El trabajo remoto o hibrido me funciona especialmente bien porque soy muy
+productivo trabajando en profundidad.
+
+P: Cuales son tus expectativas salariales / What are your salary expectations?
+R: Estoy abierto a discutirlo dependiendo del rol, las responsabilidades y
+el paquete total. Me interesa un salario competitivo acorde al nivel tecnico
+del puesto y al mercado actual para perfiles Cloud/DevOps con experiencia en IA.
+
+P: Tienes experiencia trabajando con metodologias agiles / Do you have experience with agile?
+R: Si. Conozco Jira para gestion de tareas y seguimiento de proyectos. He
+trabajado con ciclos iterativos donde el objetivo es tener algo funcionando
+en cada sprint. En mis proyectos personales aplico el mismo principio:
+incremental, testeable y desplegable en cada iteracion.
+
+P: Como gestionas multiples tareas o proyectos a la vez / How do you manage multiple tasks?
+R: Priorizo segun impacto y dependencias. Uso herramientas como Jira para
+mantener visibilidad del estado de cada tarea. En mis proyectos personales
+mantengo varios repositorios activos simultAneamente organizando el trabajo
+en incrementos independientes para no bloquear un proyecto por otro.
+
+P: Que herramientas de colaboracion conoces / What collaboration tools do you know?
+R: Git/GitHub para control de versiones y pull requests, Jira para gestion
+de proyectos, Google Workspace para documentacion y comunicacion, y Slack
+para comunicacion de equipo. Tambien tengo experiencia con MS Intune para
+gestion de dispositivos en entornos corporativos.
 
 CONTACTO
 ========

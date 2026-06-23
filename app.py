@@ -1,10 +1,9 @@
 """
-CV Bot — asistente web sobre el perfil profesional de Eric C.
-RAG: Flask + LangChain + Groq (gratis) + embeddings locales
+CV Bot - conversational assistant about Eric C.'s professional profile
+Flask + LangChain + Groq llama-3.3-70b + HuggingFace embeddings (local)
 """
 
-import os
-import sys
+import os, sys, json, re, secrets
 from flask import Flask, request, jsonify, render_template_string
 from langchain_groq import ChatGroq
 from langchain_huggingface import HuggingFaceEmbeddings
@@ -19,254 +18,337 @@ from dotenv import load_dotenv
 load_dotenv()
 
 DOCS_DIR      = "./docs"
-MODEL         = "llama-3.1-8b-instant"
+MODEL         = "llama-3.3-70b-versatile"
 EMBED_MODEL   = "sentence-transformers/all-MiniLM-L6-v2"
-CHUNK_SIZE    = 600
-CHUNK_OVERLAP = 60
-TOP_K         = 4
+CHUNK_SIZE    = 800
+CHUNK_OVERLAP = 80
+TOP_K         = 5
+MAX_HISTORY   = 6
 
-PROMPT_TEMPLATE = """Eres el asistente de CV de Eric C., un profesional de Cloud, DevOps e IA.
-Responde en el mismo idioma que use la pregunta (español o inglés).
-Usa únicamente la información del perfil que se te proporciona como contexto.
-Si la información no está disponible, responde: "No tengo esa información en el perfil."
-Sé conciso y directo.
+sessions = {}   # session_id -> [{"q": str, "a": str}]
 
-Perfil:
-{context}
+MAIN_PROMPT = (
+    "You are the CV assistant for Eric C., a Cloud & DevOps / AI professional.\n"
+    "Your only job: answer questions about Eric's skills, projects, and experience.\n\n"
+    "Rules:\n"
+    "- Detect the language of the question and respond in THAT same language (Spanish or English)\n"
+    "- Be specific: mention real project names, tech stacks, and concrete details from the profile\n"
+    "- If the information is not in the profile, say so honestly without making things up\n"
+    "- Be concise and relevant — think like a recruiter reading this\n"
+    "- Use conversation history to understand follow-up questions in context\n\n"
+    "Conversation so far:\n{history}\n\n"
+    "Relevant profile sections:\n{context}\n\n"
+    "Question: {question}\n"
+    "Answer:"
+)
 
-Pregunta: {question}
-Respuesta:"""
+SUGGEST_PROMPT = (
+    "A recruiter is reading about a software professional named Eric C. "
+    "and just received this answer:\n\n"
+    "Q: {question}\n"
+    "A: {answer}\n\n"
+    "Generate exactly 3 short follow-up questions a recruiter might naturally ask next.\n"
+    "Respond in {lang}.\n"
+    "Return ONLY a valid JSON array of 3 strings - no explanation, no markdown, just the array.\n"
+    'Example: ["Question 1?", "Question 2?", "Question 3?"]'
+)
+
+# ── RAG pipeline ──────────────────────────────────────────────────────────────
+
+def build_pipeline():
+    if not os.getenv("GROQ_API_KEY"):
+        print("[!] Missing GROQ_API_KEY in .env")
+        sys.exit(1)
+
+    print("[~] Loading documents...")
+    loader = DirectoryLoader(DOCS_DIR, glob="**/*.txt", loader_cls=TextLoader,
+                             loader_kwargs={"encoding": "utf-8"})
+    docs = loader.load()
+    if not docs:
+        print(f"[!] No .txt files found in '{DOCS_DIR}'")
+        sys.exit(1)
+    print(f"[ok] {len(docs)} doc(s) loaded")
+
+    chunks = RecursiveCharacterTextSplitter(
+        chunk_size=CHUNK_SIZE, chunk_overlap=CHUNK_OVERLAP
+    ).split_documents(docs)
+    print(f"[ok] {len(chunks)} chunks")
+
+    print("[~] Loading embeddings (first run may take a minute)...")
+    embeddings = HuggingFaceEmbeddings(model_name=EMBED_MODEL)
+    vectorstore = Chroma.from_documents(chunks, embeddings)
+    print("[ok] Vector store ready")
+
+    llm       = ChatGroq(model=MODEL, temperature=0.15)
+    retriever = vectorstore.as_retriever(search_kwargs={"k": TOP_K})
+    prompt    = PromptTemplate(
+        input_variables=["history", "context", "question"],
+        template=MAIN_PROMPT,
+    )
+
+    def fmt(docs):
+        return "\n\n".join(d.page_content for d in docs)
+
+    chain = (
+        {
+            "context":  retriever | fmt,
+            "question": lambda x: x["question"],
+            "history":  lambda x: x["history"],
+        }
+        | prompt
+        | llm
+        | StrOutputParser()
+    )
+    return chain, ChatGroq(model=MODEL, temperature=0.7)
+
+
+print("\nCV Bot - building RAG pipeline...")
+chain, llm_suggest = build_pipeline()
+print("[ok] Ready\n")
+
+# ── HTML ──────────────────────────────────────────────────────────────────────
 
 HTML = """<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Eric C. — CV Assistant</title>
+  <title>Eric C. - CV Assistant</title>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
+    :root {
+      --bg: #0d0d0d; --surface: #141420; --border: #252535;
+      --accent: #7c5cbf; --accent-h: #9b7fe0;
+      --text: #e2e2e2; --muted: #666;
+    }
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: #0d0d0d;
-      color: #e0e0e0;
-      height: 100dvh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+      background: var(--bg); color: var(--text);
+      height: 100dvh; display: flex; flex-direction: column; align-items: center;
     }
-
     header {
-      width: 100%;
-      max-width: 720px;
-      padding: 24px 20px 12px;
-      text-align: center;
+      width: 100%; max-width: 760px;
+      padding: 20px 20px 8px;
+      display: flex; align-items: center; gap: 14px;
     }
-    header h1 { font-size: 1.4rem; color: #fff; }
-    header p  { font-size: 0.85rem; color: #777; margin-top: 4px; }
-
+    .avatar {
+      width: 44px; height: 44px; border-radius: 50%;
+      background: linear-gradient(135deg, #7c5cbf, #3a2a6e);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem; font-weight: 700; color: #fff; flex-shrink: 0;
+    }
+    .htext h1 { font-size: 1rem; color: #fff; font-weight: 600; }
+    .htext p  { font-size: 0.76rem; color: var(--muted); margin-top: 2px; }
+    .badge {
+      margin-left: auto; padding: 4px 10px;
+      background: #1a2e1a; border: 1px solid #2a4a2a;
+      border-radius: 20px; font-size: 0.72rem; color: #5a9a5a;
+    }
     #chat {
-      flex: 1;
-      width: 100%;
-      max-width: 720px;
-      overflow-y: auto;
-      padding: 12px 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
+      flex: 1; width: 100%; max-width: 760px;
+      overflow-y: auto; padding: 8px 20px 4px;
+      display: flex; flex-direction: column; gap: 10px;
     }
-
+    #chat::-webkit-scrollbar { width: 4px; }
+    #chat::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
     .msg {
-      max-width: 85%;
-      padding: 10px 14px;
-      border-radius: 12px;
-      font-size: 0.9rem;
-      line-height: 1.5;
-      white-space: pre-wrap;
+      max-width: 82%; padding: 11px 15px;
+      border-radius: 14px; font-size: 0.88rem; line-height: 1.6;
     }
     .msg.user {
-      align-self: flex-end;
-      background: #7c5cbf;
-      color: #fff;
+      align-self: flex-end; background: var(--accent); color: #fff;
       border-bottom-right-radius: 4px;
     }
     .msg.bot {
-      align-self: flex-start;
-      background: #1e1e2e;
-      border: 1px solid #2a2a3a;
-      border-bottom-left-radius: 4px;
+      align-self: flex-start; background: var(--surface);
+      border: 1px solid var(--border); border-bottom-left-radius: 4px;
     }
-    .msg.typing { color: #555; font-style: italic; }
-
-    #form {
-      width: 100%;
-      max-width: 720px;
-      padding: 12px 20px 20px;
-      display: flex;
-      gap: 8px;
+    .msg.bot p { margin-bottom: 6px; }
+    .msg.bot p:last-child { margin-bottom: 0; }
+    .msg.bot ul, .msg.bot ol { padding-left: 18px; margin: 4px 0; }
+    .msg.bot li { margin: 2px 0; }
+    .msg.bot code {
+      background: #1e1e2e; padding: 1px 5px; border-radius: 4px;
+      font-size: 0.82em; font-family: monospace;
     }
-    #input {
-      flex: 1;
-      padding: 10px 14px;
-      background: #1a1a2e;
-      border: 1px solid #333;
-      border-radius: 8px;
-      color: #e0e0e0;
-      font-size: 0.9rem;
-      outline: none;
+    .msg.bot strong { color: #c9a8ff; }
+    .dots span {
+      display: inline-block; width: 6px; height: 6px;
+      background: var(--muted); border-radius: 50%; margin: 0 2px;
+      animation: bounce 1.2s infinite ease-in-out;
     }
-    #input:focus { border-color: #7c5cbf; }
-    #input::placeholder { color: #555; }
-
-    button {
-      padding: 10px 18px;
-      background: #7c5cbf;
-      border: none;
-      border-radius: 8px;
-      color: #fff;
-      font-size: 0.9rem;
-      cursor: pointer;
-      transition: background 0.15s;
+    .dots span:nth-child(2) { animation-delay: .2s; }
+    .dots span:nth-child(3) { animation-delay: .4s; }
+    @keyframes bounce {
+      0%,80%,100% { transform: translateY(0); opacity:.4; }
+      40%          { transform: translateY(-5px); opacity:1; }
     }
-    button:hover { background: #9b7fe0; }
-    button:disabled { background: #444; cursor: default; }
-
-    .suggestions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      padding: 0 20px 12px;
-      width: 100%;
-      max-width: 720px;
+    #chips {
+      width: 100%; max-width: 760px;
+      padding: 6px 20px 4px; display: flex; flex-wrap: wrap; gap: 7px; min-height: 38px;
     }
     .chip {
-      padding: 6px 12px;
-      background: #1a1a2e;
-      border: 1px solid #333;
-      border-radius: 20px;
-      font-size: 0.78rem;
-      color: #aaa;
-      cursor: pointer;
-      transition: border-color 0.15s, color 0.15s;
+      padding: 6px 13px; background: var(--surface);
+      border: 1px solid var(--border); border-radius: 20px;
+      font-size: 0.75rem; color: #aaa; cursor: pointer;
+      transition: border-color .15s, color .15s, opacity .2s, transform .2s;
     }
-    .chip:hover { border-color: #7c5cbf; color: #c9a8ff; }
+    .chip:hover { border-color: var(--accent); color: #c9a8ff; }
+    .chip.out { opacity: 0; transform: translateY(-4px); }
+    @keyframes chipIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .chip.in { animation: chipIn .25s ease forwards; }
+    #form {
+      width: 100%; max-width: 760px;
+      padding: 8px 20px 18px; display: flex; gap: 8px; align-items: flex-end;
+    }
+    #input {
+      flex: 1; padding: 11px 14px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 10px; color: var(--text); font-size: 0.88rem;
+      outline: none; resize: none; min-height: 44px; max-height: 120px;
+      line-height: 1.5; font-family: inherit;
+    }
+    #input:focus { border-color: var(--accent); }
+    #input::placeholder { color: var(--muted); }
+    button {
+      padding: 0 18px; background: var(--accent);
+      border: none; border-radius: 10px; color: #fff;
+      font-size: 1rem; cursor: pointer; transition: background .15s; height: 44px; flex-shrink: 0;
+    }
+    button:hover { background: var(--accent-h); }
+    button:disabled { background: #333; cursor: default; }
   </style>
 </head>
 <body>
   <header>
-    <h1>Eric C. — CV Assistant</h1>
-    <p>Pregúntame sobre habilidades, proyectos o experiencia · Ask me about skills, projects or experience</p>
+    <div class="avatar">EC</div>
+    <div class="htext">
+      <h1>Eric C. &mdash; CV Assistant</h1>
+      <p>Cloud &amp; DevOps &middot; IA &middot; Sistemas &amp; Redes &middot; Ask in any language</p>
+    </div>
+    <span class="badge">&#9679; online</span>
   </header>
 
   <div id="chat"></div>
-
-  <div class="suggestions">
-    <span class="chip" onclick="ask(this.textContent)">¿Qué proyectos has hecho?</span>
-    <span class="chip" onclick="ask(this.textContent)">¿Qué tecnologías de IA conoces?</span>
-    <span class="chip" onclick="ask(this.textContent)">What Cloud experience do you have?</span>
-    <span class="chip" onclick="ask(this.textContent)">¿Sabes Kubernetes?</span>
-    <span class="chip" onclick="ask(this.textContent)">Tell me about your networking skills</span>
-  </div>
+  <div id="chips"></div>
 
   <form id="form" onsubmit="send(event)">
-    <input id="input" type="text" placeholder="Escribe tu pregunta..." autocomplete="off">
-    <button id="btn" type="submit">Enviar</button>
+    <textarea id="input" placeholder="Pregunta en cualquier idioma / Ask in any language..." rows="1"
+      oninput="resize(this)" onkeydown="onKey(event)"></textarea>
+    <button id="btn" type="submit">&#9658;</button>
   </form>
 
   <script>
-    const chat = document.getElementById('chat');
+    const chat  = document.getElementById('chat');
     const input = document.getElementById('input');
-    const btn = document.getElementById('btn');
+    const btn   = document.getElementById('btn');
+    const chips = document.getElementById('chips');
+    let sid  = null;
+    let busy = false;
 
-    function addMsg(text, role) {
-      const div = document.createElement('div');
-      div.className = `msg ${role}`;
-      div.textContent = text;
-      chat.appendChild(div);
+    const DEFAULTS = [
+      "Que proyectos has hecho?",
+      "Que tecnologias de IA conoces?",
+      "What Cloud & DevOps experience do you have?",
+      "Sabes Kubernetes?",
+      "Tell me about your networking skills"
+    ];
+
+    function setChips(list) {
+      [...chips.children].forEach(c => c.classList.add('out'));
+      setTimeout(() => {
+        chips.innerHTML = '';
+        list.forEach(q => {
+          const el = document.createElement('span');
+          el.className = 'chip in';
+          el.textContent = q;
+          el.onclick = () => ask(q);
+          chips.appendChild(el);
+        });
+      }, 220);
+    }
+
+    function addMsg(html, role, markdown) {
+      const d = document.createElement('div');
+      d.className = 'msg ' + role;
+      if (markdown) d.innerHTML = marked.parse(html);
+      else d.textContent = html;
+      chat.appendChild(d);
       chat.scrollTop = chat.scrollHeight;
-      return div;
+      return d;
     }
 
-    async function ask(q) {
-      input.value = q;
-      await send(new Event('submit'));
+    function typing() {
+      const d = document.createElement('div');
+      d.className = 'msg bot';
+      d.innerHTML = '<div class="dots"><span></span><span></span><span></span></div>';
+      chat.appendChild(d);
+      chat.scrollTop = chat.scrollHeight;
+      return d;
     }
+
+    function resize(el) {
+      el.style.height = 'auto';
+      el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+    }
+
+    function onKey(e) {
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(e); }
+    }
+
+    async function ask(q) { input.value = q; resize(input); await send(new Event('submit')); }
 
     async function send(e) {
       e.preventDefault();
       const q = input.value.trim();
-      if (!q) return;
+      if (!q || busy) return;
+      busy = true; btn.disabled = true;
 
-      addMsg(q, 'user');
-      input.value = '';
-      btn.disabled = true;
-
-      const typing = addMsg('Pensando...', 'bot typing');
+      addMsg(q, 'user', false);
+      input.value = ''; resize(input);
+      const t = typing();
 
       try {
-        const res = await fetch('/chat', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ question: q })
+        const res  = await fetch('/chat', {
+          method: 'POST', headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({ question: q, session_id: sid })
         });
         const data = await res.json();
-        typing.className = 'msg bot';
-        typing.textContent = data.answer || data.error || 'Error al procesar la pregunta.';
-      } catch {
-        typing.className = 'msg bot';
-        typing.textContent = 'Error de conexión.';
-      } finally {
-        btn.disabled = false;
-        input.focus();
-      }
+        t.remove();
+        if (data.error) { addMsg(data.error, 'bot', false); }
+        else {
+          sid = data.session_id;
+          addMsg(data.answer, 'bot', true);
+          getSuggestions(q, data.answer);
+        }
+      } catch { t.remove(); addMsg('Error de conexion.', 'bot', false); }
+      finally { busy = false; btn.disabled = false; input.focus(); }
     }
+
+    async function getSuggestions(q, a) {
+      try {
+        const lang = /[a-z]/i.test(q) && !/[aeiou]{2}/i.test(q) ? 'English' : 'Spanish';
+        const res  = await fetch('/suggest', {
+          method: 'POST', headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({ question: q, answer: a, lang })
+        });
+        const data = await res.json();
+        if (Array.isArray(data.suggestions) && data.suggestions.length)
+          setChips(data.suggestions);
+      } catch {}
+    }
+
+    setChips(DEFAULTS);
+    input.focus();
   </script>
 </body>
 </html>"""
 
-
-def build_pipeline():
-    if not os.getenv("GROQ_API_KEY"):
-        print("[!] Falta GROQ_API_KEY en el archivo .env")
-        sys.exit(1)
-
-    print("[~] Cargando documentos...")
-    loader = DirectoryLoader(DOCS_DIR, glob="**/*.txt", loader_cls=TextLoader,
-                             loader_kwargs={"encoding": "utf-8"})
-    docs = loader.load()
-    if not docs:
-        print(f"[!] No se encontraron documentos en '{DOCS_DIR}'")
-        sys.exit(1)
-    print(f"[✓] {len(docs)} documento(s) cargado(s)")
-
-    splitter = RecursiveCharacterTextSplitter(chunk_size=CHUNK_SIZE, chunk_overlap=CHUNK_OVERLAP)
-    chunks = splitter.split_documents(docs)
-    print(f"[✓] {len(chunks)} chunks generados")
-
-    print("[~] Cargando embeddings (primera vez puede tardar)...")
-    embeddings = HuggingFaceEmbeddings(model_name=EMBED_MODEL)
-    vectorstore = Chroma.from_documents(chunks, embeddings)
-    print("[✓] Vector store listo")
-
-    llm = ChatGroq(model=MODEL, temperature=0)
-    retriever = vectorstore.as_retriever(search_kwargs={"k": TOP_K})
-    prompt = PromptTemplate(input_variables=["context", "question"], template=PROMPT_TEMPLATE)
-
-    def format_docs(docs):
-        return "\n\n".join(d.page_content for d in docs)
-
-    chain = (
-        {"context": retriever | format_docs, "question": RunnablePassthrough()}
-        | prompt
-        | llm
-        | StrOutputParser()
-    )
-    return chain
-
-
-print("\nCV Bot — iniciando pipeline RAG...")
-chain = build_pipeline()
-print("[✓] Listo en http://localhost:5000\n")
+# ── Flask routes ──────────────────────────────────────────────────────────────
 
 app = Flask(__name__)
 
@@ -274,18 +356,44 @@ app = Flask(__name__)
 def index():
     return render_template_string(HTML)
 
+@app.route('/health')
+def health():
+    return jsonify({"status": "ok"})
+
 @app.route('/chat', methods=['POST'])
-def chat():
-    data = request.get_json(silent=True) or {}
+def chat_route():
+    data     = request.get_json(silent=True) or {}
     question = data.get('question', '').strip()
+    sid      = data.get('session_id') or secrets.token_hex(12)
+
     if not question:
-        return jsonify({'error': 'Pregunta vacía'}), 400
+        return jsonify({'error': 'Empty question'}), 400
+
+    hist = sessions.get(sid, [])
+    history_text = "\n\n".join(
+        f"Human: {h['q']}\nAssistant: {h['a']}" for h in hist[-MAX_HISTORY:]
+    ) or "(No previous conversation)"
+
     try:
-        answer = chain.invoke(question)
-        return jsonify({'answer': answer})
+        answer = chain.invoke({"question": question, "history": history_text})
+        hist.append({"q": question, "a": answer})
+        sessions[sid] = hist[-MAX_HISTORY:]
+        return jsonify({"answer": answer, "session_id": sid})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+@app.route('/suggest', methods=['POST'])
+def suggest():
+    data = request.get_json(silent=True) or {}
+    q, a, lang = data.get('question',''), data.get('answer',''), data.get('lang','Spanish')
+    try:
+        raw = llm_suggest.invoke(SUGGEST_PROMPT.format(question=q, answer=a, lang=lang)).content
+        m   = re.search(r'\[.*?\]', raw, re.DOTALL)
+        return jsonify({"suggestions": json.loads(m.group())[:3] if m else []})
+    except Exception:
+        return jsonify({"suggestions": []})
+
+
 if __name__ == '__main__':
-    port = int(os.getenv('PORT', 5000))
+    port = int(os.getenv('PORT', 5001))
     app.run(host='0.0.0.0', port=port, debug=False)
