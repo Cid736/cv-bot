@@ -476,6 +476,10 @@ HTML = """<!DOCTYPE html>
           sid = data.session_id;
           addMsg(data.answer, 'bot', true);
           if (data.rate_limited) {
+            const resetMsg = data.reset_msg || 'consulta la consola de Groq';
+            banner.innerHTML = '&#9888; Asistente IA pausado por l&iacute;mite de uso (Groq free tier). '
+              + '<strong>' + resetMsg + '</strong>. '
+              + 'Perfil completo: <a href="https://github.com/Cid736" target="_blank">github.com/Cid736</a>';
             banner.classList.add('visible');
           } else {
             banner.classList.remove('visible');
@@ -542,9 +546,19 @@ def chat_route():
         history.append({"q": question, "a": answer})
         sessions[sid] = history[-MAX_HISTORY:]
         return jsonify({"answer": answer, "session_id": sid})
-    except RateLimitError:
+    except RateLimitError as e:
+        # Groq includes "Please try again in Xs" or "Xm Ys" in the message
+        msg = str(e)
+        retry_match = re.search(r'try again in ([\d\w\s\.]+?)\.', msg, re.I)
+        if retry_match:
+            retry_in = retry_match.group(1).strip()
+            reset_msg = f"Reintentar en {retry_in}"
+        elif 'per_day' in msg.lower() or 'rpd' in msg.lower() or 'tpd' in msg.lower():
+            reset_msg = "Limite diario — se reinicia a medianoche UTC"
+        else:
+            reset_msg = "Reintentar en ~60 segundos (limite por minuto)"
         answer = static_answer(question, lang)
-        return jsonify({"answer": answer, "session_id": sid, "rate_limited": True})
+        return jsonify({"answer": answer, "session_id": sid, "rate_limited": True, "reset_msg": reset_msg})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
