@@ -6,210 +6,192 @@ GitHub: github.com/Cid736
 EXPERIENCIA Y TRAYECTORIA
 =========================
 Eric tiene aproximadamente 3 anos de experiencia en el sector tecnologico,
-con un perfil que cubre sistemas y redes, desarrollo de software e
-inteligencia artificial. Ha pasado por roles que incluyen administracion
-de sistemas (Linux, Windows Server, redes corporativas con VPN e Intune),
-DevOps (Kubernetes, Docker, CI/CD con GitHub Actions), y desarrollo de
-soluciones de IA (agentes, RAG, LLMs, Vertex AI).
+con un perfil orientado principalmente a sistemas, redes e infraestructura,
+complementado con conocimientos en Cloud, DevOps e IA.
 
-Su carrera muestra una evolucion rapida en poco tiempo: de infraestructura
-y redes hacia automatizacion y DevOps, y de ahi hacia IA aplicada.
-A pesar de ser un perfil junior-mid con 3 anos de experiencia, su stack
-es amplio y sus proyectos son de complejidad alta.
+Su nucleo profesional esta en la administracion de sistemas y redes:
+Linux/Ubuntu, Windows Server, TCP/IP, VPN corporativas, gestion de
+endpoints con MS Intune, y redes privadas con Tailscale y Pi-hole.
+Sobre esa base solida ha construido competencias en automatizacion,
+contenedores y cloud, lo que le permite entender la infraestructura
+de extremo a extremo — desde el cable hasta el despliegue en produccion.
 
-Tiene experiencia con herramientas de gestion empresarial como Jira,
-MS Intune y Google Workspace, lo que indica exposicion a entornos
-corporativos reales, no solo proyectos personales.
+Tiene exposicion a entornos corporativos reales (Jira, MS Intune,
+Google Workspace), no solo proyectos personales. Ha gestionado dispositivos,
+configurado redes y dado soporte en entornos Windows Server y Linux.
 
-Sus proyectos personales son complejos y completos: un sistema de notas
-con grafo de fuerzas y IA local, un chatbot RAG con embeddings locales,
-una REST API con CI/CD completo y 18 tests automatizados. Esto demuestra
-capacidad de llevar proyectos de principio a fin de forma autonoma.
+Adicionalmente, sabe programar en Python, Bash y JavaScript/Node.js,
+lo que le permite automatizar tareas de sistemas, construir herramientas
+internas y trabajar con pipelines de IA — pero su identidad profesional
+es la de un especialista en sistemas, no un desarrollador.
 
 HABILIDADES TECNICAS
 ====================
 
+Sistemas & Redes (nucleo):
+- Linux / Ubuntu — administracion de servidores, servicios, permisos, cron
+- Windows Server — entornos corporativos, Active Directory, GPO
+- TCP/IP — protocolos de red, subredes, enrutamiento
+- VPN — configuracion y gestion de redes privadas
+- Pi-hole — servidor DNS con bloqueo de publicidad a nivel de red
+- Tailscale — red mesh VPN sobre WireGuard para acceso remoto seguro
+- MS Intune — gestion de dispositivos moviles y endpoints corporativos
+- Seguridad basica de redes — firewalls, accesos, politicas
+
 Cloud & DevOps:
-- Google Cloud Platform (GCP)
+- Google Cloud Platform (GCP) — despliegue de servicios, Cloud Run
 - Kubernetes — orquestacion de contenedores
-- Docker y Docker Compose
-- CI/CD con GitHub Actions — pipelines automaticos de test y despliegue
+- Docker y Docker Compose — contenedores y entornos reproducibles
+- CI/CD con GitHub Actions — pipelines de test, build y despliegue automatico
 
-IA & Automatizacion:
-- LLMs (Large Language Models) — diseno y uso de modelos de lenguaje
-- Prompt Engineering — optimizacion de prompts para distintos modelos
+Automatizacion & Scripting:
+- Python — scripting, automatizacion de tareas de sistemas, herramientas CLI
+- Bash — scripting de sistemas, administracion, automatizacion
+- SQL — bases de datos relacionales, SQLite
+- JavaScript / Node.js — APIs REST, herramientas web complementarias
+
+IA & Automatizacion (complementario):
+- LLMs y Prompt Engineering — uso practico de modelos de lenguaje
 - Vertex AI — plataforma de IA de Google Cloud
-- Agentes IA — construccion de agentes con herramientas y memoria
-- RAG (Retrieval-Augmented Generation) — chatbots con contexto de documentos
-- LangChain — framework para pipelines de IA
-
-Programacion:
-- Python — lenguaje principal para automatizacion, IA y scripting
-- Bash — scripting y automatizacion de sistemas
-- SQL y NoSQL — bases de datos relacionales y no relacionales
-- JavaScript y Node.js — APIs REST, backends web
-
-Sistemas & Redes:
-- Linux / Ubuntu — administracion de sistemas, servidores
-- Windows Server — entornos corporativos
-- TCP/IP — protocolos de red
-- VPN — configuracion y gestion
-- Pi-hole — filtrado de DNS y bloqueo de publicidad a nivel de red
-- Tailscale — red mesh VPN basada en WireGuard
+- Agentes IA y RAG — construccion de asistentes con contexto de documentos
+- LangChain — pipelines de IA
 
 Herramientas:
-- Git / GitHub — control de versiones
-- VS Code — editor principal
-- Jira — gestion de proyectos agiles
+- Git / GitHub — control de versiones, colaboracion
+- Jira — gestion de proyectos y tickets
 - Google Workspace — Suite ofimatica colaborativa
-- MS Intune — gestion de dispositivos moviles y endpoints
+- VS Code — editor principal
+- MS Intune — gestion y politicas de dispositivos corporativos
 
 PROYECTOS PERSONALES
 ====================
 
-1. Smart Notes
-   GitHub: github.com/Cid736/smart-notes
-   App de notas inspirada en Obsidian. Editor Markdown con vista dividida en
-   tiempo real, WikiLinks entre notas, vista de grafo con fisica de fuerzas,
-   panel de backlinks, resumen IA con NLP extractivo (TF-IDF sin API externa),
-   barra de formato, auto-guardado, etiquetas, busqueda en tiempo real.
-   Stack: Node.js, Express, SQLite, Vanilla JS, marked.js.
-
-2. RAG Chatbot
-   GitHub: github.com/Cid736/rag-chatbot
-   Chatbot con arquitectura RAG. Embeddings locales con HuggingFace,
-   responde usando Groq (llama-3.1-8b) solo con informacion de los documentos.
-   Sin GPU necesaria.
-   Stack: Python, LangChain, ChromaDB, Groq API.
-
-3. CV Bot
-   GitHub: github.com/Cid736/cv-bot
-   Asistente web conversacional que responde preguntas sobre el perfil de Eric.
-   Interfaz de chat, backend Flask, RAG, preguntas predictivas post-respuesta.
-   Stack: Python, Flask, LangChain, ChromaDB, Groq API.
-
-4. Task API
-   GitHub: github.com/Cid736/task-api
-   REST API de tareas con JWT, CRUD completo, 18 tests automaticos (100% pass),
-   CI/CD con GitHub Actions: tests, build Docker, smoke test del contenedor.
-   Stack: Node.js, Express, SQLite, bcryptjs, jsonwebtoken, Docker.
-
-5. Price Tracker
-   GitHub: github.com/Cid736/price-tracker
-   CLI para rastrear precios web con historial SQLite y alertas de precio.
-   Stack: Python, BeautifulSoup, SQLite, argparse, requests.
-
-6. Dental Bot
-   GitHub: github.com/Cid736/dental-bot
-   Chatbot para clinica dental con procesamiento de lenguaje natural.
+1. Medical Bot
+   GitHub: github.com/Cid736/medical-bot
+   SaaS chatbot para clinicas medicas. Responde consultas de pacientes 24/7.
    Stack: Python, FastAPI, Docker.
 
-PREGUNTAS FRECUENTES DE ENTREVISTA — RESPUESTAS DE ERIC
-========================================================
+2. Price Tracker
+   GitHub: github.com/Cid736/price-tracker
+   CLI para rastrear precios web con historial SQLite y alertas de precio.
+   Automatizacion con scripting Python, scraping y base de datos local.
+   Stack: Python, BeautifulSoup, SQLite, argparse, requests.
+
+3. Task API
+   GitHub: github.com/Cid736/task-api
+   REST API de tareas con autenticacion JWT, CRUD completo, 18 tests
+   automaticos (100% pass), CI/CD con GitHub Actions: tests, build Docker,
+   smoke test del contenedor en produccion.
+   Stack: Node.js, Express, SQLite, Docker, GitHub Actions.
+
+4. CV Bot
+   GitHub: github.com/Cid736/cv-bot
+   Asistente web que responde preguntas sobre el perfil de Eric.
+   Backend Flask, LLM Groq, memoria de sesion, preguntas predictivas.
+   Stack: Python, Flask, LangChain, Groq API.
+
+5. Smart Notes
+   GitHub: github.com/Cid736/smart-notes
+   App de notas tipo Obsidian con WikiLinks, grafo de conexiones, IA local.
+   Stack: Node.js, Express, SQLite, Vanilla JS.
+
+6. RAG Chatbot
+   GitHub: github.com/Cid736/rag-chatbot
+   Chatbot con arquitectura RAG, embeddings locales, sin GPU necesaria.
+   Stack: Python, LangChain, ChromaDB, Groq API.
+
+PREGUNTAS FRECUENTES DE ENTREVISTA
+===================================
 
 P: Cuentame sobre ti / Tell me about yourself
-R: Soy un profesional enfocado en Cloud, DevOps e IA. Me especializo en
-automatizar infraestructura con Google Cloud y Kubernetes, y en construir
-sistemas de IA practicos: agentes, pipelines RAG, y herramientas de
-automatizacion. Disfruto resolver problemas complejos de sistemas y
-convertirlos en soluciones claras y escalables. Fuera del trabajo construyo
-proyectos propios — desde apps de notas tipo Obsidian hasta asistentes IA —
-porque aprender haciendo es lo que mejor me funciona.
+R: Soy un tecnico de sistemas con unos 3 anos de experiencia, con un perfil
+que cubre desde la administracion de sistemas Linux y Windows Server hasta
+redes, contenedores y cloud. Mi base es la infraestructura: se montar,
+mantener y asegurar sistemas en entornos corporativos reales. Sobre esa base
+he anadido conocimientos en DevOps, automatizacion con Python y Bash, y
+ultimamente en IA aplicada. Me gusta entender como funciona cada capa del
+sistema, desde la red hasta la aplicacion.
 
 P: Por que te llama la atencion este sector / Why are you interested in this field?
-R: La interseccion entre infraestructura cloud e inteligencia artificial es
-donde esta ocurriendo el cambio mas relevante en tecnologia ahora mismo.
-No me interesa solo usar herramientas: quiero entender como funcionan por
-dentro y construir sobre ellas. El hecho de que pueda montar un pipeline RAG
-completo, desplegarlo en Cloud Run con CI/CD automatico, y que un reclutador
-lo pueda usar desde un link — eso es lo que me motiva.
+R: Porque los sistemas son la base de todo. Sin infraestructura bien montada
+no hay nada. Me gusta que el trabajo en sistemas tiene impacto real e inmediato:
+cuando un servidor cae o una red falla, todo para. Eso me exige rigor, criterio
+y capacidad de resolver bajo presion. Ademas, la combinacion de sistemas con
+automatizacion e IA esta abriendo posibilidades nuevas que me interesan mucho.
 
 P: Cuales son tus puntos fuertes / What are your strengths?
-R: Primero, la verticalidad tecnica: puedo ir desde la configuracion de red
-(VPN, Pi-hole, Tailscale) hasta construir un agente IA, pasando por el
-despliegue en Kubernetes. Segundo, la autonomia: tengo varios proyectos
-funcionales en produccion que construi yo solo desde cero. Tercero, aprendo
-rapido — cuando empece con LangChain y RAG no tenia experiencia previa, y
-en poco tiempo tenia un chatbot funcionando con embeddings locales y LLM en la nube.
+R: Primero, visibilidad de extremo a extremo: entiendo tanto la capa de red
+(TCP/IP, VPN, Pi-hole, Tailscale) como la de contenedores y cloud. Segundo,
+la autonomia: configuro, despliego y mantengo sistemas sin depender de nadie.
+Tercero, la capacidad de automatizar: cuando algo se repite, lo scripto en
+Python o Bash. Y cuarto, aprendo rapido — en 3 anos he pasado de sistemas
+basicos a tener CI/CD, Docker y pipelines de IA funcionando.
 
 P: Cuales son tus areas de mejora / What are your weaknesses?
-R: Tiendo a querer entender el sistema completo antes de empezar, lo que a
-veces ralentiza el inicio de una tarea. Lo compenso dividiendo el trabajo en
-incrementos pequenos y forzandome a tener algo funcionando pronto. Tambien
-estoy reforzando mis habilidades de presentacion y comunicacion hacia perfiles
+R: Quiero profundizar mas en seguridad de sistemas y redes — firewalls avanzados,
+hardening de servidores, certificaciones tipo CompTIA Security+. Es un area
+donde tengo base pero quiero mas profundidad. Tambien estoy mejorando mis
+habilidades para documentar y comunicar configuraciones tecnicas a perfiles
 no tecnicos.
 
 P: Donde te ves en 5 anos / Where do you see yourself in 5 years?
-R: En un rol donde combine arquitectura cloud con sistemas de IA a escala.
-Me gustaria liderar proyectos tecnicos complejos y contribuir a decisiones
-de diseno en una organizacion que use tecnologia para resolver problemas
-reales. El objetivo a largo plazo es ser referente tecnico en el area de
-Cloud & AI.
+R: En un rol de administrador de sistemas senior o arquitecto de infraestructura,
+gestionando entornos complejos que combinen on-premise y cloud. Me interesa
+especializarme mas en seguridad de sistemas y en infraestructura como codigo
+(Terraform, Ansible). A largo plazo me gustaria liderar equipos de sistemas
+en organizaciones donde la infraestructura sea critica.
 
 P: Por que deberiamos contratarte / Why should we hire you?
-R: Porque no solo conozco las tecnologias del stack que usan — las he aplicado
-en proyectos reales que estan en produccion. Tengo CI/CD funcionando, tests
-automatizados, agentes IA con memoria y RAG, y sistemas de redes desplegados.
-No tengo solo teoria: tengo codigo ejecutandose. Ademas, soy autonomo,
-aprendo rapido, y me interesa el problema de fondo, no solo la tarea.
+R: Porque tengo una base solida en sistemas y redes, con exposicion real a
+entornos corporativos (Intune, Windows Server, VPN), y encima de eso se
+automatizar, contenerizar y desplegar en cloud. No soy solo un administrador
+clasico: puedo montar un servidor Linux, configurar la red, dockerizar el
+servicio, subirlo a GCP y poner CI/CD — todo yo. Eso da mucha autonomia a
+cualquier equipo.
 
 P: Cual es tu mayor logro / What is your biggest achievement?
-R: Haber construido un sistema de notas tipo Obsidian completamente desde cero,
-con WikiLinks, grafo de fuerzas en canvas, resumen IA local y auto-guardado,
-sin frameworks de frontend ni APIs externas de pago — todo con Vanilla JS,
-Node.js y SQLite. Ver un proyecto complejo funcionar de extremo a extremo,
-sabiendo que entiendo cada pieza, es lo que mas satisfaccion me da.
+R: Montar una red privada funcional con Tailscale y Pi-hole, integrando
+dispositivos en distintos entornos, con control de DNS y bloqueo de trafico
+no deseado. Ver que una infraestructura que monte desde cero funciona de forma
+fiable y segura, sin intervenciones externas, es lo que mas satisfaccion me da.
+Tambien el haber desplegado en produccion una API con CI/CD completo y tests
+automatizados — sabiendo que cada push es seguro.
 
 P: Como trabajas bajo presion / How do you work under pressure?
-R: Me centro en lo que puedo controlar. En situaciones de presion priorizo:
-primero entender el problema real, luego identificar el minimo cambio que
-desbloquea la situacion, y despues itero. He resuelto bugs criticos en
-produccion (como bucles dobles en animaciones de grafo que consumian CPU)
-analizando el problema sistematicamente en vez de parchar a ciegas.
+R: Con calma y metodicamente. En sistemas, el panico lleva a errores que
+empeoran la situacion. Mi proceso es: primero aislar el problema (cual es el
+servicio afectado, desde cuando, que cambio), luego reproducirlo si puedo,
+y despues aplicar el cambio minimo necesario. He resuelto incidencias de red
+y bugs de produccion siguiendo ese patron y funciona.
 
 P: Prefieres trabajar solo o en equipo / Do you prefer working alone or in a team?
-R: Disfruto las dos modalidades. Trabajo bien de forma autonoma — la mayoria
-de mis proyectos los he construido solo. Pero valoro mucho el trabajo en
-equipo cuando hay revision de codigo, discusion de arquitectura o cuando otro
-punto de vista acelera la solucion. La clave para mi es que el equipo tenga
-cultura tecnica solida.
+R: Las dos modalidades me funcionan. En sistemas suelo trabajar con bastante
+autonomia, lo que me gusta. Pero valoro mucho el trabajo en equipo en
+situaciones de incidencia, revision de configuraciones o discusion de
+arquitectura — otra perspectiva tecnica siempre aporta.
 
 P: Como manejas el aprendizaje de nuevas tecnologias / How do you learn new technologies?
-R: Aprendiendo haciendo. Cuando quiero aprender algo nuevo, construyo un
-proyecto pequeno pero completo con esa tecnologia. Cuando aprendi LangChain,
-construi un chatbot RAG completo. Cuando aprendi CI/CD con GitHub Actions,
-lo integre en una API real con tests. Eso me da comprension profunda, no
-solo conocimiento superficial.
+R: Montando un laboratorio. Si quiero aprender una tecnologia, la instalo,
+la configuro y la rompo para ver como se comporta. Asi aprendi Docker,
+Kubernetes, Tailscale y las herramientas de IA. La teoria sin practica
+no me queda. Tambien uso documentacion oficial mas que cursos — prefiero
+ir a la fuente.
 
-P: Que tipo de entorno de trabajo prefieres / What kind of work environment do you prefer?
-R: Un entorno donde se valore la autonomia tecnica, donde haya desafios reales
-y donde el codigo importa. Me van bien los equipos pequenos con cultura de
-ingenieria fuerte, donde se premia resolver problemas bien en vez de rapido.
-El trabajo remoto o hibrido me funciona especialmente bien porque soy muy
-productivo trabajando en profundidad.
-
-P: Cuales son tus expectativas salariales / What are your salary expectations?
-R: Estoy abierto a discutirlo dependiendo del rol, las responsabilidades y
-el paquete total. Me interesa un salario competitivo acorde al nivel tecnico
-del puesto y al mercado actual para perfiles Cloud/DevOps con experiencia en IA.
-
-P: Tienes experiencia trabajando con metodologias agiles / Do you have experience with agile?
-R: Si. Conozco Jira para gestion de tareas y seguimiento de proyectos. He
-trabajado con ciclos iterativos donde el objetivo es tener algo funcionando
-en cada sprint. En mis proyectos personales aplico el mismo principio:
+P: Tienes experiencia con metodologias agiles / Do you have experience with agile?
+R: Si, conozco Jira para gestion de tickets y proyectos. He trabajado con
+flujos iterativos donde el objetivo es tener algo funcionando y desplegado
+en cada ciclo. En mis proyectos personales aplico el mismo principio:
 incremental, testeable y desplegable en cada iteracion.
 
-P: Como gestionas multiples tareas o proyectos a la vez / How do you manage multiple tasks?
-R: Priorizo segun impacto y dependencias. Uso herramientas como Jira para
-mantener visibilidad del estado de cada tarea. En mis proyectos personales
-mantengo varios repositorios activos simultAneamente organizando el trabajo
-en incrementos independientes para no bloquear un proyecto por otro.
+P: Cuales son tus expectativas salariales / What are your salary expectations?
+R: Estoy abierto a discutirlo segun el rol y las responsabilidades. Me interesa
+un salario competitivo acorde al mercado para perfiles de sistemas junior-mid
+con conocimientos en cloud y automatizacion.
 
 P: Que herramientas de colaboracion conoces / What collaboration tools do you know?
-R: Git/GitHub para control de versiones y pull requests, Jira para gestion
-de proyectos, Google Workspace para documentacion y comunicacion, y Slack
-para comunicacion de equipo. Tambien tengo experiencia con MS Intune para
-gestion de dispositivos en entornos corporativos.
+R: Git/GitHub para control de versiones, Jira para gestion de proyectos y
+tickets, Google Workspace para documentacion y comunicacion, MS Intune para
+gestion de dispositivos, y Slack para comunicacion de equipo.
 
 CONTACTO
 ========
