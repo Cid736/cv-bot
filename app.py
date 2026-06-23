@@ -4,6 +4,7 @@ Flask + LangChain + Groq llama-3.3-70b + HuggingFace embeddings (local)
 """
 
 import os, sys, json, re, secrets
+from operator import itemgetter
 from flask import Flask, request, jsonify, render_template_string
 from langchain_groq import ChatGroq
 from langchain_huggingface import HuggingFaceEmbeddings
@@ -91,9 +92,9 @@ def build_pipeline():
 
     chain = (
         {
-            "context":  retriever | fmt,
-            "question": lambda x: x["question"],
-            "history":  lambda x: x["history"],
+            "context":  itemgetter("question") | retriever | fmt,
+            "question": itemgetter("question"),
+            "history":  itemgetter("history"),
         }
         | prompt
         | llm
