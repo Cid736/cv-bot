@@ -8,6 +8,7 @@ from pathlib import Path
 from flask import Flask, request, jsonify, render_template_string
 from langchain_groq import ChatGroq
 from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
+from groq import RateLimitError
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -65,6 +66,178 @@ SPANISH_RE = re.compile(r'[áéíóúüñ¿¡]|(\bque\b|\bcomo\b|\bcuanto\b|\bti
 
 def detect_lang(text: str) -> str:
     return "Spanish" if SPANISH_RE.search(text) else "English"
+
+# ── Static fallbacks (shown when Groq rate limit is hit) ─────────────────────
+
+FALLBACKS_ES = [
+    (r'sobre ti|cuentame|quien eres|presentat', (
+        "Soy Eric C., técnico de sistemas con ~3 años de experiencia. Mi base es "
+        "infraestructura: Linux, Windows Server, redes (TCP/IP, VPN, Pi-hole, Tailscale) "
+        "y gestión de endpoints con MS Intune. Sobre esa base tengo Cloud & DevOps "
+        "(GCP, Docker, Kubernetes, CI/CD) y automatización con Python y Bash. "
+        "La IA la uso como complemento, no como núcleo."
+    )),
+    (r'proyecto|has hecho|portfolio|trabajo', (
+        "Proyectos destacados:\n"
+        "- **Medical Bot** — SaaS chatbot para clínicas médicas (Python · FastAPI · Docker)\n"
+        "- **Task API** — REST API con JWT, 18 tests automáticos y CI/CD completo (Node.js · GitHub Actions)\n"
+        "- **Price Tracker** — CLI de rastreo de precios web con historial SQLite (Python)\n"
+        "- **RAG Chatbot** — chatbot con embeddings locales, sin GPU (Python · LangChain)\n"
+        "- **Smart Notes** — app tipo Obsidian con WikiLinks y grafo de conexiones (Node.js)\n"
+        "Todos están en github.com/Cid736"
+    )),
+    (r'sistema|linux|windows server|red|tcp|vpn|tailscale|pihole|pi-hole|intune', (
+        "Mi núcleo es sistemas y redes:\n"
+        "- **Linux/Ubuntu** — administración de servidores, servicios, permisos\n"
+        "- **Windows Server** — entornos corporativos, Active Directory\n"
+        "- **TCP/IP, VPN** — configuración y gestión de redes\n"
+        "- **Tailscale** — red mesh VPN sobre WireGuard para acceso remoto seguro\n"
+        "- **Pi-hole** — servidor DNS con bloqueo de publicidad a nivel de red\n"
+        "- **MS Intune** — gestión de dispositivos y endpoints corporativos"
+    )),
+    (r'cloud|gcp|google cloud|kubernetes|docker|devops|ci.?cd', (
+        "En Cloud & DevOps manejo:\n"
+        "- **Google Cloud Platform (GCP)** — despliegue de servicios, Cloud Run\n"
+        "- **Docker y Docker Compose** — contenedores y entornos reproducibles\n"
+        "- **Kubernetes** — orquestación de contenedores\n"
+        "- **GitHub Actions** — CI/CD: pipelines de test, build y despliegue automático"
+    )),
+    (r'ia|inteligencia artificial|llm|langchain|rag|vertex|automatizacion', (
+        "La IA la uso como complemento a mis habilidades de sistemas:\n"
+        "- LLMs y Prompt Engineering — uso práctico de modelos de lenguaje\n"
+        "- RAG (Retrieval-Augmented Generation) — chatbots con contexto de documentos\n"
+        "- Vertex AI — plataforma de IA de Google Cloud\n"
+        "- LangChain — pipelines de IA\n"
+        "Tengo proyectos en producción: RAG Chatbot, CV Bot y Medical Bot."
+    )),
+    (r'python|bash|script|programacion|javascript|node', (
+        "Programo principalmente para automatizar tareas de sistemas:\n"
+        "- **Python** — scripting, CLIs, automatización, herramientas de sistemas\n"
+        "- **Bash** — scripts de administración y automatización\n"
+        "- **SQL/SQLite** — bases de datos relacionales\n"
+        "- **JavaScript/Node.js** — APIs REST como complemento"
+    )),
+    (r'fuerte|habilidad|punto fuerte|strength|skill', (
+        "Mis puntos fuertes:\n"
+        "1. **Visión de extremo a extremo** — de la red al despliegue en cloud\n"
+        "2. **Autonomía** — configuro, despliego y mantengo sistemas sin depender de nadie\n"
+        "3. **Automatización** — si algo se repite, lo scripto en Python o Bash\n"
+        "4. **Aprendizaje rápido** — en 3 años: sistemas → DevOps → Cloud → IA"
+    )),
+    (r'debil|mejora|weakness|mejorar', (
+        "Quiero profundizar en seguridad de sistemas y redes — hardening de servidores, "
+        "firewalls avanzados, posiblemente CompTIA Security+. Tengo base pero quiero más "
+        "profundidad. También estoy mejorando la comunicación técnica hacia perfiles no técnicos."
+    )),
+    (r'contratar|hire|por que|why.*hire|deberiamos', (
+        "Porque tengo base sólida en sistemas y redes con exposición real a entornos "
+        "corporativos (Intune, Windows Server, VPN), y encima sé automatizar, contenerizar "
+        "y desplegar en cloud. No soy solo un administrador clásico: puedo montar un servidor "
+        "Linux, configurar la red, dockerizarlo, subirlo a GCP y poner CI/CD — todo yo. "
+        "Eso da mucha autonomía a cualquier equipo."
+    )),
+    (r'5 años|cinco años|futuro|donde.*ves|5 years|future', (
+        "En un rol de administrador de sistemas senior o arquitecto de infraestructura, "
+        "gestionando entornos complejos que combinen on-premise y cloud. Me interesa "
+        "especializarme en seguridad de sistemas e infraestructura como código "
+        "(Terraform, Ansible)."
+    )),
+    (r'año|experiencia|tiempo|how long|years|experience', (
+        "Tengo aproximadamente 3 años de experiencia en el sector tecnológico. "
+        "Perfil junior-mid con stack amplio: sistemas, redes, Cloud, DevOps y nociones de IA. "
+        "La evolución ha sido rápida — de infraestructura básica a CI/CD, Kubernetes y "
+        "pipelines de IA en ese tiempo."
+    )),
+    (r'salario|salary|sueldo|expectativa|pay', (
+        "Estoy abierto a discutirlo según el rol y las responsabilidades. "
+        "Me interesa un salario competitivo acorde al mercado para perfiles de "
+        "sistemas junior-mid con conocimientos en cloud y automatización."
+    )),
+]
+
+FALLBACKS_EN = [
+    (r'about you|yourself|who are you|introduce', (
+        "I'm Eric C., a systems technician with ~3 years of experience. My core is "
+        "infrastructure: Linux, Windows Server, networking (TCP/IP, VPN, Pi-hole, Tailscale) "
+        "and endpoint management with MS Intune. On top of that I have Cloud & DevOps "
+        "(GCP, Docker, Kubernetes, CI/CD) and automation with Python and Bash. "
+        "I use AI as a complement, not as my core identity."
+    )),
+    (r'project|portfolio|built|work', (
+        "Key projects:\n"
+        "- **Medical Bot** — SaaS chatbot for medical clinics (Python · FastAPI · Docker)\n"
+        "- **Task API** — REST API with JWT auth, 18 automated tests and full CI/CD (Node.js · GitHub Actions)\n"
+        "- **Price Tracker** — web price tracking CLI with SQLite history (Python)\n"
+        "- **RAG Chatbot** — chatbot with local embeddings, no GPU needed (Python · LangChain)\n"
+        "- **Smart Notes** — Obsidian-like app with WikiLinks and graph view (Node.js)\n"
+        "All on github.com/Cid736"
+    )),
+    (r'system|linux|windows server|network|tcp|vpn|tailscale|pihole|intune', (
+        "My core is systems & networking:\n"
+        "- **Linux/Ubuntu** — server admin, services, permissions\n"
+        "- **Windows Server** — corporate environments, Active Directory\n"
+        "- **TCP/IP, VPN** — network configuration and management\n"
+        "- **Tailscale** — mesh VPN over WireGuard for secure remote access\n"
+        "- **Pi-hole** — DNS server with network-level ad blocking\n"
+        "- **MS Intune** — corporate device and endpoint management"
+    )),
+    (r'cloud|gcp|google cloud|kubernetes|docker|devops|ci.?cd', (
+        "In Cloud & DevOps:\n"
+        "- **Google Cloud Platform (GCP)** — service deployment, Cloud Run\n"
+        "- **Docker & Docker Compose** — containers and reproducible environments\n"
+        "- **Kubernetes** — container orchestration\n"
+        "- **GitHub Actions** — CI/CD pipelines: test, build and deploy"
+    )),
+    (r'strength|skill|good at|best', (
+        "My strengths:\n"
+        "1. **End-to-end visibility** — from network config to cloud deployment\n"
+        "2. **Autonomy** — I set up, deploy and maintain systems independently\n"
+        "3. **Automation mindset** — if something repeats, I script it in Python or Bash\n"
+        "4. **Fast learner** — in 3 years: sysadmin → DevOps → Cloud → AI"
+    )),
+    (r'weakness|improve|area', (
+        "I want to go deeper into systems security — server hardening, advanced firewalls, "
+        "possibly CompTIA Security+. I have the foundation but want more depth. "
+        "I'm also improving how I communicate technical concepts to non-technical stakeholders."
+    )),
+    (r'hire|why.*you|should we', (
+        "Because I have a solid foundation in systems and networking with real corporate "
+        "exposure (Intune, Windows Server, VPN), and on top of that I can automate, "
+        "containerize and deploy to the cloud. I'm not just a classic sysadmin: "
+        "I can set up a Linux server, configure the network, dockerize the service, "
+        "push it to GCP and add CI/CD — all by myself. That gives a team a lot of autonomy."
+    )),
+    (r'year|experience|how long|how many', (
+        "About 3 years of experience in the tech sector. "
+        "Junior-mid profile with a broad stack: systems, networking, Cloud, DevOps and AI. "
+        "The progression has been fast — from basic infrastructure to CI/CD, Kubernetes "
+        "and AI pipelines in that time."
+    )),
+    (r'salary|pay|compensation|expect', (
+        "Open to discussing based on the role and responsibilities. "
+        "I'm looking for a competitive salary in line with the market for "
+        "junior-mid systems profiles with cloud and automation skills."
+    )),
+]
+
+def static_answer(question: str, lang: str) -> str:
+    q = question.lower()
+    table = FALLBACKS_ES if lang == "Spanish" else FALLBACKS_EN
+    for pattern, answer in table:
+        if re.search(pattern, q):
+            return answer
+    if lang == "Spanish":
+        return (
+            "El asistente IA está temporalmente pausado por límite de uso de la API. "
+            "Puedes ver el perfil completo de Eric en **github.com/Cid736** o escribirle directamente. "
+            "Prueba con una pregunta más específica sobre proyectos, tecnologías o experiencia."
+        )
+    return (
+        "The AI assistant is temporarily paused due to API rate limits. "
+        "You can view Eric's full profile at **github.com/Cid736** or reach out directly. "
+        "Try a more specific question about projects, technologies or experience."
+    )
+
 
 llm         = ChatGroq(model=MODEL, temperature=0.2)
 llm_suggest = ChatGroq(model=MODEL, temperature=0.7)
@@ -185,6 +358,15 @@ HTML = """<!DOCTYPE html>
     }
     button:hover { background: var(--accent-h); }
     button:disabled { background: #333; cursor: default; }
+    #rate-banner {
+      display: none; width: 100%; max-width: 760px;
+      margin: 4px 20px 0; padding: 9px 14px;
+      background: #2a1a00; border: 1px solid #6b3f00;
+      border-radius: 8px; font-size: 0.78rem; color: #e09a3a;
+      gap: 8px; align-items: center;
+    }
+    #rate-banner.visible { display: flex; }
+    #rate-banner a { color: #e09a3a; }
   </style>
 </head>
 <body>
@@ -198,6 +380,11 @@ HTML = """<!DOCTYPE html>
   </header>
 
   <div id="chat"></div>
+  <div id="rate-banner">
+    &#9888; Asistente IA pausado por l&iacute;mite de uso (Groq free tier).
+    Las respuestas son est&aacute;ticas hasta que se reinicie el contador (~1 min).
+    Perfil completo: <a href="https://github.com/Cid736" target="_blank">github.com/Cid736</a>
+  </div>
   <div id="chips"></div>
 
   <form id="form" onsubmit="send(event)">
@@ -207,10 +394,11 @@ HTML = """<!DOCTYPE html>
   </form>
 
   <script>
-    const chat  = document.getElementById('chat');
-    const input = document.getElementById('input');
-    const btn   = document.getElementById('btn');
-    const chips = document.getElementById('chips');
+    const chat   = document.getElementById('chat');
+    const input  = document.getElementById('input');
+    const btn    = document.getElementById('btn');
+    const chips  = document.getElementById('chips');
+    const banner = document.getElementById('rate-banner');
     let sid  = null;
     let busy = false;
 
@@ -287,7 +475,12 @@ HTML = """<!DOCTYPE html>
         else {
           sid = data.session_id;
           addMsg(data.answer, 'bot', true);
-          getSuggestions(q, data.answer);
+          if (data.rate_limited) {
+            banner.classList.add('visible');
+          } else {
+            banner.classList.remove('visible');
+            getSuggestions(q, data.answer);
+          }
         }
       } catch { t.remove(); addMsg('Error de conexion.', 'bot', false); }
       finally { busy = false; btn.disabled = false; input.focus(); }
@@ -349,6 +542,9 @@ def chat_route():
         history.append({"q": question, "a": answer})
         sessions[sid] = history[-MAX_HISTORY:]
         return jsonify({"answer": answer, "session_id": sid})
+    except RateLimitError:
+        answer = static_answer(question, lang)
+        return jsonify({"answer": answer, "session_id": sid, "rate_limited": True})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
