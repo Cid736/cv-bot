@@ -1,0 +1,96 @@
+PERFIL PROFESIONAL
+==================
+Nombre: Eric C.
+GitHub: github.com/Cid736
+
+HABILIDADES TÉCNICAS
+====================
+
+Cloud & DevOps:
+- Google Cloud Platform (GCP)
+- Kubernetes — orquestación de contenedores
+- Docker y Docker Compose
+- CI/CD con GitHub Actions — pipelines automáticos de test y despliegue
+
+IA & Automatización:
+- LLMs (Large Language Models) — diseño y uso de modelos de lenguaje
+- Prompt Engineering — optimización de prompts para distintos modelos
+- Vertex AI — plataforma de IA de Google Cloud
+- Agentes IA — construcción de agentes con herramientas y memoria
+- RAG (Retrieval-Augmented Generation) — chatbots con contexto de documentos
+- LangChain — framework para pipelines de IA
+
+Programación:
+- Python — lenguaje principal para automatización, IA y scripting
+- Bash — scripting y automatización de sistemas
+- SQL y NoSQL — bases de datos relacionales y no relacionales
+- JavaScript y Node.js — APIs REST, backends web
+
+Sistemas & Redes:
+- Linux / Ubuntu — administración de sistemas, servidores
+- Windows Server — entornos corporativos
+- TCP/IP — protocolos de red
+- VPN — configuración y gestión
+- Pi-hole — filtrado de DNS y bloqueo de publicidad a nivel de red
+- Tailscale — red mesh VPN basada en WireGuard
+
+Herramientas:
+- Git / GitHub — control de versiones
+- VS Code — editor principal
+- Jira — gestión de proyectos ágiles
+- Google Workspace — Suite ofimática colaborativa
+- MS Intune — gestión de dispositivos móviles y endpoints
+
+PROYECTOS PERSONALES
+====================
+
+1. Smart Notes
+   GitHub: github.com/Cid736/smart-notes
+   App de notas inspirada en Obsidian.
+   Funcionalidades: editor Markdown con vista dividida en tiempo real,
+   WikiLinks entre notas ([[Nombre de nota]]), vista de grafo de conexiones
+   con física de fuerzas, panel de backlinks, resumen IA con NLP extractivo
+   (TF-IDF sin API externa), barra de formato, auto-guardado, etiquetas,
+   búsqueda en tiempo real, barra de estado con contador de palabras.
+   Stack: Node.js, Express, SQLite (better-sqlite3), Vanilla JS, marked.js.
+
+2. RAG Chatbot
+   GitHub: github.com/Cid736/rag-chatbot
+   Chatbot con arquitectura RAG (Retrieval-Augmented Generation).
+   Carga documentos .txt, los trocea, genera embeddings locales con
+   HuggingFace (sentence-transformers/all-MiniLM-L6-v2) y responde
+   preguntas usando Groq (llama-3.1-8b-instant) solo con información
+   de los documentos cargados. Sin GPU necesaria.
+   Stack: Python, LangChain, ChromaDB, Groq API.
+
+3. CV Bot
+   GitHub: github.com/Cid736/cv-bot
+   Asistente web conversacional que responde preguntas sobre el perfil
+   profesional de Eric. Interfaz de chat en el navegador, backend Flask,
+   RAG sobre este mismo documento. Se puede desplegar con Docker.
+   Stack: Python, Flask, LangChain, ChromaDB, Groq API.
+
+4. Task API
+   GitHub: github.com/Cid736/task-api
+   REST API de gestión de tareas con autenticación JWT (registro y login),
+   CRUD completo de tareas, filtros por estado y prioridad, estadísticas.
+   Tests automáticos con Node:test + Supertest (18 tests, 100% pasan).
+   CI/CD con GitHub Actions: tests → build Docker → smoke test del contenedor.
+   Stack: Node.js, Express, SQLite (better-sqlite3), bcryptjs, jsonwebtoken, Docker.
+
+5. Price Tracker
+   GitHub: github.com/Cid736/price-tracker
+   CLI para rastrear precios en páginas web. Guarda historial en SQLite,
+   compara precios actuales con el mínimo histórico, muestra gráfico ASCII
+   de evolución. Comandos: add, list, check, history, run.
+   Stack: Python, BeautifulSoup, SQLite, argparse, requests.
+
+6. Dental Bot
+   GitHub: github.com/Cid736/dental-bot
+   Chatbot para clínica dental. Procesamiento de lenguaje natural para
+   responder preguntas frecuentes de pacientes.
+   Stack: Python, FastAPI, Docker.
+
+CONTACTO
+========
+GitHub: github.com/Cid736
