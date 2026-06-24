@@ -500,7 +500,6 @@ HTML = """<!DOCTYPE html>
 
     async function getSuggestions(q, a) {
       try {
-        const hasSpanishChars = /[a-z]/i.test(q);
         const lang = /[aeiou]{2,}|[nN][oO]|[qQ]ue|[cC]omo/i.test(q) ? 'Spanish' : 'English';
         const res  = await fetch('/suggest', {
           method: 'POST', headers: {'Content-Type':'application/json'},
