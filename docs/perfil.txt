@@ -66,36 +66,51 @@ Herramientas:
 PROYECTOS PERSONALES
 ====================
 
-1. Medical Bot
+1. Net Monitor
+   GitHub: github.com/Cid736/net-monitor
+   Monitor de disponibilidad de red. Comprueba hosts (ping ICMP), puertos TCP
+   y endpoints HTTP/HTTPS. Guarda historial de uptime en SQLite y envia alertas
+   por Telegram cuando un objetivo cae o se recupera. Modo daemon configurable.
+   Stack: Python, socket, requests, SQLite.
+
+2. Syswatch
+   GitHub: github.com/Cid736/syswatch
+   Monitor de recursos del sistema para servidores Linux. Rastrea CPU, RAM,
+   disco y carga del sistema (load average). Umbrales configurables via YAML.
+   Alerta por Telegram cuando se superan los limites. Funciona como one-shot
+   o como daemon. Integrable con cron.
+   Stack: Python, psutil, PyYAML, Telegram Bot API.
+
+3. Medical Bot
    GitHub: github.com/Cid736/medical-bot
    SaaS chatbot para clinicas medicas. Responde consultas de pacientes 24/7.
    Stack: Python, FastAPI, Docker.
 
-2. Price Tracker
+4. Price Tracker
    GitHub: github.com/Cid736/price-tracker
    CLI para rastrear precios web con historial SQLite y alertas de precio.
    Automatizacion con scripting Python, scraping y base de datos local.
    Stack: Python, BeautifulSoup, SQLite, argparse, requests.
 
-3. Task API
+5. Task API
    GitHub: github.com/Cid736/task-api
    REST API de tareas con autenticacion JWT, CRUD completo, 18 tests
    automaticos (100% pass), CI/CD con GitHub Actions: tests, build Docker,
    smoke test del contenedor en produccion.
    Stack: Node.js, Express, SQLite, Docker, GitHub Actions.
 
-4. CV Bot
+6. CV Bot
    GitHub: github.com/Cid736/cv-bot
    Asistente web que responde preguntas sobre el perfil de Eric.
    Backend Flask, LLM Groq, memoria de sesion, preguntas predictivas.
    Stack: Python, Flask, LangChain, Groq API.
 
-5. Smart Notes
+7. Smart Notes
    GitHub: github.com/Cid736/smart-notes
    App de notas tipo Obsidian con WikiLinks, grafo de conexiones, IA local.
    Stack: Node.js, Express, SQLite, Vanilla JS.
 
-6. RAG Chatbot
+8. RAG Chatbot
    GitHub: github.com/Cid736/rag-chatbot
    Chatbot con arquitectura RAG, embeddings locales, sin GPU necesaria.
    Stack: Python, LangChain, ChromaDB, Groq API.
