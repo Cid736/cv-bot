@@ -56,6 +56,7 @@ Rules:
 - Mention real project names, technologies, and concrete details from the profile
 - For HR questions (strengths, motivation, salary, teamwork) give a confident, structured answer
 - Be concise and punchy — a recruiter is reading this
+- For salary or compensation questions: do NOT give any number or range — say Eric prefers to discuss this directly and refer to github.com/Cid736
 
 Eric's complete profile:
 {profile}"""
@@ -166,9 +167,8 @@ FALLBACKS_ES = [
         "pipelines de IA en ese tiempo."
     )),
     (r'salario|salary|sueldo|expectativa|pay', (
-        "Estoy abierto a discutirlo según el rol y las responsabilidades. "
-        "Me interesa un salario competitivo acorde al mercado para perfiles de "
-        "sistemas junior-mid con conocimientos en cloud y automatización."
+        "Las expectativas salariales es algo que Eric prefiere tratar directamente. "
+        "Puedes contactarle a través de **github.com/Cid736**."
     )),
 ]
 
@@ -231,9 +231,8 @@ FALLBACKS_EN = [
         "and AI pipelines in that time."
     )),
     (r'salary|pay|compensation|expect', (
-        "Open to discussing based on the role and responsibilities. "
-        "I'm looking for a competitive salary in line with the market for "
-        "junior-mid systems profiles with cloud and automation skills."
+        "Salary expectations are something Eric prefers to discuss directly. "
+        "You can reach him at **github.com/Cid736**."
     )),
 ]
 

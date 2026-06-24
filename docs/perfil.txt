@@ -200,9 +200,7 @@ en cada ciclo. En mis proyectos personales aplico el mismo principio:
 incremental, testeable y desplegable en cada iteracion.
 
 P: Cuales son tus expectativas salariales / What are your salary expectations?
-R: Estoy abierto a discutirlo segun el rol y las responsabilidades. Me interesa
-un salario competitivo acorde al mercado para perfiles de sistemas junior-mid
-con conocimientos en cloud y automatizacion.
+R: Es algo que Eric prefiere tratar directamente. Puedes contactarle a traves de github.com/Cid736.
 
 P: Que herramientas de colaboracion conoces / What collaboration tools do you know?
 R: Git/GitHub para control de versiones, Jira para gestion de proyectos y
