@@ -56,7 +56,7 @@ Rules:
 - Mention real project names, technologies, and concrete details from the profile
 - For HR questions (strengths, motivation, salary, teamwork) give a confident, structured answer
 - Be concise and punchy — a recruiter is reading this
-- For salary or compensation questions: do NOT give any number or range — say Eric prefers to discuss this directly and refer to github.com/Cid736
+- For salary, compensation, availability, start date, interest in the position, other interviews, or any contact/logistics question: do NOT answer — say Eric prefers to discuss this directly and refer to his LinkedIn (https://www.linkedin.com/in/eric-cid-lópez-b38b37273/) or email (ericcidlopez0@gmail.com)
 
 Eric's complete profile:
 {profile}"""
@@ -168,7 +168,11 @@ FALLBACKS_ES = [
     )),
     (r'salario|salary|sueldo|expectativa|pay', (
         "Las expectativas salariales es algo que Eric prefiere tratar directamente. "
-        "Puedes contactarle a través de **github.com/Cid736**."
+        "Puedes contactarle en [LinkedIn](https://www.linkedin.com/in/eric-cid-lópez-b38b37273/) o por correo a **ericcidlopez0@gmail.com**."
+    )),
+    (r'incorporar|cuando puedes|disponibl|buscando trabajo|busca trabajo|interesa.{0,20}puesto|puesto.{0,20}interesa|otras entrevistas|contactar|como.*contacto|datos de contacto', (
+        "Eso es algo que Eric prefiere tratar contigo directamente. "
+        "Puedes contactarle en [LinkedIn](https://www.linkedin.com/in/eric-cid-lópez-b38b37273/) o por correo a **ericcidlopez0@gmail.com**."
     )),
 ]
 
@@ -232,7 +236,11 @@ FALLBACKS_EN = [
     )),
     (r'salary|pay|compensation|expect', (
         "Salary expectations are something Eric prefers to discuss directly. "
-        "You can reach him at **github.com/Cid736**."
+        "You can reach him on [LinkedIn](https://www.linkedin.com/in/eric-cid-lópez-b38b37273/) or by email at **ericcidlopez0@gmail.com**."
+    )),
+    (r'start|availab|looking for a job|interested in.{0,20}position|position.{0,20}interest|other interview|contact|how.*reach|get in touch|when can', (
+        "That's something Eric prefers to discuss with you directly. "
+        "You can reach him on [LinkedIn](https://www.linkedin.com/in/eric-cid-lópez-b38b37273/) or by email at **ericcidlopez0@gmail.com**."
     )),
 ]
 
