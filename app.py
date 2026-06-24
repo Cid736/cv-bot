@@ -367,9 +367,17 @@ HTML = """<!DOCTYPE html>
     }
     #rate-banner.visible { display: flex; }
     #rate-banner a { color: #e09a3a; }
+    #alpha-banner { background:#1a1200; border-bottom:1px solid #4a3500; padding:6px 20px; font-size:0.73rem; color:#d29922; display:flex; align-items:center; gap:8px; }
+    #alpha-banner .ab { background:#4a3500; color:#d29922; font-size:0.62rem; font-weight:700; padding:1px 6px; border-radius:4px; letter-spacing:.5px; }
+    #alpha-banner a { color:#d29922; }
   </style>
 </head>
 <body>
+  <div id="alpha-banner">
+    <span class="ab">ALPHA</span>
+    Versi&oacute;n en desarrollo &mdash; pueden existir errores.
+    Reporta en <a href="https://github.com/Cid736/cv-bot/issues" target="_blank">github.com/Cid736/cv-bot</a>
+  </div>
   <header>
     <div class="avatar">EC</div>
     <div class="htext">
