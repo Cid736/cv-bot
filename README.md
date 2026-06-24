@@ -35,6 +35,17 @@ Edit `docs/perfil.txt` with your own profile and restart. The LLM sees the full 
 
 ## Changelog
 
+**v0.3.0** — 2026-06-24
+- Security: server-side rate limiting — 20 requests/min per IP (sliding window), returns 429 before reaching the LLM
+- Security: question length capped at 500 chars; `/suggest` answer capped at 1 000 chars
+- Security: `lang` parameter in `/suggest` validated against whitelist (`Spanish` / `English`)
+- Security: SYSTEM_PROMPT and SUGGEST_PROMPT built with `.replace()` instead of `.format()` — prevents KeyError crash when user input contains `{}`
+- Security: HTTP security headers added (`X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`)
+- Security: XSS-safe banner — replaced `innerHTML` assignment with DOM API (`textContent` + `createElement`)
+- Security: all `marked.parse()` output wrapped with DOMPurify before rendering
+- Security: internal exception details no longer leak to the client (generic 500 message)
+- Security: in-memory session dict capped at 500 entries with LRU eviction
+
 **v0.2.0** — 2026-06-24
 - Fix: remove unused variable in frontend suggest handler
 - Feat: Groq rate-limit fallback with static answers and dynamic reset time banner

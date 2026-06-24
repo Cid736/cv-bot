@@ -96,7 +96,7 @@ FALLBACKS_ES = [
     )),
     (r'proyecto|has hecho|portfolio|trabajo', (
         "Proyectos destacados:\n"
-        "- **Medical Bot** — SaaS chatbot para clínicas médicas (Python · FastAPI · Docker)\n"
+        "- **Medical Bot** — SaaS chatbot para clínicas médicas (Node.js · Express · Docker)\n"
         "- **Task API** — REST API con JWT, 18 tests automáticos y CI/CD completo (Node.js · GitHub Actions)\n"
         "- **Price Tracker** — CLI de rastreo de precios web con historial SQLite (Python)\n"
         "- **RAG Chatbot** — chatbot con embeddings locales, sin GPU (Python · LangChain)\n"
@@ -182,7 +182,7 @@ FALLBACKS_EN = [
     )),
     (r'project|portfolio|built|work', (
         "Key projects:\n"
-        "- **Medical Bot** — SaaS chatbot for medical clinics (Python · FastAPI · Docker)\n"
+        "- **Medical Bot** — SaaS chatbot for medical clinics (Node.js · Express · Docker)\n"
         "- **Task API** — REST API with JWT auth, 18 automated tests and full CI/CD (Node.js · GitHub Actions)\n"
         "- **Price Tracker** — web price tracking CLI with SQLite history (Python)\n"
         "- **RAG Chatbot** — chatbot with local embeddings, no GPU needed (Python · LangChain)\n"

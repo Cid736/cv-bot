@@ -83,8 +83,9 @@ PROYECTOS PERSONALES
 
 3. Medical Bot
    GitHub: github.com/Cid736/medical-bot
-   SaaS chatbot para clinicas medicas. Responde consultas de pacientes 24/7.
-   Stack: Python, FastAPI, Docker.
+   SaaS chatbot para clinicas medicas. Responde consultas de pacientes 24/7,
+   captura leads y gestiona citas. Dashboard web con KPIs en tiempo real.
+   Stack: Node.js, Express, SQLite, Docker.
 
 4. Price Tracker
    GitHub: github.com/Cid736/price-tracker
