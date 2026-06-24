@@ -3,8 +3,9 @@ CV Bot - conversational assistant about Eric C.'s professional profile
 Flask + Groq llama-3.3-70b  (no embeddings, no torch, full profile in context)
 """
 
-import os, sys, json, re, secrets
+import os, sys, json, re, secrets, time
 from pathlib import Path
+from collections import defaultdict
 from flask import Flask, request, jsonify, render_template_string
 from langchain_groq import ChatGroq
 from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
@@ -19,6 +20,21 @@ MAX_HISTORY = 8   # exchanges kept per session
 
 sessions: dict[str, list] = {}  # session_id -> [{"role":"user"|"assistant","content":str}]
 MAX_SESSIONS = 500
+MAX_QUESTION_LEN = 500  # chars; limits token abuse and prompt stuffing
+
+# Per-IP sliding-window rate limiter for /chat
+_rate_log: dict[str, list[float]] = defaultdict(list)
+RATE_WINDOW = 60   # seconds
+RATE_MAX    = 20   # requests per window
+
+def _rate_ok(ip: str) -> bool:
+    now = time.time()
+    hits = [t for t in _rate_log[ip] if now - t < RATE_WINDOW]
+    _rate_log[ip] = hits
+    if len(hits) >= RATE_MAX:
+        return False
+    _rate_log[ip].append(now)
+    return True
 
 def load_profile() -> str:
     txts = list(DOCS_DIR.glob("**/*.txt"))
@@ -487,9 +503,14 @@ HTML = """<!DOCTYPE html>
           addMsg(data.answer, 'bot', true);
           if (data.rate_limited) {
             const resetMsg = data.reset_msg || 'consulta la consola de Groq';
-            banner.innerHTML = '&#9888; Asistente IA pausado por l&iacute;mite de uso (Groq free tier). '
-              + '<strong>' + resetMsg + '</strong>. '
-              + 'Perfil completo: <a href="https://github.com/Cid736" target="_blank">github.com/Cid736</a>';
+            banner.textContent = '';
+            const strong = document.createElement('strong');
+            strong.textContent = resetMsg;
+            const link = document.createElement('a');
+            link.href = 'https://github.com/Cid736';
+            link.target = '_blank';
+            link.textContent = 'github.com/Cid736';
+            banner.append('⚠ Asistente IA pausado por límite de uso (Groq free tier). ', strong, '. Perfil completo: ', link);
             banner.classList.add('visible');
           } else {
             banner.classList.remove('visible');
@@ -523,6 +544,13 @@ HTML = """<!DOCTYPE html>
 
 app = Flask(__name__)
 
+@app.after_request
+def security_headers(resp):
+    resp.headers['X-Content-Type-Options'] = 'nosniff'
+    resp.headers['X-Frame-Options']        = 'DENY'
+    resp.headers['Referrer-Policy']        = 'no-referrer'
+    return resp
+
 @app.route('/')
 def index():
     return render_template_string(HTML)
@@ -539,11 +567,16 @@ def chat_route():
 
     if not question:
         return jsonify({'error': 'Empty question'}), 400
+    if len(question) > MAX_QUESTION_LEN:
+        return jsonify({'error': f'Pregunta demasiado larga (máx. {MAX_QUESTION_LEN} caracteres)'}), 400
+    if not _rate_ok(request.remote_addr or ''):
+        return jsonify({'error': 'Demasiadas peticiones. Espera un momento.'}), 429
 
     history = sessions.get(sid, [])
 
     lang    = detect_lang(question)
-    system  = SYSTEM_PROMPT.format(profile=PROFILE, lang=lang)
+    # Escape braces in PROFILE so user-supplied docs with {} (JSON, code) don't crash .format()
+    system  = SYSTEM_PROMPT.replace('{profile}', PROFILE).replace('{lang}', lang)
     messages = [SystemMessage(content=system)]
     for h in history[-(MAX_HISTORY):]:
         messages.append(HumanMessage(content=h['q']))
@@ -576,11 +609,19 @@ def chat_route():
 @app.route('/suggest', methods=['POST'])
 def suggest():
     data = request.get_json(silent=True) or {}
-    q, a, lang = data.get('question',''), data.get('answer',''), data.get('lang','Spanish')
+    q    = str(data.get('question', ''))[:MAX_QUESTION_LEN]
+    a    = str(data.get('answer',   ''))[:1000]
+    lang = data.get('lang', 'Spanish')
+    if lang not in ('Spanish', 'English'):
+        lang = 'Spanish'
     try:
-        prompt = SUGGEST_PROMPT.format(question=q, answer=a, lang=lang)
-        raw    = llm_suggest.invoke([HumanMessage(content=prompt)]).content
-        m      = re.search(r'\[.*?\]', raw, re.DOTALL)
+        # Use str.replace instead of .format() to avoid KeyError if q/a contain {}
+        prompt = (SUGGEST_PROMPT
+                  .replace('{question}', q)
+                  .replace('{answer}',   a)
+                  .replace('{lang}',     lang))
+        raw = llm_suggest.invoke([HumanMessage(content=prompt)]).content
+        m   = re.search(r'\[.*?\]', raw, re.DOTALL)
         return jsonify({"suggestions": json.loads(m.group())[:3] if m else []})
     except Exception:
         return jsonify({"suggestions": []})
