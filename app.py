@@ -14,9 +14,11 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-DOCS_DIR    = Path("./docs")
-MODEL       = "llama-3.3-70b-versatile"
-MAX_HISTORY = 8   # exchanges kept per session
+DOCS_DIR        = Path("./docs")
+MODEL           = "llama-3.3-70b-versatile"
+MAX_HISTORY     = 8   # exchanges kept per session
+CONTACT_EMAIL   = os.getenv("CONTACT_EMAIL",   "contact@example.com")
+CONTACT_LINKEDIN = os.getenv("CONTACT_LINKEDIN", "https://www.linkedin.com/in/yourprofile/")
 
 sessions: dict[str, list] = {}  # session_id -> [{"role":"user"|"assistant","content":str}]
 MAX_SESSIONS = 500
@@ -56,7 +58,7 @@ Rules:
 - Mention real project names, technologies, and concrete details from the profile
 - For HR questions (strengths, motivation, salary, teamwork) give a confident, structured answer
 - Be concise and punchy — a recruiter is reading this
-- For salary, compensation, availability, start date, interest in the position, other interviews, or any contact/logistics question: do NOT answer — say Eric prefers to discuss this directly and refer to his LinkedIn (https://www.linkedin.com/in/eric-cid-lópez-b38b37273/) or email (cidlopezeric@gmail.com)
+- For salary, compensation, availability, start date, interest in the position, other interviews, or any contact/logistics question: do NOT answer — say Eric prefers to discuss this directly and refer to his LinkedIn ({CONTACT_LINKEDIN}) or email ({CONTACT_EMAIL})
 
 Eric's complete profile:
 {profile}"""
@@ -168,11 +170,11 @@ FALLBACKS_ES = [
     )),
     (r'salario|salary|sueldo|expectativa|pay', (
         "Las expectativas salariales es algo que Eric prefiere tratar directamente. "
-        "Puedes contactarle en [LinkedIn](https://www.linkedin.com/in/eric-cid-lópez-b38b37273/) o por correo a **cidlopezeric@gmail.com**."
+        "Puedes contactarle en [LinkedIn]({CONTACT_LINKEDIN}) o por correo a **{CONTACT_EMAIL}**."
     )),
     (r'incorporar|cuando puedes|disponibl|buscando trabajo|busca trabajo|interesa.{0,20}puesto|puesto.{0,20}interesa|otras entrevistas|contactar|como.*contacto|datos de contacto', (
         "Eso es algo que Eric prefiere tratar contigo directamente. "
-        "Puedes contactarle en [LinkedIn](https://www.linkedin.com/in/eric-cid-lópez-b38b37273/) o por correo a **cidlopezeric@gmail.com**."
+        "Puedes contactarle en [LinkedIn]({CONTACT_LINKEDIN}) o por correo a **{CONTACT_EMAIL}**."
     )),
 ]
 
@@ -236,13 +238,21 @@ FALLBACKS_EN = [
     )),
     (r'salary|pay|compensation|expect', (
         "Salary expectations are something Eric prefers to discuss directly. "
-        "You can reach him on [LinkedIn](https://www.linkedin.com/in/eric-cid-lópez-b38b37273/) or by email at **cidlopezeric@gmail.com**."
+        "You can reach him on [LinkedIn]({CONTACT_LINKEDIN}) or by email at **{CONTACT_EMAIL}**."
     )),
     (r'start|availab|looking for a job|interested in.{0,20}position|position.{0,20}interest|other interview|contact|how.*reach|get in touch|when can', (
         "That's something Eric prefers to discuss with you directly. "
-        "You can reach him on [LinkedIn](https://www.linkedin.com/in/eric-cid-lópez-b38b37273/) or by email at **cidlopezeric@gmail.com**."
+        "You can reach him on [LinkedIn]({CONTACT_LINKEDIN}) or by email at **{CONTACT_EMAIL}**."
     )),
 ]
+
+# Resolve contact placeholders now that the constants are defined
+def _fill(s: str) -> str:
+    return s.replace('{CONTACT_EMAIL}', CONTACT_EMAIL).replace('{CONTACT_LINKEDIN}', CONTACT_LINKEDIN)
+
+SYSTEM_PROMPT   = _fill(SYSTEM_PROMPT)
+FALLBACKS_ES    = [(p, _fill(a)) for p, a in FALLBACKS_ES]
+FALLBACKS_EN    = [(p, _fill(a)) for p, a in FALLBACKS_EN]
 
 def static_answer(question: str, lang: str) -> str:
     q = question.lower()
