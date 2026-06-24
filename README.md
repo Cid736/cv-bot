@@ -1,3 +1,11 @@
+<p align="center">
+  <a href="#english">🇬🇧 English</a> &nbsp;·&nbsp; <a href="#español">🇪🇸 Español</a>
+</p>
+
+---
+
+<a name="english"></a>
+
 # CV Bot
 
 Conversational web assistant that answers questions about Eric C.'s professional profile — skills, projects, and experience. Powered by Groq LLM with the full profile passed as context.
@@ -53,3 +61,46 @@ Edit `docs/perfil.txt` with your own profile and restart. The LLM sees the full 
 
 **v0.1.0** — 2026-06-01
 - Initial release: Flask + Groq LLM, conversation history, language auto-detection, suggested follow-up questions
+
+---
+
+<a name="español"></a>
+
+# CV Bot
+
+Asistente conversacional web que responde preguntas sobre el perfil profesional de Eric C. — habilidades, proyectos y experiencia. Impulsado por Groq LLM con el perfil completo como contexto.
+
+En producción: [cv-bot-hxku.onrender.com](https://cv-bot-hxku.onrender.com)
+
+## Stack
+Python · Flask · LangChain · Groq API (llama-3.3-70b, gratuito)
+
+## Cómo funciona
+1. Carga `docs/perfil.txt` al arrancar (~6KB de documento de perfil)
+2. En cada pregunta: envía el perfil completo + historial de conversación al LLM
+3. Idioma detectado automáticamente — responde en español o inglés
+4. Si Groq alcanza el límite de peticiones (429): responde con datos estáticos del perfil y muestra el tiempo de espera
+
+Sin embeddings, sin base de datos vectorial, sin GPU. El perfil completo cabe en la ventana de contexto de 128K.
+
+## Instalación
+```bash
+pip install -r requirements.txt
+cp .env.example .env
+# Añade tu clave gratuita de Groq: https://console.groq.com
+python app.py
+# Abre http://localhost:5001
+```
+
+## Docker
+```bash
+docker build -t cv-bot .
+docker run -p 5001:5001 -e GROQ_API_KEY=gsk_... cv-bot
+```
+
+## Personalización
+Edita `docs/perfil.txt` con tu propio perfil y reinicia. El LLM ve el documento completo en cada petición.
+
+## Licencia
+
+MIT
