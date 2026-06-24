@@ -253,6 +253,7 @@ HTML = """<!DOCTYPE html>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Eric C. - CV Assistant</title>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
@@ -436,7 +437,7 @@ HTML = """<!DOCTYPE html>
     function addMsg(html, role, markdown) {
       const d = document.createElement('div');
       d.className = 'msg ' + role;
-      if (markdown) d.innerHTML = marked.parse(html);
+      if (markdown) d.innerHTML = DOMPurify.sanitize(marked.parse(html));
       else d.textContent = html;
       chat.appendChild(d);
       chat.scrollTop = chat.scrollHeight;
