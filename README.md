@@ -32,3 +32,13 @@ docker run -p 5001:5001 -e GROQ_API_KEY=gsk_... cv-bot
 
 ## Customization
 Edit `docs/perfil.txt` with your own profile and restart. The LLM sees the full document on every request.
+
+## Changelog
+
+**v0.2.0** — 2026-06-24
+- Fix: remove unused variable in frontend suggest handler
+- Feat: Groq rate-limit fallback with static answers and dynamic reset time banner
+- Feat: alpha version banner
+
+**v0.1.0** — 2026-06-01
+- Initial release: Flask + Groq LLM, conversation history, language auto-detection, suggested follow-up questions
