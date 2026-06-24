@@ -18,6 +18,7 @@ MODEL       = "llama-3.3-70b-versatile"
 MAX_HISTORY = 8   # exchanges kept per session
 
 sessions: dict[str, list] = {}  # session_id -> [{"role":"user"|"assistant","content":str}]
+MAX_SESSIONS = 500
 
 def load_profile() -> str:
     txts = list(DOCS_DIR.glob("**/*.txt"))
@@ -552,6 +553,8 @@ def chat_route():
         answer = llm.invoke(messages).content
         history.append({"q": question, "a": answer})
         sessions[sid] = history[-MAX_HISTORY:]
+        if len(sessions) >= MAX_SESSIONS:
+            sessions.pop(next(iter(sessions)))
         return jsonify({"answer": answer, "session_id": sid})
     except RateLimitError as e:
         # Groq includes "Please try again in Xs" or "Xm Ys" in the message
@@ -566,8 +569,8 @@ def chat_route():
             reset_msg = "Reintentar en ~60 segundos (limite por minuto)"
         answer = static_answer(question, lang)
         return jsonify({"answer": answer, "session_id": sid, "rate_limited": True, "reset_msg": reset_msg})
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
+    except Exception:
+        return jsonify({'error': 'Error interno del servidor'}), 500
 
 @app.route('/suggest', methods=['POST'])
 def suggest():
