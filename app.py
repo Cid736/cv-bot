@@ -3,7 +3,7 @@ CV Bot - conversational assistant about Eric C.'s professional profile
 Flask + Groq llama-3.3-70b  (no embeddings, no torch, full profile in context)
 """
 
-import os, sys, json, re, secrets, time
+import os, sys, json, re, secrets, time, logging
 from pathlib import Path
 from collections import defaultdict
 from flask import Flask, request, jsonify, render_template_string
@@ -618,7 +618,10 @@ def chat_route():
         return jsonify({'error': 'Empty question'}), 400
     if len(question) > MAX_QUESTION_LEN:
         return jsonify({'error': f'Pregunta demasiado larga (máx. {MAX_QUESTION_LEN} caracteres)'}), 400
-    if not _rate_ok(request.remote_addr or ''):
+    client_ip = (request.headers.get('X-Real-IP') or
+                 request.headers.get('X-Forwarded-For', '').split(',')[0].strip() or
+                 request.remote_addr or '')
+    if not _rate_ok(client_ip):
         return jsonify({'error': 'Demasiadas peticiones. Espera un momento.'}), 429
 
     history = sessions.get(sid, [])
@@ -653,6 +656,7 @@ def chat_route():
         answer = static_answer(question, lang)
         return jsonify({"answer": answer, "session_id": sid, "rate_limited": True, "reset_msg": reset_msg})
     except Exception:
+        logging.exception("Unhandled error in /chat")
         return jsonify({'error': 'Error interno del servidor'}), 500
 
 @app.route('/suggest', methods=['POST'])
