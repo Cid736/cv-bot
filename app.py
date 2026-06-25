@@ -661,6 +661,11 @@ def chat_route():
 
 @app.route('/suggest', methods=['POST'])
 def suggest():
+    ip = (request.headers.get('X-Forwarded-For') or
+          request.headers.get('X-Real-IP') or
+          request.remote_addr or 'unknown').split(',')[0].strip()
+    if not _rate_ok(ip):
+        return jsonify({'error': 'Too many requests'}), 429
     data = request.get_json(silent=True) or {}
     q    = str(data.get('question', ''))[:MAX_QUESTION_LEN]
     a    = str(data.get('answer',   ''))[:1000]

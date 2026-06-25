@@ -113,7 +113,7 @@ Edita `docs/perfil.txt` con tu propio perfil y reinicia. El LLM ve el documento 
 
 Las revisiones de seguridad automatizadas utilizan [Claude](https://claude.ai) (Anthropic AI) y se ejecutan en cada cambio significativo para detectar vulnerabilidades, patrones inseguros y riesgos en dependencias. Los hallazgos se registran en [`BUGLOG.md`](BUGLOG.md).
 
-**Última revisión:** 2026-06-25 — 3 vulnerabilidades encontradas (1 crítica⚠️ acción manual requerida, 1 media, 1 baja) — código parcheado. Rotar Groq API key manualmente.
+**Última revisión:** 2026-06-25 (rev 3) — 4 vulnerabilidades totales (1 crítica⚠️ acción manual requerida, 1 media, 2 bajas) — código parcheado. Revisión 3: `/suggest` ahora protegido por rate limiter. Rotar Groq API key manualmente.
 
 ¿Encontraste una vulnerabilidad? Abre un issue o contacta directamente.
 ## Licencia
