@@ -91,19 +91,22 @@ def detect_lang(text: str) -> str:
 
 FALLBACKS_ES = [
     (r'sobre ti|cuentame|quien eres|presentat', (
-        "Soy Eric C., técnico de sistemas con ~3 años de experiencia. Mi base es "
-        "infraestructura: Linux, Windows Server, redes (TCP/IP, VPN, Pi-hole, Tailscale) "
+        "Soy Eric C., técnico de sistemas con más de 3 años de experiencia. "
+        "Actualmente trabajo como AI System Configurator en Infinity Neural (Badalona). "
+        "Mi base es infraestructura: Linux, Windows Server, redes (TCP/IP, VPN, Tailscale) "
         "y gestión de endpoints con MS Intune. Sobre esa base tengo Cloud & DevOps "
-        "(GCP, Docker, Kubernetes, CI/CD) y automatización con Python y Bash. "
-        "La IA la uso como complemento, no como núcleo."
+        "(GCP, Ansible, Docker, Kubernetes, CI/CD) y automatización con Python y Bash. "
+        "Estoy cursando el Grado en Ingeniería Informática en la UOC."
     )),
     (r'proyecto|has hecho|portfolio|trabajo', (
         "Proyectos destacados:\n"
-        "- **Medical Bot** — SaaS chatbot para clínicas médicas (Node.js · Express · Docker)\n"
+        "- **CV Bot** — asistente conversacional de CV en producción (Python · Flask · Groq LLM)\n"
+        "- **Ansible Platform** — plataforma web estilo AWX con salida en tiempo real vía WebSocket "
+        "(Python · FastAPI · Ansible · PostgreSQL · Celery · Redis · React · Docker)\n"
         "- **Task API** — REST API con JWT, 18 tests automáticos y CI/CD completo (Node.js · GitHub Actions)\n"
-        "- **Price Tracker** — CLI de rastreo de precios web con historial SQLite (Python)\n"
-        "- **RAG Chatbot** — chatbot con embeddings locales, sin GPU (Python · LangChain)\n"
-        "- **Smart Notes** — app tipo Obsidian con WikiLinks y grafo de conexiones (Node.js)\n"
+        "- **RAG Chatbot** — chatbot con embeddings locales, sin GPU (Python · LangChain · ChromaDB)\n"
+        "- **Net Monitor** — monitor de red con alertas Telegram (Python · SQLite)\n"
+        "- **Portscanner** — escáner de puertos TCP estilo nmap para Windows (C · Winsock2)\n"
         "Todos están en github.com/Cid736"
     )),
     (r'sistema|linux|windows server|red|tcp|vpn|tailscale|pihole|pi-hole|intune', (
@@ -115,12 +118,22 @@ FALLBACKS_ES = [
         "- **Pi-hole** — servidor DNS con bloqueo de publicidad a nivel de red\n"
         "- **MS Intune** — gestión de dispositivos y endpoints corporativos"
     )),
+    (r'ansible|infraestructura como codigo|iac', (
+        "Ansible es una de mis herramientas clave:\n"
+        "- Automatización de configuración e infraestructura como código\n"
+        "- He construido **Ansible Platform** — una plataforma web estilo AWX completa "
+        "(FastAPI · React · PostgreSQL · Celery · Redis · Docker) con ejecución de playbooks "
+        "y salida en tiempo real vía WebSocket\n"
+        "- github.com/Cid736/ansible-platform"
+    )),
     (r'cloud|gcp|google cloud|kubernetes|docker|devops|ci.?cd', (
         "En Cloud & DevOps manejo:\n"
         "- **Google Cloud Platform (GCP)** — despliegue de servicios, Cloud Run\n"
+        "- **Ansible** — automatización de infraestructura, IaC\n"
         "- **Docker y Docker Compose** — contenedores y entornos reproducibles\n"
         "- **Kubernetes** — orquestación de contenedores\n"
-        "- **GitHub Actions** — CI/CD: pipelines de test, build y despliegue automático"
+        "- **GitHub Actions** — CI/CD: pipelines de test, build y despliegue automático\n"
+        "- **Celery + Redis** — colas de tareas asíncronas"
     )),
     (r'ia|inteligencia artificial|llm|langchain|rag|vertex|automatizacion', (
         "La IA la uso como complemento a mis habilidades de sistemas:\n"
@@ -128,21 +141,23 @@ FALLBACKS_ES = [
         "- RAG (Retrieval-Augmented Generation) — chatbots con contexto de documentos\n"
         "- Vertex AI — plataforma de IA de Google Cloud\n"
         "- LangChain — pipelines de IA\n"
-        "Tengo proyectos en producción: RAG Chatbot, CV Bot y Medical Bot."
+        "- ChromaDB — base de datos vectorial para embeddings\n"
+        "Proyectos en producción: CV Bot, RAG Chatbot, Ansible Platform."
     )),
-    (r'python|bash|script|programacion|javascript|node', (
+    (r'python|bash|script|programacion|javascript|node|fastapi|react|powershell', (
         "Programo principalmente para automatizar tareas de sistemas:\n"
-        "- **Python** — scripting, CLIs, automatización, herramientas de sistemas\n"
-        "- **Bash** — scripts de administración y automatización\n"
-        "- **SQL/SQLite** — bases de datos relacionales\n"
-        "- **JavaScript/Node.js** — APIs REST como complemento"
+        "- **Python** — scripting, CLIs, automatización, APIs con FastAPI\n"
+        "- **Bash / PowerShell** — scripts de administración y automatización\n"
+        "- **JavaScript/Node.js + React** — APIs REST y frontend\n"
+        "- **C** — herramientas de sistemas de bajo nivel (portscanner con Winsock2)\n"
+        "- **SQL/PostgreSQL/SQLite** — bases de datos relacionales"
     )),
     (r'fuerte|habilidad|punto fuerte|strength|skill', (
         "Mis puntos fuertes:\n"
         "1. **Visión de extremo a extremo** — de la red al despliegue en cloud\n"
         "2. **Autonomía** — configuro, despliego y mantengo sistemas sin depender de nadie\n"
-        "3. **Automatización** — si algo se repite, lo scripto en Python o Bash\n"
-        "4. **Aprendizaje rápido** — en 3 años: sistemas → DevOps → Cloud → IA"
+        "3. **Automatización** — si algo se repite, lo scripto en Python, Bash o Ansible\n"
+        "4. **Aprendizaje rápido** — en pocos años: sistemas → DevOps → Cloud → IA aplicada"
     )),
     (r'debil|mejora|weakness|mejorar', (
         "Quiero profundizar en seguridad de sistemas y redes — hardening de servidores, "
@@ -151,9 +166,10 @@ FALLBACKS_ES = [
     )),
     (r'contratar|hire|por que|why.*hire|deberiamos', (
         "Porque tengo base sólida en sistemas y redes con exposición real a entornos "
-        "corporativos (Intune, Windows Server, VPN), y encima sé automatizar, contenerizar "
-        "y desplegar en cloud. No soy solo un administrador clásico: puedo montar un servidor "
-        "Linux, configurar la red, dockerizarlo, subirlo a GCP y poner CI/CD — todo yo. "
+        "corporativos (Intune, Windows Server, VPN — AMC Networks, Factorial), y encima "
+        "sé automatizar con Ansible, contenerizar y desplegar en cloud. No soy solo un "
+        "administrador clásico: puedo montar un servidor Linux, configurar la red, "
+        "automatizar con Ansible, dockerizarlo, subirlo a GCP y poner CI/CD — todo yo. "
         "Eso da mucha autonomía a cualquier equipo."
     )),
     (r'5 años|cinco años|futuro|donde.*ves|5 years|future', (
@@ -163,10 +179,11 @@ FALLBACKS_ES = [
         "(Terraform, Ansible)."
     )),
     (r'año|experiencia|tiempo|how long|years|experience', (
-        "Tengo aproximadamente 3 años de experiencia en el sector tecnológico. "
-        "Perfil junior-mid con stack amplio: sistemas, redes, Cloud, DevOps y nociones de IA. "
-        "La evolución ha sido rápida — de infraestructura básica a CI/CD, Kubernetes y "
-        "pipelines de IA en ese tiempo."
+        "Tengo más de 3 años de experiencia en el sector tecnológico. "
+        "Actualmente trabajo como AI System Configurator en Infinity Neural. "
+        "Perfil junior-mid con stack amplio: sistemas, redes, Cloud, DevOps e IA aplicada. "
+        "La evolución ha sido rápida — de infraestructura básica a CI/CD, Kubernetes, "
+        "Ansible y pipelines de IA en ese tiempo."
     )),
     (r'salario|salary|sueldo|expectativa|pay', (
         "Las expectativas salariales es algo que Eric prefiere tratar directamente. "
@@ -180,19 +197,22 @@ FALLBACKS_ES = [
 
 FALLBACKS_EN = [
     (r'about you|yourself|who are you|introduce', (
-        "I'm Eric C., a systems technician with ~3 years of experience. My core is "
-        "infrastructure: Linux, Windows Server, networking (TCP/IP, VPN, Pi-hole, Tailscale) "
+        "I'm Eric C., a systems technician with 3+ years of experience. "
+        "I currently work as AI System Configurator at Infinity Neural (Badalona). "
+        "My core is infrastructure: Linux, Windows Server, networking (TCP/IP, VPN, Tailscale) "
         "and endpoint management with MS Intune. On top of that I have Cloud & DevOps "
-        "(GCP, Docker, Kubernetes, CI/CD) and automation with Python and Bash. "
-        "I use AI as a complement, not as my core identity."
+        "(GCP, Ansible, Docker, Kubernetes, CI/CD) and automation with Python and Bash. "
+        "I'm also studying a Computer Engineering degree at UOC."
     )),
     (r'project|portfolio|built|work', (
         "Key projects:\n"
-        "- **Medical Bot** — SaaS chatbot for medical clinics (Node.js · Express · Docker)\n"
+        "- **CV Bot** — conversational CV assistant in production (Python · Flask · Groq LLM)\n"
+        "- **Ansible Platform** — AWX-like web platform with real-time WebSocket output "
+        "(Python · FastAPI · Ansible · PostgreSQL · Celery · Redis · React · Docker)\n"
         "- **Task API** — REST API with JWT auth, 18 automated tests and full CI/CD (Node.js · GitHub Actions)\n"
-        "- **Price Tracker** — web price tracking CLI with SQLite history (Python)\n"
-        "- **RAG Chatbot** — chatbot with local embeddings, no GPU needed (Python · LangChain)\n"
-        "- **Smart Notes** — Obsidian-like app with WikiLinks and graph view (Node.js)\n"
+        "- **RAG Chatbot** — chatbot with local embeddings, no GPU needed (Python · LangChain · ChromaDB)\n"
+        "- **Net Monitor** — network availability monitor with Telegram alerts (Python · SQLite)\n"
+        "- **Portscanner** — TCP port scanner for Windows, nmap-style (C · Winsock2)\n"
         "All on github.com/Cid736"
     )),
     (r'system|linux|windows server|network|tcp|vpn|tailscale|pihole|intune', (
@@ -204,19 +224,29 @@ FALLBACKS_EN = [
         "- **Pi-hole** — DNS server with network-level ad blocking\n"
         "- **MS Intune** — corporate device and endpoint management"
     )),
+    (r'ansible|infrastructure as code|iac', (
+        "Ansible is one of my key tools:\n"
+        "- Configuration automation and infrastructure as code\n"
+        "- Built **Ansible Platform** — a full AWX-like web platform "
+        "(FastAPI · React · PostgreSQL · Celery · Redis · Docker) with playbook execution "
+        "and real-time output via WebSocket\n"
+        "- github.com/Cid736/ansible-platform"
+    )),
     (r'cloud|gcp|google cloud|kubernetes|docker|devops|ci.?cd', (
         "In Cloud & DevOps:\n"
         "- **Google Cloud Platform (GCP)** — service deployment, Cloud Run\n"
+        "- **Ansible** — infrastructure automation, IaC\n"
         "- **Docker & Docker Compose** — containers and reproducible environments\n"
         "- **Kubernetes** — container orchestration\n"
-        "- **GitHub Actions** — CI/CD pipelines: test, build and deploy"
+        "- **GitHub Actions** — CI/CD pipelines: test, build and deploy\n"
+        "- **Celery + Redis** — async task queues"
     )),
     (r'strength|skill|good at|best', (
         "My strengths:\n"
         "1. **End-to-end visibility** — from network config to cloud deployment\n"
         "2. **Autonomy** — I set up, deploy and maintain systems independently\n"
-        "3. **Automation mindset** — if something repeats, I script it in Python or Bash\n"
-        "4. **Fast learner** — in 3 years: sysadmin → DevOps → Cloud → AI"
+        "3. **Automation mindset** — if something repeats, I script it in Python, Bash or Ansible\n"
+        "4. **Fast learner** — in a few years: sysadmin → DevOps → Cloud → applied AI"
     )),
     (r'weakness|improve|area', (
         "I want to go deeper into systems security — server hardening, advanced firewalls, "
@@ -225,16 +255,18 @@ FALLBACKS_EN = [
     )),
     (r'hire|why.*you|should we', (
         "Because I have a solid foundation in systems and networking with real corporate "
-        "exposure (Intune, Windows Server, VPN), and on top of that I can automate, "
-        "containerize and deploy to the cloud. I'm not just a classic sysadmin: "
-        "I can set up a Linux server, configure the network, dockerize the service, "
-        "push it to GCP and add CI/CD — all by myself. That gives a team a lot of autonomy."
+        "exposure (Intune, Windows Server, VPN — AMC Networks, Factorial), and on top of "
+        "that I can automate with Ansible, containerize and deploy to the cloud. I'm not "
+        "just a classic sysadmin: I can set up a Linux server, configure the network, "
+        "automate with Ansible, dockerize the service, push it to GCP and add CI/CD — "
+        "all by myself. That gives a team a lot of autonomy."
     )),
     (r'year|experience|how long|how many', (
-        "About 3 years of experience in the tech sector. "
+        "3+ years of experience in the tech sector. "
+        "Currently working as AI System Configurator at Infinity Neural. "
         "Junior-mid profile with a broad stack: systems, networking, Cloud, DevOps and AI. "
-        "The progression has been fast — from basic infrastructure to CI/CD, Kubernetes "
-        "and AI pipelines in that time."
+        "The progression has been fast — from basic infrastructure to CI/CD, Kubernetes, "
+        "Ansible and AI pipelines in that time."
     )),
     (r'salary|pay|compensation|expect', (
         "Salary expectations are something Eric prefers to discuss directly. "

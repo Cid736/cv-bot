@@ -1,212 +1,293 @@
 PERFIL PROFESIONAL
 ==================
-Nombre: Eric C.
+Nombre: Eric Cid López
 GitHub: github.com/Cid736
+LinkedIn: linkedin.com/in/eric-cid-lópez-b38b37273
+Email: cidlopezeric@gmail.com
+Teléfono: 611 409 833
+Ubicación: Badalona, Barcelona
+Permiso de conducción: B
 
 EXPERIENCIA Y TRAYECTORIA
 =========================
-Eric tiene aproximadamente 3 anos de experiencia en el sector tecnologico,
-con un perfil orientado principalmente a sistemas, redes e infraestructura,
-complementado con conocimientos en Cloud, DevOps e IA.
+Eric tiene más de 3 años de experiencia en el sector tecnológico,
+con un perfil orientado a sistemas, redes e infraestructura,
+complementado con experiencia real en soporte IT y proyectos de
+Cloud, DevOps e IA aplicada.
 
-Su nucleo profesional esta en la administracion de sistemas y redes:
-Linux/Ubuntu, Windows Server, TCP/IP, VPN corporativas, gestion de
-endpoints con MS Intune, y redes privadas con Tailscale y Pi-hole.
-Sobre esa base solida ha construido competencias en automatizacion,
-contenedores y cloud, lo que le permite entender la infraestructura
-de extremo a extremo — desde el cable hasta el despliegue en produccion.
+Actualmente trabaja como AI System Configurator en Infinity Neural (Badalona),
+donde configura y despliega sistemas basados en IA. Anteriormente trabajó como
+IT Support Technician en AMC Networks (Barcelona), Factorial (Barcelona) y en el
+Instituto Escuela de Badalona, acumulando experiencia sólida en entornos
+corporativos reales.
 
-Tiene exposicion a entornos corporativos reales (Jira, MS Intune,
-Google Workspace), no solo proyectos personales. Ha gestionado dispositivos,
-configurado redes y dado soporte en entornos Windows Server y Linux.
+Su núcleo profesional está en administración de sistemas y redes:
+Linux/Ubuntu, Windows Server, TCP/IP, VPN corporativas, gestión de
+endpoints con MS Intune. Sobre esa base ha construido competencias en
+automatización, contenedores, cloud y desarrollo, lo que le permite
+entender la infraestructura de extremo a extremo — desde el cable hasta
+el despliegue en producción.
 
-Adicionalmente, sabe programar en Python, Bash y JavaScript/Node.js,
-lo que le permite automatizar tareas de sistemas, construir herramientas
-internas y trabajar con pipelines de IA — pero su identidad profesional
-es la de un especialista en sistemas, no un desarrollador.
+Sabe programar en Python, Bash, JavaScript/Node.js y C, lo que le permite
+automatizar tareas de sistemas, construir herramientas internas, APIs REST
+y trabajar con pipelines de IA — pero su identidad profesional es la de un
+especialista en sistemas e infraestructura, no solo un desarrollador.
 
-HABILIDADES TECNICAS
+EXPERIENCIA PROFESIONAL
+=======================
+
+1. AI System Configurator
+   Empresa: Infinity Neural · Badalona
+   Período: Oct 2025 – Actualidad (posición actual)
+   Rol: Configuración y despliegue de sistemas basados en IA.
+
+2. IT Support Technician
+   Empresa: AMC Networks · Barcelona
+   Período: Mar 2025 – Oct 2025
+   Rol: Soporte IT en entorno corporativo de medios de comunicación.
+
+3. IT Support Technician
+   Empresa: Factorial · Barcelona
+   Período: Oct 2023 – Feb 2024
+   Rol: Soporte técnico en startup tecnológica de software HR.
+
+4. IT Support Technician
+   Empresa: Instituto Escuela de Badalona · Badalona
+   Período: Sep 2021 – Mar 2022
+   Rol: Soporte microinformático en entorno educativo.
+
+HABILIDADES TÉCNICAS
 ====================
 
-Sistemas & Redes (nucleo):
-- Linux / Ubuntu — administracion de servidores, servicios, permisos, cron
+Sistemas & Redes (núcleo):
+- Linux / Ubuntu — administración de servidores, servicios, permisos, cron
 - Windows Server — entornos corporativos, Active Directory, GPO
 - TCP/IP — protocolos de red, subredes, enrutamiento
-- VPN — configuracion y gestion de redes privadas
+- VPN — configuración y gestión de redes privadas
 - Pi-hole — servidor DNS con bloqueo de publicidad a nivel de red
 - Tailscale — red mesh VPN sobre WireGuard para acceso remoto seguro
-- MS Intune — gestion de dispositivos moviles y endpoints corporativos
-- Seguridad basica de redes — firewalls, accesos, politicas
+- MS Intune — gestión de dispositivos móviles y endpoints corporativos
+- Seguridad básica de redes — firewalls, accesos, políticas
 
 Cloud & DevOps:
 - Google Cloud Platform (GCP) — despliegue de servicios, Cloud Run
-- Kubernetes — orquestacion de contenedores
+- Ansible — automatización de configuración e infraestructura como código
+- Kubernetes — orquestación de contenedores
 - Docker y Docker Compose — contenedores y entornos reproducibles
-- CI/CD con GitHub Actions — pipelines de test, build y despliegue automatico
+- CI/CD con GitHub Actions — pipelines de test, build y despliegue automático
+- Celery + Redis — colas de tareas asíncronas
 
-Automatizacion & Scripting:
-- Python — scripting, automatizacion de tareas de sistemas, herramientas CLI
-- Bash — scripting de sistemas, administracion, automatizacion
-- SQL — bases de datos relacionales, SQLite
-- JavaScript / Node.js — APIs REST, herramientas web complementarias
-
-IA & Automatizacion (complementario):
-- LLMs y Prompt Engineering — uso practico de modelos de lenguaje
+IA & Automatización:
+- LLMs y Prompt Engineering — uso práctico de modelos de lenguaje
+- RAG (Retrieval-Augmented Generation) — chatbots con contexto de documentos
 - Vertex AI — plataforma de IA de Google Cloud
-- Agentes IA y RAG — construccion de asistentes con contexto de documentos
+- Agentes IA — construcción de asistentes inteligentes
 - LangChain — pipelines de IA
+- ChromaDB — base de datos vectorial para embeddings
+
+Programación & Scripting:
+- Python — scripting, automatización de sistemas, herramientas CLI, APIs
+- FastAPI — APIs REST modernas con Python
+- Bash — scripting de sistemas, administración, automatización
+- PowerShell — automatización en entornos Windows
+- JavaScript / Node.js — APIs REST, herramientas web
+- React — interfaces web (frontend)
+- C — programación de sistemas, herramientas de red de bajo nivel
+- SQL / PostgreSQL / SQLite — bases de datos relacionales
+- NoSQL — bases de datos no relacionales
 
 Herramientas:
-- Git / GitHub — control de versiones, colaboracion
-- Jira — gestion de proyectos y tickets
-- Google Workspace — Suite ofimatica colaborativa
+- Git / GitHub — control de versiones, colaboración
+- Jira — gestión de proyectos y tickets
+- Google Workspace — suite ofimática colaborativa
 - VS Code — editor principal
-- MS Intune — gestion y politicas de dispositivos corporativos
+- MS Intune — gestión y políticas de dispositivos corporativos
 
 PROYECTOS PERSONALES
 ====================
 
-1. Net Monitor
+1. CV Bot
+   GitHub: github.com/Cid736/cv-bot
+   Estado: EN PRODUCCIÓN
+   Asistente conversacional que responde preguntas sobre el perfil de Eric
+   en español e inglés. Rate limiting, historial de sesión, preguntas
+   predictivas generadas por LLM, fallbacks estáticos ante límites de API.
+   Stack: Python, Flask, LangChain, Groq LLM.
+
+2. Ansible Platform
+   GitHub: github.com/Cid736/ansible-platform
+   Plataforma web estilo AWX para gestionar inventarios Ansible, playbooks,
+   credenciales y ejecución de jobs — self-hosted con Docker, salida en
+   tiempo real vía WebSocket.
+   Stack: Python, FastAPI, Ansible, PostgreSQL, Celery, Redis, React, Docker.
+
+3. Task API
+   GitHub: github.com/Cid736/task-api
+   REST API de tareas con autenticación JWT, CRUD completo, 18 tests
+   automáticos (100% pass), CI/CD con GitHub Actions: tests, build Docker,
+   smoke test del contenedor en producción.
+   Stack: Node.js, Express, SQLite, Docker, GitHub Actions.
+
+4. RAG Chatbot
+   GitHub: github.com/Cid736/rag-chatbot
+   Chatbot con arquitectura RAG, embeddings locales, sin GPU necesaria,
+   usando Groq como LLM. Sin coste de infraestructura GPU.
+   Stack: Python, LangChain, ChromaDB, Groq API.
+
+5. Net Monitor
    GitHub: github.com/Cid736/net-monitor
    Monitor de disponibilidad de red. Comprueba hosts (ping ICMP), puertos TCP
-   y endpoints HTTP/HTTPS. Guarda historial de uptime en SQLite y envia alertas
+   y endpoints HTTP/HTTPS. Guarda historial de uptime en SQLite y envía alertas
    por Telegram cuando un objetivo cae o se recupera. Modo daemon configurable.
-   Stack: Python, socket, requests, SQLite.
+   Stack: Python, socket, requests, SQLite, Telegram Bot API.
 
-2. Syswatch
-   GitHub: github.com/Cid736/syswatch
-   Monitor de recursos del sistema para servidores Linux. Rastrea CPU, RAM,
-   disco y carga del sistema (load average). Umbrales configurables via YAML.
-   Alerta por Telegram cuando se superan los limites. Funciona como one-shot
-   o como daemon. Integrable con cron.
-   Stack: Python, psutil, PyYAML, Telegram Bot API.
+6. Portscanner
+   GitHub: github.com/Cid736/portscanner
+   Escáner de puertos TCP para Windows — estados open/closed/filtered,
+   banner grabbing, salida estilo nmap. Herramienta de sistemas de bajo nivel.
+   Stack: C, Winsock2.
 
-3. Medical Bot
+7. Medical Bot
    GitHub: github.com/Cid736/medical-bot
-   SaaS chatbot para clinicas medicas. Responde consultas de pacientes 24/7,
+   SaaS chatbot para clínicas médicas. Responde consultas de pacientes 24/7,
    captura leads y gestiona citas. Dashboard web con KPIs en tiempo real.
    Stack: Node.js, Express, SQLite, Docker.
 
-4. Price Tracker
+8. Price Tracker
    GitHub: github.com/Cid736/price-tracker
    CLI para rastrear precios web con historial SQLite y alertas de precio.
-   Automatizacion con scripting Python, scraping y base de datos local.
+   Automatización con scripting Python, scraping y base de datos local.
    Stack: Python, BeautifulSoup, SQLite, argparse, requests.
 
-5. Task API
-   GitHub: github.com/Cid736/task-api
-   REST API de tareas con autenticacion JWT, CRUD completo, 18 tests
-   automaticos (100% pass), CI/CD con GitHub Actions: tests, build Docker,
-   smoke test del contenedor en produccion.
-   Stack: Node.js, Express, SQLite, Docker, GitHub Actions.
-
-6. CV Bot
-   GitHub: github.com/Cid736/cv-bot
-   Asistente web que responde preguntas sobre el perfil de Eric.
-   Backend Flask, LLM Groq, memoria de sesion, preguntas predictivas.
-   Stack: Python, Flask, LangChain, Groq API.
-
-7. Smart Notes
+9. Smart Notes
    GitHub: github.com/Cid736/smart-notes
    App de notas tipo Obsidian con WikiLinks, grafo de conexiones, IA local.
    Stack: Node.js, Express, SQLite, Vanilla JS.
 
-8. RAG Chatbot
-   GitHub: github.com/Cid736/rag-chatbot
-   Chatbot con arquitectura RAG, embeddings locales, sin GPU necesaria.
-   Stack: Python, LangChain, ChromaDB, Groq API.
+10. Syswatch
+    GitHub: github.com/Cid736/syswatch
+    Monitor de recursos del sistema para servidores Linux. Rastrea CPU, RAM,
+    disco y carga del sistema. Umbrales configurables via YAML. Alerta por
+    Telegram. Integrable con cron.
+    Stack: Python, psutil, PyYAML, Telegram Bot API.
+
+FORMACIÓN ACADÉMICA
+===================
+
+1. Grado en Ingeniería Informática (en curso)
+   Institución: Universitat Oberta de Catalunya (UOC)
+   Período: Sep 2024 – Actualidad
+
+2. CFGS — Administración de Sistemas Informáticos en Red
+   Institución: INS La Pineda
+   Período: 2022 – 2024
+
+3. CFGM — Sistemas Microinformáticos y Redes
+   Institución: INS La Pineda
+   Período: 2020 – 2022
+
+CERTIFICACIONES
+===============
+- Manage Kubernetes in Google Cloud — Google Cloud Skills Boost · 2025
+- Implement Load Balancing on Compute Engine — Google Cloud Skills Boost · 2025
+- Prompt Design in Vertex AI — Google Cloud Skills Boost · 2025
+
+IDIOMAS
+=======
+- Español: Nativo
+- Catalán: Nativo
+- Inglés: B1–B2 Técnico
 
 PREGUNTAS FRECUENTES DE ENTREVISTA
 ===================================
 
-P: Cuentame sobre ti / Tell me about yourself
-R: Soy un tecnico de sistemas con unos 3 anos de experiencia, con un perfil
-que cubre desde la administracion de sistemas Linux y Windows Server hasta
-redes, contenedores y cloud. Mi base es la infraestructura: se montar,
-mantener y asegurar sistemas en entornos corporativos reales. Sobre esa base
-he anadido conocimientos en DevOps, automatizacion con Python y Bash, y
-ultimamente en IA aplicada. Me gusta entender como funciona cada capa del
-sistema, desde la red hasta la aplicacion.
+P: Cuéntame sobre ti / Tell me about yourself
+R: Soy un técnico de sistemas con más de 3 años de experiencia, con un perfil
+que cubre desde la administración de sistemas Linux y Windows Server hasta
+redes, contenedores y cloud. Actualmente trabajo como AI System Configurator
+en Infinity Neural. Mi base es la infraestructura: sé montar, mantener y
+asegurar sistemas en entornos corporativos reales. Sobre esa base he añadido
+conocimientos en DevOps, automatización con Python y Bash, y IA aplicada.
+Estoy cursando el Grado en Ingeniería Informática en la UOC.
 
-P: Por que te llama la atencion este sector / Why are you interested in this field?
+P: Por qué te llama la atención este sector / Why are you interested in this field?
 R: Porque los sistemas son la base de todo. Sin infraestructura bien montada
 no hay nada. Me gusta que el trabajo en sistemas tiene impacto real e inmediato:
 cuando un servidor cae o una red falla, todo para. Eso me exige rigor, criterio
-y capacidad de resolver bajo presion. Ademas, la combinacion de sistemas con
-automatizacion e IA esta abriendo posibilidades nuevas que me interesan mucho.
+y capacidad de resolver bajo presión. Además, la combinación de sistemas con
+automatización e IA está abriendo posibilidades nuevas que me interesan mucho.
 
-P: Cuales son tus puntos fuertes / What are your strengths?
+P: Cuáles son tus puntos fuertes / What are your strengths?
 R: Primero, visibilidad de extremo a extremo: entiendo tanto la capa de red
-(TCP/IP, VPN, Pi-hole, Tailscale) como la de contenedores y cloud. Segundo,
-la autonomia: configuro, despliego y mantengo sistemas sin depender de nadie.
-Tercero, la capacidad de automatizar: cuando algo se repite, lo scripto en
-Python o Bash. Y cuarto, aprendo rapido — en 3 anos he pasado de sistemas
-basicos a tener CI/CD, Docker y pipelines de IA funcionando.
+como la de contenedores y cloud. Segundo, la autonomía: configuro, despliego
+y mantengo sistemas sin depender de nadie. Tercero, la capacidad de automatizar:
+cuando algo se repite, lo scripto en Python, Bash o Ansible. Y cuarto, aprendo
+rápido — en pocos años he pasado de sistemas básicos a tener CI/CD, Kubernetes,
+Ansible y pipelines de IA funcionando.
 
-P: Cuales son tus areas de mejora / What are your weaknesses?
-R: Quiero profundizar mas en seguridad de sistemas y redes — firewalls avanzados,
-hardening de servidores, certificaciones tipo CompTIA Security+. Es un area
-donde tengo base pero quiero mas profundidad. Tambien estoy mejorando mis
-habilidades para documentar y comunicar configuraciones tecnicas a perfiles
-no tecnicos.
+P: Cuáles son tus áreas de mejora / What are your weaknesses?
+R: Quiero profundizar más en seguridad de sistemas y redes — firewalls avanzados,
+hardening de servidores, certificaciones tipo CompTIA Security+. Es un área
+donde tengo base pero quiero más profundidad. También estoy mejorando mis
+habilidades para documentar y comunicar configuraciones técnicas a perfiles
+no técnicos.
 
-P: Donde te ves en 5 anos / Where do you see yourself in 5 years?
+P: Dónde te ves en 5 años / Where do you see yourself in 5 years?
 R: En un rol de administrador de sistemas senior o arquitecto de infraestructura,
 gestionando entornos complejos que combinen on-premise y cloud. Me interesa
-especializarme mas en seguridad de sistemas y en infraestructura como codigo
-(Terraform, Ansible). A largo plazo me gustaria liderar equipos de sistemas
-en organizaciones donde la infraestructura sea critica.
+especializarme más en seguridad de sistemas y en infraestructura como código
+(Terraform, Ansible). A largo plazo me gustaría liderar equipos de sistemas
+en organizaciones donde la infraestructura sea crítica.
 
-P: Por que deberiamos contratarte / Why should we hire you?
-R: Porque tengo una base solida en sistemas y redes, con exposicion real a
-entornos corporativos (Intune, Windows Server, VPN), y encima de eso se
-automatizar, contenerizar y desplegar en cloud. No soy solo un administrador
-clasico: puedo montar un servidor Linux, configurar la red, dockerizar el
-servicio, subirlo a GCP y poner CI/CD — todo yo. Eso da mucha autonomia a
-cualquier equipo.
+P: Por qué deberíamos contratarte / Why should we hire you?
+R: Porque tengo una base sólida en sistemas y redes, con exposición real a
+entornos corporativos (Intune, Windows Server, VPN, AMC Networks, Factorial),
+y encima de eso sé automatizar con Ansible, contenerizar y desplegar en cloud.
+No soy solo un administrador clásico: puedo montar un servidor Linux,
+configurar la red, automatizar con Ansible, dockerizarlo, subirlo a GCP y
+poner CI/CD — todo yo. Eso da mucha autonomía a cualquier equipo.
 
-P: Cual es tu mayor logro / What is your biggest achievement?
-R: Montar una red privada funcional con Tailscale y Pi-hole, integrando
-dispositivos en distintos entornos, con control de DNS y bloqueo de trafico
-no deseado. Ver que una infraestructura que monte desde cero funciona de forma
-fiable y segura, sin intervenciones externas, es lo que mas satisfaccion me da.
-Tambien el haber desplegado en produccion una API con CI/CD completo y tests
-automatizados — sabiendo que cada push es seguro.
+P: Cuál es tu mayor logro / What is your biggest achievement?
+R: Montar la Ansible Platform — una plataforma web completa estilo AWX con
+FastAPI, React, PostgreSQL, Celery, Redis y Docker, con salida en tiempo real
+vía WebSocket. Ver que una infraestructura que monté desde cero funciona de
+forma fiable es lo que más satisfacción me da. También el haber desplegado
+en producción una API con CI/CD completo y tests automatizados.
 
-P: Como trabajas bajo presion / How do you work under pressure?
-R: Con calma y metodicamente. En sistemas, el panico lleva a errores que
-empeoran la situacion. Mi proceso es: primero aislar el problema (cual es el
-servicio afectado, desde cuando, que cambio), luego reproducirlo si puedo,
-y despues aplicar el cambio minimo necesario. He resuelto incidencias de red
-y bugs de produccion siguiendo ese patron y funciona.
+P: Cómo trabajas bajo presión / How do you work under pressure?
+R: Con calma y metódicamente. En sistemas, el pánico lleva a errores que
+empeoran la situación. Mi proceso es: primero aislar el problema (cuál es el
+servicio afectado, desde cuándo, qué cambió), luego reproducirlo si puedo,
+y después aplicar el cambio mínimo necesario.
 
 P: Prefieres trabajar solo o en equipo / Do you prefer working alone or in a team?
 R: Las dos modalidades me funcionan. En sistemas suelo trabajar con bastante
-autonomia, lo que me gusta. Pero valoro mucho el trabajo en equipo en
-situaciones de incidencia, revision de configuraciones o discusion de
-arquitectura — otra perspectiva tecnica siempre aporta.
+autonomía, lo que me gusta. Pero valoro mucho el trabajo en equipo en
+situaciones de incidencia, revisión de configuraciones o discusión de
+arquitectura.
 
-P: Como manejas el aprendizaje de nuevas tecnologias / How do you learn new technologies?
-R: Montando un laboratorio. Si quiero aprender una tecnologia, la instalo,
-la configuro y la rompo para ver como se comporta. Asi aprendi Docker,
-Kubernetes, Tailscale y las herramientas de IA. La teoria sin practica
-no me queda. Tambien uso documentacion oficial mas que cursos — prefiero
-ir a la fuente.
+P: Cómo manejas el aprendizaje de nuevas tecnologías / How do you learn new technologies?
+R: Montando un laboratorio. Si quiero aprender una tecnología, la instalo,
+la configuro y la rompo para ver cómo se comporta. Así aprendí Docker,
+Kubernetes, Ansible, Tailscale y las herramientas de IA. La teoría sin práctica
+no me queda. También uso documentación oficial más que cursos.
 
-P: Tienes experiencia con metodologias agiles / Do you have experience with agile?
-R: Si, conozco Jira para gestion de tickets y proyectos. He trabajado con
+P: Tienes experiencia con metodologías ágiles / Do you have experience with agile?
+R: Sí, conozco Jira para gestión de tickets y proyectos. He trabajado con
 flujos iterativos donde el objetivo es tener algo funcionando y desplegado
 en cada ciclo. En mis proyectos personales aplico el mismo principio:
-incremental, testeable y desplegable en cada iteracion.
+incremental, testeable y desplegable en cada iteración.
 
-P: Cuales son tus expectativas salariales / What are your salary expectations?
-R: Es algo que Eric prefiere tratar directamente. Puedes contactarle a traves de github.com/Cid736.
+P: Cuáles son tus expectativas salariales / What are your salary expectations?
+R: Es algo que Eric prefiere tratar directamente. Puedes contactarle a través de github.com/Cid736.
 
-P: Que herramientas de colaboracion conoces / What collaboration tools do you know?
-R: Git/GitHub para control de versiones, Jira para gestion de proyectos y
-tickets, Google Workspace para documentacion y comunicacion, MS Intune para
-gestion de dispositivos, y Slack para comunicacion de equipo.
+P: Qué herramientas de colaboración conoces / What collaboration tools do you know?
+R: Git/GitHub para control de versiones, Jira para gestión de proyectos y
+tickets, Google Workspace para documentación y comunicación, MS Intune para
+gestión de dispositivos, y Slack para comunicación de equipo.
 
 CONTACTO
 ========
 GitHub: github.com/Cid736
+LinkedIn: linkedin.com/in/eric-cid-lópez-b38b37273
+Email: cidlopezeric@gmail.com
