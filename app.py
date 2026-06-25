@@ -24,18 +24,24 @@ sessions: dict[str, list] = {}  # session_id -> [{"role":"user"|"assistant","con
 MAX_SESSIONS = 500
 MAX_QUESTION_LEN = 500  # chars; limits token abuse and prompt stuffing
 
-# Per-IP sliding-window rate limiter for /chat
+# Per-IP sliding-window rate limiters
 _rate_log: dict[str, list[float]] = defaultdict(list)
-RATE_WINDOW = 60   # seconds
-RATE_MAX    = 20   # requests per window
+_suggest_rate_log: dict[str, list[float]] = defaultdict(list)
+RATE_WINDOW       = 60   # seconds
+RATE_MAX          = 20   # /chat requests per window
+SUGGEST_RATE_MAX  = 40   # /suggest has higher budget (auto-called by frontend)
 
-def _rate_ok(ip: str) -> bool:
+def _rate_ok(ip: str, store: dict | None = None, max_req: int | None = None) -> bool:
+    if store is None:
+        store = _rate_log
+    if max_req is None:
+        max_req = RATE_MAX
     now = time.time()
-    hits = [t for t in _rate_log[ip] if now - t < RATE_WINDOW]
-    _rate_log[ip] = hits
-    if len(hits) >= RATE_MAX:
+    hits = [t for t in store[ip] if now - t < RATE_WINDOW]
+    store[ip] = hits
+    if len(hits) >= max_req:
         return False
-    _rate_log[ip].append(now)
+    store[ip].append(now)
     return True
 
 def load_profile() -> str:
@@ -595,9 +601,18 @@ app = Flask(__name__)
 
 @app.after_request
 def security_headers(resp):
-    resp.headers['X-Content-Type-Options'] = 'nosniff'
-    resp.headers['X-Frame-Options']        = 'DENY'
-    resp.headers['Referrer-Policy']        = 'no-referrer'
+    resp.headers['X-Content-Type-Options']    = 'nosniff'
+    resp.headers['X-Frame-Options']           = 'DENY'
+    resp.headers['Referrer-Policy']           = 'no-referrer'
+    resp.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
+    resp.headers['Content-Security-Policy']   = (
+        "default-src 'self'; "
+        "script-src 'self' https://cdn.jsdelivr.net; "
+        "style-src 'self' 'unsafe-inline'; "
+        "connect-src 'self'; "
+        "img-src 'self' data:; "
+        "font-src 'self';"
+    )
     return resp
 
 @app.route('/')
@@ -612,7 +627,11 @@ def health():
 def chat_route():
     data     = request.get_json(silent=True) or {}
     question = data.get('question', '').strip()
-    sid      = data.get('session_id') or secrets.token_hex(12)
+    raw_sid  = data.get('session_id', '')
+    if raw_sid and re.fullmatch(r'[0-9a-fA-F]{1,48}', str(raw_sid)):
+        sid = str(raw_sid)
+    else:
+        sid = secrets.token_hex(12)
 
     if not question:
         return jsonify({'error': 'Empty question'}), 400
@@ -664,7 +683,7 @@ def suggest():
     ip = (request.headers.get('X-Forwarded-For') or
           request.headers.get('X-Real-IP') or
           request.remote_addr or 'unknown').split(',')[0].strip()
-    if not _rate_ok(ip):
+    if not _rate_ok(ip, store=_suggest_rate_log, max_req=SUGGEST_RATE_MAX):
         return jsonify({'error': 'Too many requests'}), 429
     data = request.get_json(silent=True) or {}
     q    = str(data.get('question', ''))[:MAX_QUESTION_LEN]
