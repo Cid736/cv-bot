@@ -15,7 +15,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 DOCS_DIR        = Path("./docs")
-MODEL           = "llama-3.3-70b-versatile"
+MODEL           = "openai/gpt-oss-120b"
 MAX_HISTORY     = 8   # exchanges kept per session
 CONTACT_EMAIL   = os.getenv("CONTACT_EMAIL",   "contact@example.com")
 CONTACT_LINKEDIN = os.getenv("CONTACT_LINKEDIN", "https://www.linkedin.com/in/yourprofile/")
