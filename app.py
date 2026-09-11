@@ -487,9 +487,8 @@ HTML = """<!DOCTYPE html>
   </div>
   <div id="chips"></div>
 
-  <form id="form" onsubmit="send(event)">
-    <textarea id="input" placeholder="Pregunta en cualquier idioma / Ask in any language..." rows="1"
-      oninput="resize(this)" onkeydown="onKey(event)"></textarea>
+  <form id="form">
+    <textarea id="input" placeholder="Pregunta en cualquier idioma / Ask in any language..." rows="1"></textarea>
     <button id="btn" type="submit">&#9658;</button>
   </form>
 
@@ -607,6 +606,10 @@ HTML = """<!DOCTYPE html>
           setChips(data.suggestions);
       } catch {}
     }
+
+    document.getElementById('form').addEventListener('submit', send);
+    input.addEventListener('input', function () { resize(this); });
+    input.addEventListener('keydown', onKey);
 
     setChips(DEFAULTS);
     input.focus();
