@@ -7,9 +7,7 @@ import os, sys, json, re, secrets, time, logging
 from pathlib import Path
 from collections import defaultdict
 from flask import Flask, request, jsonify, render_template_string
-from langchain_groq import ChatGroq
-from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
-from groq import RateLimitError
+from groq import Groq, RateLimitError
 from dotenv import load_dotenv
 
 # Maximum number of distinct IPs tracked in rate-limit logs.
@@ -35,51 +33,88 @@ RATE_WINDOW       = 60   # seconds
 RATE_MAX          = 20   # /chat requests per window
 SUGGEST_RATE_MAX  = 40   # /suggest has higher budget (auto-called by frontend)
 
-# ── Groq free-tier usage tracking (global — one shared API key for all visitors) ──
-# Limits published for openai/gpt-oss-120b on the Groq free tier
-# (console.groq.com/docs/rate-limits). Update these if the plan/model changes.
-GROQ_RPM_LIMIT = 30
-GROQ_RPD_LIMIT = 1_000
-GROQ_TPM_LIMIT = 8_000
-GROQ_TPD_LIMIT = 200_000
+# ── Groq usage tracking ──────────────────────────────────────────────────────
+# Read straight from Groq's own rate-limit headers on every response instead of
+# guessing locally — these are the account's real, live numbers.
+# Per console.groq.com/docs/rate-limits:
+#   x-ratelimit-limit-requests / -remaining-requests  -> Requests Per Day (RPD)
+#   x-ratelimit-limit-tokens   / -remaining-tokens    -> Tokens Per Minute (TPM)
+#   x-ratelimit-reset-requests / -reset-tokens        -> time until each bucket is back to full
+#
+# IMPORTANT: these buckets refill gradually (leaky-bucket), not in one jump at
+# the end of the window. If we only show the number from the *last* request,
+# the bar looks "stuck" at a high % between messages even though the quota is
+# quietly recovering in the background. So instead of showing the raw snapshot,
+# we extrapolate forward using the reset duration Groq reports.
+_last_usage = {
+    "requests": {"limit": None, "remaining": None, "window": "day",
+                 "reset_seconds": None, "observed_at": None},
+    "tokens":   {"limit": None, "remaining": None, "window": "minute",
+                 "reset_seconds": None, "observed_at": None},
+}
 
-_groq_req_times: list[float] = []          # timestamps of every Groq call (sliding 60s)
-_groq_tok_times: list[tuple[float, int]] = []  # (timestamp, tokens) sliding 60s
-_groq_day_reqs = 0
-_groq_day_toks = 0
-_groq_day_key = time.strftime('%Y-%m-%d', time.gmtime())
+def _parse_reset_duration(raw: str | None) -> float | None:
+    """Parse Go-style durations Groq sends, e.g. '7.66s', '6m0s', '1h2m3s', '500ms'."""
+    if not raw:
+        return None
+    raw = raw.strip()
+    if not raw:
+        return None
+    total = 0.0
+    matched = False
+    for value, unit in re.findall(r'([\d.]+)(h|ms|m|s)', raw):
+        matched = True
+        v = float(value)
+        total += {'h': 3600, 'm': 60, 's': 1, 'ms': 0.001}[unit] * v
+    if not matched:
+        try:
+            return float(raw)
+        except ValueError:
+            return None
+    return total
 
-def _record_groq_usage(tokens: int) -> None:
-    """Call once after every successful Groq request to update usage counters."""
-    global _groq_day_reqs, _groq_day_toks, _groq_day_key
+def _update_usage_from_headers(headers) -> None:
+    def _num(name):
+        try:
+            return int(headers.get(name))
+        except (TypeError, ValueError):
+            return None
     now = time.time()
-    today = time.strftime('%Y-%m-%d', time.gmtime())
-    if today != _groq_day_key:
-        _groq_day_key = today
-        _groq_day_reqs = 0
-        _groq_day_toks = 0
-    _groq_req_times.append(now)
-    _groq_tok_times.append((now, tokens))
-    _groq_day_reqs += 1
-    _groq_day_toks += tokens
-    # trim old entries so the lists don't grow forever
-    cutoff = now - 60
-    del _groq_req_times[:len([t for t in _groq_req_times if t < cutoff])]
-    _groq_tok_times[:] = [(t, tk) for t, tk in _groq_tok_times if t >= cutoff]
+    rl, rr = _num('x-ratelimit-limit-requests'), _num('x-ratelimit-remaining-requests')
+    tl, tr = _num('x-ratelimit-limit-tokens'),   _num('x-ratelimit-remaining-tokens')
+    rreset = _parse_reset_duration(headers.get('x-ratelimit-reset-requests'))
+    treset = _parse_reset_duration(headers.get('x-ratelimit-reset-tokens'))
+    if rl is not None: _last_usage["requests"]["limit"] = rl
+    if rr is not None:
+        _last_usage["requests"]["remaining"]    = rr
+        _last_usage["requests"]["observed_at"]  = now
+    if rreset is not None: _last_usage["requests"]["reset_seconds"] = rreset
+    if tl is not None: _last_usage["tokens"]["limit"] = tl
+    if tr is not None:
+        _last_usage["tokens"]["remaining"]   = tr
+        _last_usage["tokens"]["observed_at"] = now
+    if treset is not None: _last_usage["tokens"]["reset_seconds"] = treset
 
-def _groq_usage_snapshot() -> dict:
-    """Percentage used of whichever Groq limit (RPM/RPD/TPM/TPD) is tightest right now."""
-    now = time.time()
-    reqs_min = len([t for t in _groq_req_times if now - t < 60])
-    toks_min = sum(tk for t, tk in _groq_tok_times if now - t < 60)
-    pct = {
-        "RPM": reqs_min / GROQ_RPM_LIMIT * 100,
-        "RPD": _groq_day_reqs / GROQ_RPD_LIMIT * 100,
-        "TPM": toks_min / GROQ_TPM_LIMIT * 100,
-        "TPD": _groq_day_toks / GROQ_TPD_LIMIT * 100,
+def _usage_snapshot() -> dict:
+    def _entry(d):
+        limit, remaining = d["limit"], d["remaining"]
+        if limit in (None, 0) or remaining is None:
+            return {"limit": limit, "remaining": remaining, "window": d["window"], "pct": None}
+        # Extrapolate how much of the bucket has refilled since we last saw a
+        # real number from Groq, using the reset duration it reported then.
+        est_remaining = remaining
+        reset_s, observed_at = d["reset_seconds"], d["observed_at"]
+        if reset_s and observed_at:
+            elapsed = time.time() - observed_at
+            if elapsed > 0:
+                est_remaining = min(limit, remaining + (limit - remaining) * min(1.0, elapsed / reset_s))
+        pct = round(max(0, min(100, (limit - est_remaining) / limit * 100)), 1)
+        return {"limit": limit, "remaining": round(est_remaining), "window": d["window"], "pct": pct}
+    return {
+        "model": MODEL,
+        "requests": _entry(_last_usage["requests"]),
+        "tokens":   _entry(_last_usage["tokens"]),
     }
-    tightest = max(pct, key=pct.get)
-    return {"pct": round(min(pct[tightest], 100), 1), "dimension": tightest}
 
 def _rate_ok(ip: str, store: dict | None = None, max_req: int | None = None) -> bool:
     if store is None:
@@ -376,8 +411,18 @@ def static_answer(question: str, lang: str) -> str:
     )
 
 
-llm         = ChatGroq(model=MODEL, temperature=0.2)
-llm_suggest = ChatGroq(model=MODEL, temperature=0.7)
+groq_client = Groq()  # reads GROQ_API_KEY from env
+
+def _groq_chat(messages: list[dict], temperature: float) -> str:
+    """Call Groq directly (not via langchain) so we can read the real
+    x-ratelimit-* headers off the raw HTTP response and update usage stats."""
+    raw = groq_client.chat.completions.with_raw_response.create(
+        model=MODEL, messages=messages, temperature=temperature,
+    )
+    _update_usage_from_headers(raw.headers)
+    completion = raw.parse()
+    return completion.choices[0].message.content
+
 print("[ok] Ready\n")
 
 # ── HTML ──────────────────────────────────────────────────────────────────────
@@ -459,21 +504,26 @@ HTML = """<!DOCTYPE html>
       0%,80%,100% { transform: translateY(0); opacity:.4; }
       40%          { transform: translateY(-5px); opacity:1; }
     }
-    #usage-row {
+    #usage-panel {
       width: 100%; max-width: 760px;
-      padding: 0 20px 6px; display: flex; align-items: center; gap: 8px;
+      padding: 0 20px 8px; display: flex; flex-direction: column; gap: 4px;
     }
-    #usage-label {
-      font-size: 0.66rem; color: var(--muted); text-transform: uppercase; letter-spacing: .5px;
+    #usage-title {
+      font-size: 0.64rem; color: var(--muted); text-transform: uppercase;
+      letter-spacing: .6px; margin-bottom: 1px;
     }
-    #usage-bar-wrap {
+    .usage-row { display: flex; align-items: center; gap: 8px; }
+    .usage-label {
+      font-size: 0.68rem; color: #999; width: 82px; flex-shrink: 0;
+    }
+    .usage-bar-wrap {
       flex: 1; height: 5px; background: var(--border); border-radius: 3px; overflow: hidden;
     }
-    #usage-bar {
+    .usage-bar {
       height: 100%; width: 0%; background: var(--accent);
       transition: width .3s ease, background .3s ease;
     }
-    #usage-pct { font-size: 0.66rem; color: var(--muted); min-width: 32px; text-align: right; }
+    .usage-pct { font-size: 0.68rem; color: var(--muted); min-width: 32px; text-align: right; }
     #chips {
       width: 100%; max-width: 760px;
       padding: 6px 20px 4px; display: flex; flex-wrap: wrap; gap: 7px; min-height: 38px;
@@ -540,10 +590,18 @@ HTML = """<!DOCTYPE html>
     <span class="badge">&#9679; online</span>
   </header>
 
-  <div id="usage-row" title="Uso del cupo gratuito de Groq">
-    <span id="usage-label">IA</span>
-    <div id="usage-bar-wrap"><div id="usage-bar"></div></div>
-    <span id="usage-pct">0%</span>
+  <div id="usage-panel" title="Uso real reportado por Groq para este modelo">
+    <div id="usage-title">Usage &middot; openai/gpt-oss-120b</div>
+    <div class="usage-row">
+      <span class="usage-label">Requests/dia</span>
+      <div class="usage-bar-wrap"><div class="usage-bar" id="usage-bar-req"></div></div>
+      <span class="usage-pct" id="usage-pct-req">&ndash;</span>
+    </div>
+    <div class="usage-row">
+      <span class="usage-label">Tokens/min</span>
+      <div class="usage-bar-wrap"><div class="usage-bar" id="usage-bar-tok"></div></div>
+      <span class="usage-pct" id="usage-pct-tok">&ndash;</span>
+    </div>
   </div>
 
   <div id="chat"></div>
@@ -565,9 +623,11 @@ HTML = """<!DOCTYPE html>
     const btn    = document.getElementById('btn');
     const chips  = document.getElementById('chips');
     const banner = document.getElementById('rate-banner');
-    const usageBar = document.getElementById('usage-bar');
-    const usagePct = document.getElementById('usage-pct');
-    const usageRow = document.getElementById('usage-row');
+    const usagePanel  = document.getElementById('usage-panel');
+    const usageBarReq = document.getElementById('usage-bar-req');
+    const usagePctReq = document.getElementById('usage-pct-req');
+    const usageBarTok = document.getElementById('usage-bar-tok');
+    const usagePctTok = document.getElementById('usage-pct-tok');
     let sid  = null;
     let busy = false;
 
@@ -678,15 +738,28 @@ HTML = """<!DOCTYPE html>
       } catch {}
     }
 
+    function paintUsageBar(barEl, pctEl, entry) {
+      if (entry.pct === null || entry.pct === undefined) {
+        pctEl.textContent = '\u2013';
+        barEl.style.width = '0%';
+        return;
+      }
+      barEl.style.width = entry.pct + '%';
+      barEl.style.background = entry.pct > 85 ? '#c0392b' : entry.pct > 60 ? '#e09a3a' : 'var(--accent)';
+      pctEl.textContent = Math.round(entry.pct) + '%';
+    }
+
     async function pollUsage() {
       try {
         const res = await fetch('/usage');
         const data = await res.json();
-        const pct = Math.min(data.pct, 100);
-        usageBar.style.width = pct + '%';
-        usageBar.style.background = pct > 85 ? '#c0392b' : pct > 60 ? '#e09a3a' : 'var(--accent)';
-        usagePct.textContent = Math.round(pct) + '%';
-        usageRow.title = `Uso del cupo gratuito de Groq: ${pct.toFixed(1)}% (limite mas ajustado: ${data.dimension})`;
+        paintUsageBar(usageBarReq, usagePctReq, data.requests);
+        paintUsageBar(usageBarTok, usagePctTok, data.tokens);
+        const reqTxt = data.requests.remaining !== null
+          ? `${data.requests.remaining}/${data.requests.limit} requests restantes hoy` : 'sin datos aun';
+        const tokTxt = data.tokens.remaining !== null
+          ? `${data.tokens.remaining}/${data.tokens.limit} tokens restantes este minuto` : 'sin datos aun';
+        usagePanel.title = `${reqTxt} \u00b7 ${tokTxt}`;
       } catch {}
     }
 
@@ -695,7 +768,7 @@ HTML = """<!DOCTYPE html>
     input.addEventListener('keydown', onKey);
 
     pollUsage();
-    setInterval(pollUsage, 15000);
+    setInterval(pollUsage, 5000);
     setChips(DEFAULTS);
     input.focus();
   </script>
@@ -746,7 +819,7 @@ def health():
 
 @app.route('/usage')
 def usage_route():
-    return jsonify(_groq_usage_snapshot())
+    return jsonify(_usage_snapshot())
 
 @app.route('/chat', methods=['POST'])
 def chat_route():
@@ -773,17 +846,14 @@ def chat_route():
     lang    = detect_lang(question)
     # Escape braces in PROFILE so user-supplied docs with {} (JSON, code) don't crash .format()
     system  = SYSTEM_PROMPT.replace('{profile}', PROFILE).replace('{lang}', lang)
-    messages = [SystemMessage(content=system)]
+    messages = [{"role": "system", "content": system}]
     for h in history[-(MAX_HISTORY):]:
-        messages.append(HumanMessage(content=h['q']))
-        messages.append(AIMessage(content=h['a']))
-    messages.append(HumanMessage(content=question))
+        messages.append({"role": "user", "content": h['q']})
+        messages.append({"role": "assistant", "content": h['a']})
+    messages.append({"role": "user", "content": question})
 
     try:
-        response = llm.invoke(messages)
-        answer = response.content
-        tokens = (response.response_metadata or {}).get('token_usage', {}).get('total_tokens', 0)
-        _record_groq_usage(tokens)
+        answer = _groq_chat(messages, temperature=0.2)
         history.append({"q": question, "a": answer})
         sessions[sid] = history[-MAX_HISTORY:]
         if len(sessions) >= MAX_SESSIONS:
@@ -825,10 +895,7 @@ def suggest():
                   .replace('{question}', q)
                   .replace('{answer}',   a)
                   .replace('{lang}',     lang))
-        response = llm_suggest.invoke([HumanMessage(content=prompt)])
-        raw = response.content
-        tokens = (response.response_metadata or {}).get('token_usage', {}).get('total_tokens', 0)
-        _record_groq_usage(tokens)
+        raw = _groq_chat([{"role": "user", "content": prompt}], temperature=0.7)
         m   = re.search(r'\[.*?\]', raw, re.DOTALL)
         return jsonify({"suggestions": json.loads(m.group())[:3] if m else []})
     except Exception:
