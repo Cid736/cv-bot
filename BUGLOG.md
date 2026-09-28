@@ -1,4 +1,31 @@
 # Bug Log — cv-bot
+## 2026-09-28 — Revisión 6
+
+### [MEDIA] Rate-limit de IP falsificable si el proxy no sanea las cabeceras
+- **Archivo:** `app.py` — `/chat` y `/suggest`
+- **Descripción:** La aplicación lee `X-Real-IP` y `X-Forwarded-For` directamente. Un cliente puede elegir esos valores si el proxy inverso no los elimina y vuelve a escribir; una prueba local confirmó que `X-Real-IP` controla la clave del limitador.
+- **Estado:** Pendiente de configurar según el proxy de producción. Confiar en `remote_addr` sin más rompería el límite por cliente tras un proxy compartido; hay que definir explícitamente el proxy/cadena de confianza y validar las cabeceras en el borde.
+
+### [MEDIA] Rate-limit por IP superaba su tope configurado
+- **Archivo:** `app.py` — `_rate_ok()`
+- **Descripción:** El acceso a `defaultdict` insertaba cada IP antes de comprobar el límite de entradas, haciendo inefectiva la evicción y permitiendo crecimiento sin límite.
+- **Fix:** Comprobar/evictar una IP antigua antes de crear la nueva clave.
+
+### [MEDIA] Sesiones activas expulsaban otras conversaciones al llegar a capacidad
+- **Archivo:** `app.py` — `/chat`
+- **Descripción:** Cada respuesta eliminaba la sesión más antigua cuando el store tenía 500 entradas, incluso si la petición actual pertenecía a una sesión ya existente.
+- **Fix:** Solo evictar otra sesión al crear una nueva; mover la sesión atendida al final para conservar LRU.
+
+### [BAJA] JSON válido con tipos incorrectos provocaba 500
+- **Archivo:** `app.py` — `/chat` y `/suggest`
+- **Descripción:** Campos como `question: null` o un cuerpo JSON que no fuese objeto podían causar `AttributeError` en vez de un error de cliente.
+- **Fix:** Validar el objeto y los campos de texto; responder 400 ante entradas mal tipadas.
+
+### [MEJORA] Respuestas y sugerencias del asistente
+- **Archivo:** `app.py` — `SYSTEM_PROMPT`, `SUGGEST_PROMPT` y preguntas iniciales
+- **Descripción:** El prompt anterior incentivaba inferencias no respaldadas y la detección de idioma del navegador podía clasificar preguntas incorrectamente.
+- **Fix:** Exigir respuestas respaldadas por el perfil, etiquetar inferencias, pedir tres preguntas distintas en JSON y reutilizar la detección de idioma del servidor. Añadidas preguntas iniciales bilingües y específicas para recruiters.
+
 
 ## 2026-06-28 — Revisión 5 (Auditoría exhaustiva)
 

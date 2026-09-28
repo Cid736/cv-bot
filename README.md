@@ -13,13 +13,14 @@ Conversational web assistant that answers questions about Eric C.'s professional
 Live: [cv-bot-hxku.onrender.com](https://cv-bot-hxku.onrender.com)
 
 ## Stack
-Python · Flask · LangChain · Groq API (llama-3.3-70b, free)
+Python · Flask · LangChain · Groq API (`openai/gpt-oss-120b`)
 
 ## How it works
 1. Loads `docs/perfil.txt` at startup (~6KB profile document)
 2. On each question: sends the full profile + conversation history to the LLM
-3. Language auto-detected per message — responds in Spanish or English
-4. When Groq rate limit is hit (429): falls back to static answers from the profile, shows reset time
+3. The assistant answers from profile evidence, labels reasonable inferences, and avoids inventing experience
+4. Language is detected consistently for answers and recruiter follow-up suggestions in Spanish or English
+5. When Groq rate limit is hit (429): falls back to static answers from the profile, shows reset time
 
 No embeddings, no vector database, no GPU needed. The full profile fits comfortably in the 128K context window.
 
@@ -42,6 +43,13 @@ docker run -p 5001:5001 -e GROQ_API_KEY=gsk_... cv-bot
 Edit `docs/perfil.txt` with your own profile and restart. The LLM sees the full document on every request.
 
 ## Changelog
+**v0.5.0** — 2026-09-28
+- Model: updated runtime documentation to `openai/gpt-oss-120b` on Groq
+- AI: grounded answer and follow-up prompts in profile evidence; prevent invented facts, repeated suggestions, and unsupported logistics answers
+- Fix: use server-side language detection for follow-up suggestions; replace misleading default questions with specific bilingual recruiter prompts
+- Fix: malformed JSON payloads now return 400; correct rate-limit IP-store and session-store eviction behavior
+- Tests: add regression coverage for rate limiting, sessions, JSON validation, and suggestion language
+
 
 **v0.4.0** — 2026-06-28
 - Security: CSP nonces per-request — replaced `unsafe-inline` with `nonce-{token}` in `script-src` and `style-src`
@@ -88,6 +96,7 @@ Automated security reviews are powered by [Claude](https://claude.ai) (Anthropic
 - In-memory session store capped at 500 entries (LRU eviction)
 - Phone number removed from LLM context; system prompt explicitly forbids revealing private contact details
 - System prompt instructs the LLM to ignore prompt-injection attempts
+- Rate-limit client IP depends on the reverse proxy overwriting forwarded-IP headers; see [`BUGLOG.md`](BUGLOG.md) for this deployment caveat
 
 Found a vulnerability? Open an issue or contact directly.
 
@@ -102,13 +111,14 @@ Asistente conversacional web que responde preguntas sobre el perfil profesional 
 En producción: [cv-bot-hxku.onrender.com](https://cv-bot-hxku.onrender.com)
 
 ## Stack
-Python · Flask · LangChain · Groq API (llama-3.3-70b, gratuito)
+Python · Flask · LangChain · Groq API (`openai/gpt-oss-120b`)
 
 ## Cómo funciona
 1. Carga `docs/perfil.txt` al arrancar (~6KB de documento de perfil)
 2. En cada pregunta: envía el perfil completo + historial de conversación al LLM
-3. Idioma detectado automáticamente — responde en español o inglés
-4. Si Groq alcanza el límite de peticiones (429): responde con datos estáticos del perfil y muestra el tiempo de espera
+3. La respuesta se basa en el perfil; las inferencias se identifican y no se inventa experiencia
+4. Detecta el idioma de forma coherente para las respuestas y preguntas de seguimiento, en español o inglés
+5. Si Groq alcanza el límite de peticiones (429): responde con datos estáticos del perfil y muestra el tiempo de espera
 
 Sin embeddings, sin base de datos vectorial, sin GPU. El perfil completo cabe en la ventana de contexto de 128K.
 
