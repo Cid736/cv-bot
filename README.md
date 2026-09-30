@@ -13,10 +13,10 @@ Conversational web assistant that answers questions about Eric C.'s professional
 Live: [cv-bot-hxku.onrender.com](https://cv-bot-hxku.onrender.com)
 
 ## Stack
-Python · Flask · LangChain · Groq API (`openai/gpt-oss-120b`)
+Python · Flask · Groq API — `openai/gpt-oss-120b` (chat) · `openai/gpt-oss-20b` (suggestions)
 
 ## How it works
-1. Loads `docs/perfil.txt` at startup (~6KB profile document)
+1. Loads `docs/perfil.txt` at startup (~15KB profile, compacted at load)
 2. On each question: sends the full profile + conversation history to the LLM
 3. The assistant answers from profile evidence, labels reasonable inferences, and avoids inventing experience
 4. Language is detected consistently for answers and recruiter follow-up suggestions in Spanish or English
@@ -43,6 +43,15 @@ docker run -p 5001:5001 -e GROQ_API_KEY=gsk_... cv-bot
 Edit `docs/perfil.txt` with your own profile and restart. The LLM sees the full document on every request.
 
 ## Changelog
+**v0.6.0** — 2026-10-01
+- Profile: synced with the current CV — 2+ years of experience (was wrongly 3+), FCT internships no longer listed as jobs, role responsibilities, Active Directory/DNS/DHCP/ServiceNow, Cisco *Introduction to Cybersecurity* credential
+- AI: rewritten system prompt — evidence-first answers, job-description fit analysis (requirement by requirement), follow-up resolution, clear split between jobs, internships and projects
+- AI: adaptive reasoning — `reasoning_effort` low by default, medium for role-fit / job-description questions
+- Tokens: stable prompt prefix (profile before the per-turn language) for Groq prompt caching; profile compacted at load; only the last 4 exchanges are resent, older answers trimmed; `max_completion_tokens` caps
+- Tokens: follow-up suggestions moved to `openai/gpt-oss-20b` (separate rate-limit bucket); in-memory cache for first-turn answers and suggestions
+- UI: app version and AI model shown on the page; `/health` returns version and model
+- Question length raised to 1 500 chars so recruiters can paste a job description
+
 **v0.5.0** — 2026-09-28
 - Model: updated runtime documentation to `openai/gpt-oss-120b` on Groq
 - AI: grounded answer and follow-up prompts in profile evidence; prevent invented facts, repeated suggestions, and unsupported logistics answers
@@ -86,7 +95,7 @@ Automated security reviews are powered by [Claude](https://claude.ai) (Anthropic
 
 **Security controls in place:**
 - Server-side rate limiting per IP — 20 req/min on `/chat`, 40 req/min on `/suggest` (independent sliding-window stores, capped at 10 000 IP entries to prevent memory exhaustion)
-- Question length capped at 500 chars; `/suggest` answer input capped at 1 000 chars
+- Question length capped at 1 500 chars; `/suggest` answer input capped at 1 000 chars
 - `session_id` validated against `[0-9a-fA-F]{1,48}` — arbitrary values replaced with a server-generated token
 - CSP with per-request cryptographic nonces — no `unsafe-inline` anywhere
 - `X-Content-Type-Options`, `X-Frame-Options: DENY`, `Referrer-Policy: no-referrer`, `HSTS`
@@ -111,10 +120,10 @@ Asistente conversacional web que responde preguntas sobre el perfil profesional 
 En producción: [cv-bot-hxku.onrender.com](https://cv-bot-hxku.onrender.com)
 
 ## Stack
-Python · Flask · LangChain · Groq API (`openai/gpt-oss-120b`)
+Python · Flask · Groq API — `openai/gpt-oss-120b` (chat) · `openai/gpt-oss-20b` (suggestions)
 
 ## Cómo funciona
-1. Carga `docs/perfil.txt` al arrancar (~6KB de documento de perfil)
+1. Carga `docs/perfil.txt` al arrancar (~15KB de perfil, compactado al cargar)
 2. En cada pregunta: envía el perfil completo + historial de conversación al LLM
 3. La respuesta se basa en el perfil; las inferencias se identifican y no se inventa experiencia
 4. Detecta el idioma de forma coherente para las respuestas y preguntas de seguimiento, en español o inglés
@@ -148,7 +157,7 @@ Las revisiones de seguridad automatizadas utilizan [Claude](https://claude.ai) (
 
 **Controles de seguridad activos:**
 - Rate limiting por IP en servidor — 20 req/min en `/chat`, 40 req/min en `/suggest` (stores independientes con ventana deslizante, capeados en 10 000 IPs para prevenir agotamiento de memoria)
-- Longitud de pregunta limitada a 500 chars; respuesta en `/suggest` limitada a 1 000 chars
+- Longitud de pregunta limitada a 1 500 chars; respuesta en `/suggest` limitada a 1 000 chars
 - `session_id` validado contra `[0-9a-fA-F]{1,48}` — valores arbitrarios se reemplazan con token generado por servidor
 - CSP con nonces criptográficos por request — sin `unsafe-inline` en ningún punto
 - `X-Content-Type-Options`, `X-Frame-Options: DENY`, `Referrer-Policy: no-referrer`, HSTS

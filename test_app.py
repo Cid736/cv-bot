@@ -56,7 +56,7 @@ class AppBehaviorTests(unittest.TestCase):
     def test_suggestions_use_the_same_language_detection_as_chat(self):
         captured = {}
 
-        def fake_groq_chat(messages, temperature):
+        def fake_groq_chat(messages, temperature, **kwargs):
             captured["prompt"] = messages[0]["content"]
             captured["temperature"] = temperature
             return '["One?", "Two?", "Three?"]'

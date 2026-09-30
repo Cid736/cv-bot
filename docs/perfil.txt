@@ -9,20 +9,25 @@ Permiso de conducción: B
 
 EXPERIENCIA Y TRAYECTORIA
 =========================
-Eric tiene más de 3 años de experiencia en el sector tecnológico,
-con un perfil orientado a sistemas, redes e infraestructura,
-complementado con experiencia real en soporte IT y proyectos de
-Cloud, DevOps e IA aplicada.
+Título profesional: Administrador de Sistemas y Redes.
+
+Eric tiene más de dos años de experiencia en soporte e infraestructura IT
+corporativa (NO tres: si preguntan por años de experiencia, la respuesta es
+"más de dos años"). Su perfil está orientado a sistemas, redes e
+infraestructura, y actualmente ocupa un puesto de configuración y evaluación
+de sistemas de IA en producción.
 
 Actualmente trabaja como AI System Configurator en Infinity Neural (Badalona),
-donde configura y despliega sistemas basados en IA. Anteriormente trabajó como
-IT Support Technician en AMC Networks (Barcelona), Factorial (Barcelona) y en el
-Instituto Escuela de Badalona, acumulando experiencia sólida en entornos
-corporativos reales.
+desde octubre de 2025. Antes trabajó como IT Support Technician en AMC Networks
+(Barcelona) de marzo a octubre de 2025. Además, durante los ciclos formativos
+SMR y ASIR (2021–2024) hizo prácticas FCT de soporte IT en Factorial
+(Barcelona) y en el Instituto Escuela de Badalona; son prácticas curriculares,
+no contratos laborales.
 
 Su núcleo profesional está en administración de sistemas y redes:
-Linux/Ubuntu, Windows Server, TCP/IP, VPN corporativas, gestión de
-endpoints con MS Intune. Sobre esa base ha construido competencias en
+Linux/Ubuntu, Windows Server, Active Directory, TCP/IP, DNS, DHCP, VPN
+corporativas, gestión de endpoints con Microsoft Intune. Tiene formación
+continua en ciberseguridad. Sobre esa base ha construido competencias en
 automatización, contenedores, cloud y desarrollo, lo que le permite
 entender la infraestructura de extremo a extremo — desde el cable hasta
 el despliegue en producción.
@@ -38,22 +43,36 @@ EXPERIENCIA PROFESIONAL
 1. AI System Configurator
    Empresa: Infinity Neural · Badalona
    Período: Oct 2025 – Actualidad (posición actual)
-   Rol: Configuración y despliegue de sistemas basados en IA.
+   Funciones:
+   - Evalúa la calidad de respuesta de sistemas de IA en producción mediante
+     revisión estructurada de casos, identificando patrones de error
+     recurrentes y traduciéndolos en ajustes de prompt y configuración.
+   - Analiza los datos de negocio de los clientes y elabora los informes
+     periódicos que sirven de base para el seguimiento del servicio.
+   - Configura y despliega los sistemas de IA de cliente, iterando sobre
+     prompts e integraciones según los resultados de la evaluación.
 
 2. IT Support Technician
    Empresa: AMC Networks · Barcelona
    Período: Mar 2025 – Oct 2025
-   Rol: Soporte IT en entorno corporativo de medios de comunicación.
+   Funciones:
+   - Resolvía una media de diez incidencias diarias de hardware, software y
+     conectividad, dentro del equipo de cuatro técnicos responsable de todo el
+     soporte IT de AMC Networks España, con cobertura de Barcelona y Madrid.
+   - Gestionaba el ciclo completo de altas y bajas de empleados: provisión de
+     equipos, cuentas de Google Workspace y políticas de dispositivo en
+     Microsoft Intune.
+   - Administraba el parque de endpoints corporativos con Microsoft Intune,
+     aplicando políticas de cumplimiento y despliegue remoto de software.
+   - Diagnosticaba incidencias de red y acceso remoto en TCP/IP, VPN y Wi-Fi,
+     gestionando los tickets en ServiceNow según los SLA del servicio.
 
-3. IT Support Technician
-   Empresa: Factorial · Barcelona
-   Período: Oct 2023 – Feb 2024
-   Rol: Soporte técnico en startup tecnológica de software HR.
-
-4. IT Support Technician
-   Empresa: Instituto Escuela de Badalona · Badalona
-   Período: Sep 2021 – Mar 2022
-   Rol: Soporte microinformático en entorno educativo.
+3. Prácticas FCT en soporte IT (prácticas curriculares de SMR y ASIR)
+   Empresas: Factorial · Barcelona (startup tecnológica) e
+             Instituto Escuela de Badalona · Badalona (centro educativo)
+   Período: 2021 – 2024
+   Funciones: soporte a usuarios, mantenimiento del parque informático y
+   resolución de incidencias de conectividad.
 
 HABILIDADES TÉCNICAS
 ====================
@@ -62,6 +81,7 @@ Sistemas & Redes (núcleo):
 - Linux / Ubuntu — administración de servidores, servicios, permisos, cron
 - Windows Server — entornos corporativos, Active Directory, GPO
 - TCP/IP — protocolos de red, subredes, enrutamiento
+- DNS y DHCP — servicios de red
 - VPN — configuración y gestión de redes privadas
 - Pi-hole — servidor DNS con bloqueo de publicidad a nivel de red
 - Tailscale — red mesh VPN sobre WireGuard para acceso remoto seguro
@@ -95,7 +115,15 @@ Programación & Scripting:
 - SQL / PostgreSQL / SQLite — bases de datos relacionales
 - NoSQL — bases de datos no relacionales
 
+Datos:
+- Excel y Google Sheets — análisis de datos de negocio e informes periódicos
+
+IA y evaluación de modelos:
+- Evaluación de respuesta de LLMs en producción — revisión estructurada de
+  casos, detección de patrones de error, ajuste de prompts y configuración
+
 Herramientas:
+- ServiceNow — gestión de tickets según SLA (AMC Networks)
 - Git / GitHub — control de versiones, colaboración
 - Jira — gestión de proyectos y tickets
 - Google Workspace — suite ofimática colaborativa
@@ -185,11 +213,14 @@ FORMACIÓN ACADÉMICA
    Institución: INS La Pineda
    Período: 2020 – 2022
 
-CERTIFICACIONES
-===============
-- Manage Kubernetes in Google Cloud — Google Cloud Skills Boost · 2025
-- Implement Load Balancing on Compute Engine — Google Cloud Skills Boost · 2025
-- Prompt Design in Vertex AI — Google Cloud Skills Boost · 2025
+4. Ciberseguridad — formación continua (en curso)
+
+CERTIFICACIONES / CREDENCIALES
+==============================
+- Introduction to Cybersecurity — Cisco Networking Academy · 2026
+- Manage Kubernetes in Google Cloud — Google Cloud Skill Badge · 2025
+- Implement Load Balancing on Compute Engine — Google Cloud Skill Badge · 2025
+- Prompt Design in Vertex AI — Google Cloud Skill Badge · 2025
 
 IDIOMAS
 =======
@@ -201,10 +232,11 @@ PREGUNTAS FRECUENTES DE ENTREVISTA
 ===================================
 
 P: Cuéntame sobre ti / Tell me about yourself
-R: Soy un técnico de sistemas con más de 3 años de experiencia, con un perfil
-que cubre desde la administración de sistemas Linux y Windows Server hasta
-redes, contenedores y cloud. Actualmente trabajo como AI System Configurator
-en Infinity Neural. Mi base es la infraestructura: sé montar, mantener y
+R: Soy administrador de sistemas y redes con más de dos años de experiencia en
+soporte e infraestructura IT corporativa, con un perfil que cubre desde la
+administración de sistemas Linux y Windows Server hasta redes, contenedores y
+cloud. Actualmente trabajo como AI System Configurator en Infinity Neural,
+configurando y evaluando sistemas de IA en producción. Mi base es la infraestructura: sé montar, mantener y
 asegurar sistemas en entornos corporativos reales. Sobre esa base he añadido
 conocimientos en DevOps, automatización con Python y Bash, y IA aplicada.
 Estoy cursando el Grado en Ingeniería Informática en la UOC.
@@ -240,7 +272,7 @@ en organizaciones donde la infraestructura sea crítica.
 
 P: Por qué deberíamos contratarte / Why should we hire you?
 R: Porque tengo una base sólida en sistemas y redes, con exposición real a
-entornos corporativos (Intune, Windows Server, VPN, AMC Networks, Factorial),
+entornos corporativos (Intune, ServiceNow, VPN, Google Workspace en AMC Networks),
 y encima de eso sé automatizar con Ansible, contenerizar y desplegar en cloud.
 No soy solo un administrador clásico: puedo montar un servidor Linux,
 configurar la red, automatizar con Ansible, dockerizarlo, subirlo a GCP y
