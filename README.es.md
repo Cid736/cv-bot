@@ -35,6 +35,10 @@ docker run -p 5001:5001 -e GROQ_API_KEY=gsk_... cv-bot
 Edita `docs/perfil.txt` con tu propio perfil y reinicia. El LLM recibe el documento completo en cada petición.
 
 ## Historial de versiones
+**v0.6.1** — 2026-10-01
+- IA: respuestas más completas — cada respuesta incluye al menos un ejemplo concreto (puesto, proyecto, herramientas); la experiencia se explica como trayectoria prácticas → AMC Networks → Infinity Neural
+- IA: más fiel al perfil — cada función se atribuye solo al puesto donde figura, sin cálculos de fechas ni niveles de dominio exagerados
+
 **v0.6.0** — 2026-10-01
 - Perfil: sincronizado con el CV actual — más de 2 años de experiencia (antes decía 3 por error), prácticas FCT separadas de los empleos, funciones de cada puesto, Active Directory/DNS/DHCP/ServiceNow, credencial Cisco *Introduction to Cybersecurity*
 - IA: prompt de sistema reescrito — respuestas basadas en evidencia, análisis de encaje con ofertas requisito a requisito, resolución de preguntas de seguimiento y separación clara entre empleos, prácticas y proyectos

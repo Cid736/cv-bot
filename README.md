@@ -43,6 +43,10 @@ docker run -p 5001:5001 -e GROQ_API_KEY=gsk_... cv-bot
 Edit `docs/perfil.txt` with your own profile and restart. The LLM sees the full document on every request.
 
 ## Changelog
+**v0.6.1** — 2026-10-01
+- AI: fuller answers — every reply is backed by at least one concrete example (role, project, tools); experience answers walk through internships → AMC Networks → Infinity Neural
+- AI: stricter grounding — responsibilities only attributed to the role that lists them, no date arithmetic, no inflated skill levels
+
 **v0.6.0** — 2026-10-01
 - Profile: synced with the current CV — 2+ years of experience (was wrongly 3+), FCT internships no longer listed as jobs, role responsibilities, Active Directory/DNS/DHCP/ServiceNow, Cisco *Introduction to Cybersecurity* credential
 - AI: rewritten system prompt — evidence-first answers, job-description fit analysis (requirement by requirement), follow-up resolution, clear split between jobs, internships and projects
