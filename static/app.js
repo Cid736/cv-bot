@@ -62,7 +62,13 @@ function renderInto(el, text) {
   if (canRender) { el.innerHTML = DOMPurify.sanitize(marked.parse(text)); fitBadges(el); }
   else el.textContent = text;
 }
-function scrollDown() { chat.scrollTop = chat.scrollHeight; }
+const narrowLayout = window.matchMedia('(max-width: 980px)');
+function scrollDown() {
+  if (!narrowLayout.matches) { chat.scrollTop = chat.scrollHeight; return; }
+  // Narrow screens scroll the page: keep the newest message just above the pinned composer.
+  const last = chat.lastElementChild;
+  if (last) last.scrollIntoView({ block: 'end' });
+}
 
 function addUserMsg(text, mode) {
   const d = document.createElement('div');
