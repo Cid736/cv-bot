@@ -60,6 +60,9 @@ docker run -p 5001:5001 -e GROQ_API_KEY=gsk_... cv-bot
 Edit `docs/perfil.txt` with your own profile and restart. The LLM sees the full document on every request.
 
 ## Changelog
+**v0.14.2** — 2026-11-21
+- CV update: new Anthropic Claude Academy course "Tool use with the Messages API" (profile, page and downloadable PDF)
+
 **v0.14.1** — 2026-11-21
 - Mobile: the keyboard no longer pops up after every answer (no auto-focus on touch devices; sending closes the keyboard so the answer is visible)
 

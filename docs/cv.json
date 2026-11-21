@@ -167,6 +167,7 @@
       "group": "Anthropic · Claude Academy · 2026",
       "items": [
         "Claude Code in action",
+        "Tool use with the Messages API",
         "Claude Platform 101",
         "Deploying Claude Enterprise"
       ]
