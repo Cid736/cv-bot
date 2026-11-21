@@ -8,13 +8,30 @@ Live: [cv-bot-hxku.onrender.com](https://cv-bot-hxku.onrender.com)
 Python · Flask · Groq API — `openai/gpt-oss-120b` (chat) · `openai/gpt-oss-20b` (sugerencias)
 
 ## Cómo funciona
-1. Carga `docs/perfil.txt` al arrancar (~15KB de perfil, compactado al cargar)
+1. Carga `docs/perfil.txt` al arrancar (~5KB, ≈1,4k tokens, compactado al cargar)
 2. En cada pregunta: envía el perfil completo + historial de conversación al LLM
 3. Basa las respuestas en el perfil, identifica las inferencias y evita inventar experiencia
-4. Detecta el idioma de forma coherente para respuestas y sugerencias en español o inglés
+4. Detecta el idioma de cada pregunta (7 idiomas) y lo usa en la respuesta y en las sugerencias
 5. Si Groq devuelve 429 (límite de uso): muestra respuestas estáticas del perfil con el tiempo de reset exacto
 
 Sin embeddings, sin base de datos vectorial, sin GPU. El perfil cabe en la ventana de contexto de 128K tokens.
+
+## Funciones
+- **Respuestas en streaming** — el texto aparece palabra a palabra (Server-Sent Events)
+- **Análisis de ofertas** — pega una oferta (hasta 6 000 caracteres) y obtén una tabla requisito por requisito (✅ directa · 🟡 relacionada · ❌ no figura), puntos fuertes, carencias y veredicto
+- **Contacto y CV** — LinkedIn, email y CV descargable (sin teléfono) siempre visibles en la cabecera
+- **Exportar** — descarga la conversación en Markdown o imprímela / guárdala como PDF
+- **Valoraciones** — 👍/👎 en cada respuesta
+- **Voz** — pregunta con el micrófono y escucha la respuesta (Web Speech API del navegador, sin coste de servidor); si preguntas por voz, responde por voz
+- **Cualquier idioma** — español, inglés, catalán, francés, portugués, italiano, alemán
+- **Estadísticas privadas** en `/stats?token=…` — conversaciones por día, idiomas, preguntas frecuentes, preguntas que el perfil no cubre, respuestas con 👎 y ofertas analizadas. Anónimas: no se guardan IPs
+
+## Pruebas de calidad (modelo real)
+```bash
+GROQ_API_KEY=gsk_... python evals/run_evals.py        # 19 casos, código de salida 1 si falla alguno
+python evals/run_evals.py --only phone,offtopic-code -v
+```
+Comprueba idioma de respuesta, datos clave, que no dé el teléfono ni invente años o cifras de salario, que rechace temas ajenos y la tabla de ofertas.
 
 ## Instalación
 ```bash
@@ -35,6 +52,51 @@ docker run -p 5001:5001 -e GROQ_API_KEY=gsk_... cv-bot
 Edita `docs/perfil.txt` con tu propio perfil y reinicia. El LLM recibe el documento completo en cada petición.
 
 ## Historial de versiones
+**v0.13.0** — 2026-11-21
+- Respuestas más rápidas y más por minuto: el contexto de cada pregunta baja de ≈4 600 a ≈2 000 tokens (`perfil.txt` compacto con los mismos datos del CV y reglas más cortas), menos historial y límites de salida ajustados
+- Si `gpt-oss-120b` agota su cuota o falla, responde `gpt-oss-20b` (cuota propia y más rápido) en lugar de textos fijos; sin reintentos del SDK para no esperar antes de cambiar
+- Razonamiento medio solo para preguntas de encaje; las primeras respuestas también se guardan en SQLite (sobreviven a reinicios del proceso y se invalidan si cambia el perfil, el prompt o el modelo)
+- marked y DOMPurify servidos desde la propia web y diferidos: sin peticiones a terceros ni bloqueo del pintado; caché de una semana para los estáticos
+
+**v0.12.0** — 2026-11-21
+- El asistente vuelve a ser lo principal: ocupa la columna grande con «¿Qué quieres saber sobre Eric?», preguntas frecuentes de reclutadores y la comprobación de ofertas; el perfil pasa a un lateral compacto (foto, datos clave, trayectoria y competencias clave) con «Ver perfil completo» en una ventana; en móvil el asistente aparece primero
+- Arreglos de la revisión completa: ofertas durante una caída reciben un aviso de «análisis no disponible» en vez de una respuesta que no viene al caso; las preguntas de seguimiento ven la oferta completa; respuestas de respaldo correctas para «por qué contratarle» y «lenguajes de programación»; nunca se guardan en caché respuestas cortadas; una respuesta vacía usa el respaldo en vez de dar 500; condición de carrera en `/suggest`; og:image con https; token no ASCII en `/stats`; texto largo al cambiar de pestaña
+
+**v0.11.0** — 2026-11-21
+- Más profesional: fuente Inter integrada (se ve igual en todos los dispositivos), la tabla de encaje usa etiquetas «Cumple / Parcial / No consta» en lugar de emojis, tarjeta de contacto al final («¿Encaja con tu vacante?»), vista previa al compartir el enlace (imagen Open Graph) y favicon, etiqueta Alpha discreta
+- Modo oscuro: sigue la preferencia del sistema del visitante, con un botón en la cabecera que se recuerda
+- Respuestas de respaldo reescritas en tercera persona, con el nombre completo y solo datos del CV
+
+**v0.10.0** — 2026-11-21
+- Rediseño pensado para reclutadores/RRHH: estilo claro y sobrio; la página empieza por el perfil (foto, puesto, ubicación, resumen, datos clave, experiencia, competencias, formación, idiomas y certificaciones) generado desde `docs/cv.json`
+- El asistente pasa a un panel lateral con dos pestañas: «Preguntar» y «Comprobar encaje con una oferta»
+- Fuera elementos con «pinta de IA»: nombre del modelo, barras de tokens, emojis y degradados morados; la versión Alpha pasa al pie de página
+- Nombre completo en la cabecera; en móvil, botón flotante «Preguntar sobre el perfil»
+
+**v0.9.0** — 2026-11-21
+- Diseño en Figma: [CV Bot — Rediseño web](https://www.figma.com/design/GZdaoWyz3EofMczDP5ywrO) — tokens (colores, radios, espaciado), estilos de texto, 18 iconos y componentes (Pill, IconButton, Starter, Avatar, mensajes, Composer) más pantallas de bienvenida, análisis de oferta y móvil
+- La web sigue el diseño: iconos SVG nítidos en lugar de emojis (`icons.py` compartido), cabecera móvil compacta con los iconos de contacto en la misma fila, iconos en las preguntas de ejemplo
+- Nuevo: botón para copiar cada respuesta
+
+**v0.8.0** — 2026-11-21
+- Rediseño de la web: pantalla de bienvenida con resumen del perfil y preguntas de ejemplo (se acabó la pantalla vacía en móvil), barra de escritura unificada, uso de la IA más compacto, avatar en las respuestas, botón de CV destacado, mejor diseño móvil y etiquetas de accesibilidad
+- Fix: un repintado tardío al terminar una respuesta en streaming podía borrar los botones 👍/👎 y dejar el cursor parpadeando
+- Fix: las estadísticas nunca rompen el chat si no se puede escribir la base de datos (p. ej. disco de solo lectura); Docker crea `data/` para el usuario sin root
+
+**v0.7.0** — 2026-11-21
+- Nuevo: respuestas en streaming, análisis de ofertas con tabla de encaje, botones de contacto y CV, exportar conversación (Markdown / PDF), valoraciones 👍/👎, preguntas por voz y respuestas habladas, panel privado de estadísticas anónimas, pruebas de calidad con el modelo real (`evals/`)
+- El front-end sale de `app.py` a `templates/` y `static/`
+
+**v0.6.2** — 2026-11-21
+- Idiomas: nuevo detector (español, inglés, catalán, francés, portugués, italiano, alemán) que ignora nombres del CV como "Málaga" o "Instituto Escuela de Badalona"; los seguimientos cortos ("ok", "Docker?") mantienen el idioma de la conversación; el modelo debe traducir el perfil (escrito en español) en vez de mezclar idiomas; las sugerencias usan el idioma de la respuesta. Con 30 preguntas nuevas: 2 fallos frente a 19 del detector anterior
+- Perfil: sincronizado con el nuevo CV — título *Técnico de Sistemas y Soporte IT*, dos años de experiencia, fechas exactas de las FCT, certificaciones de IBM, Deloitte y Anthropic Claude Academy; eliminadas competencias que no figuran en el CV (Jira, Slack, NoSQL)
+- IA: alcance más estricto — solo responde sobre Eric y su CV; preguntas generales, tutoriales, ayuda con código u otros temas reciben una redirección de una línea
+- Fix: las respuestas de respaldo (límite de uso) detectaban palabras clave dentro de otras palabras ("experiencia" → respuesta de IA, "network" → proyectos); ahora se comparan palabras completas, sin tener en cuenta tildes
+- Fiabilidad: caídas, timeouts y errores 5xx de Groq muestran las respuestas estáticas en lugar de un error 500; timeout de 30 s por petición
+- Despliegue: servido con gunicorn (1 worker, 8 hilos) en lugar del servidor de desarrollo de Flask; estado compartido protegido con un lock; Docker se ejecuta sin root y el puerto coincide con el README
+- Seguridad: una sola función de IP de cliente para `/chat` y `/suggest`; `TRUSTED_PROXIES` opcional hace que el rate limit no se pueda falsear tras un proxy; librerías del CDN fijadas a versiones exactas
+- Web: botón "Nueva" para reiniciar la conversación; los enlaces de las respuestas se abren en otra pestaña; las sugerencias tardías de una pregunta anterior ya no sustituyen a las actuales; el sondeo de uso se pausa en pestañas en segundo plano; el chat sigue funcionando (texto plano) si el CDN no responde
+
 **v0.6.1** — 2026-10-01
 - IA: respuestas más completas — cada respuesta incluye al menos un ejemplo concreto (puesto, proyecto, herramientas); la experiencia se explica como trayectoria prácticas → AMC Networks → Infinity Neural
 - IA: más fiel al perfil — cada función se atribuye solo al puesto donde figura, sin cálculos de fechas ni niveles de dominio exagerados

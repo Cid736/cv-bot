@@ -1,0 +1,194 @@
+{
+  "name": "Eric Cid López",
+  "title": "Técnico de Sistemas y Soporte IT",
+  "location": "Badalona, Barcelona",
+  "summary": "Técnico de sistemas y soporte IT con dos años de experiencia en soporte e infraestructura IT corporativa, actualmente configurando y evaluando sistemas de IA en producción. Base en Linux, Windows Server, Active Directory y redes, ampliada con proyectos propios de automatización con Docker, Ansible y Python, y con formación continua en ciberseguridad.",
+  "facts": [
+    {
+      "label": "Experiencia",
+      "value": "2 años en soporte e infraestructura IT"
+    },
+    {
+      "label": "Puesto actual",
+      "value": "AI System Configurator · Infinity Neural"
+    },
+    {
+      "label": "Idiomas",
+      "value": "Español y catalán nativos · Inglés B1–B2"
+    },
+    {
+      "label": "Otros",
+      "value": "Permiso de conducir B"
+    }
+  ],
+  "experience": [
+    {
+      "role": "AI System Configurator",
+      "company": "Infinity Neural",
+      "place": "Badalona",
+      "dates": "oct. 2025 — actualidad",
+      "current": true,
+      "bullets": [
+        "Evalúo la calidad de respuesta de sistemas de IA en producción mediante revisión estructurada de casos, identificando patrones de error recurrentes y traduciéndolos en ajustes de prompt y configuración.",
+        "Analizo los datos de negocio de los clientes y elaboro los informes periódicos que sirven de base para el seguimiento del servicio.",
+        "Configuro y despliego los sistemas de IA de cliente, iterando sobre prompts e integraciones según los resultados de la evaluación."
+      ]
+    },
+    {
+      "role": "IT Support Technician",
+      "company": "AMC Networks",
+      "place": "Barcelona",
+      "dates": "mar. — oct. 2025",
+      "bullets": [
+        "Resolví una media de diez incidencias diarias de hardware, software y conectividad dentro del equipo de cuatro técnicos responsable de todo el soporte IT de AMC Networks España, con cobertura de Barcelona y Madrid.",
+        "Gestioné el ciclo completo de altas y bajas de empleados: provisión de equipos, cuentas de Google Workspace y políticas de dispositivo en Microsoft Intune.",
+        "Administré el parque de endpoints corporativos con Microsoft Intune, aplicando políticas de cumplimiento y despliegue remoto de software.",
+        "Diagnostiqué incidencias de red y acceso remoto en TCP/IP, VPN y Wi-Fi, gestionando los tickets en ServiceNow según los SLA del servicio."
+      ]
+    },
+    {
+      "role": "Técnico de soporte IT (prácticas FCT)",
+      "company": "Factorial",
+      "place": "Barcelona",
+      "dates": "oct. 2023 — feb. 2024",
+      "internship": true,
+      "bullets": [
+        "Prácticas del CFGS ASIR en startup tecnológica: soporte a usuarios y resolución de incidencias de conectividad."
+      ]
+    },
+    {
+      "role": "Técnico de soporte IT (prácticas FCT)",
+      "company": "Instituto Escuela de Badalona",
+      "place": "Badalona",
+      "dates": "sept. 2021 — mar. 2022",
+      "internship": true,
+      "bullets": [
+        "Prácticas del CFGM SMR en centro educativo: soporte a usuarios y mantenimiento de ordenadores y periféricos."
+      ]
+    }
+  ],
+  "skills": [
+    {
+      "group": "Sistemas y redes",
+      "items": [
+        "Linux y Ubuntu",
+        "Windows Server",
+        "Active Directory",
+        "TCP/IP",
+        "DNS",
+        "DHCP",
+        "VPN",
+        "Microsoft Intune"
+      ]
+    },
+    {
+      "group": "Cloud y contenedores",
+      "items": [
+        "Google Cloud",
+        "Kubernetes",
+        "Docker",
+        "Ansible",
+        "CI/CD",
+        "GitHub Actions"
+      ]
+    },
+    {
+      "group": "IA y evaluación de modelos",
+      "items": [
+        "LLMs",
+        "Evaluación de respuesta",
+        "Prompt engineering",
+        "RAG",
+        "LangChain"
+      ]
+    },
+    {
+      "group": "Datos y programación",
+      "items": [
+        "Excel y Google Sheets",
+        "SQL",
+        "PostgreSQL",
+        "Python",
+        "Node.js",
+        "Bash",
+        "PowerShell"
+      ]
+    },
+    {
+      "group": "Herramientas",
+      "items": [
+        "ServiceNow",
+        "Git",
+        "Google Workspace",
+        "VS Code"
+      ]
+    }
+  ],
+  "education": [
+    {
+      "title": "Grado en Ingeniería Informática",
+      "school": "UOC",
+      "dates": "desde 2024 · en curso"
+    },
+    {
+      "title": "CFGS — Administración de Sistemas Informáticos en Red (ASIR)",
+      "school": "INS La Pineda",
+      "dates": "2022 — 2024"
+    },
+    {
+      "title": "CFGM — Sistemas Microinformáticos y Redes (SMR)",
+      "school": "INS La Pineda",
+      "dates": "2020 — 2022"
+    },
+    {
+      "title": "Ciberseguridad",
+      "school": "Formación continua",
+      "dates": "en curso"
+    }
+  ],
+  "certifications": [
+    {
+      "group": "Ciberseguridad · 2026",
+      "items": [
+        "Introduction to Cybersecurity — Cisco Networking Academy",
+        "Cybersecurity Fundamentals — IBM",
+        "Cyber Job Simulation — Deloitte"
+      ]
+    },
+    {
+      "group": "Google Cloud Skill Badges · 2025",
+      "items": [
+        "Manage Kubernetes in Google Cloud",
+        "Load Balancing on Compute Engine",
+        "Prompt Design in Vertex AI"
+      ]
+    },
+    {
+      "group": "Anthropic · Claude Academy · 2026",
+      "items": [
+        "Claude Code in action",
+        "Claude Platform 101",
+        "Deploying Claude Enterprise"
+      ]
+    }
+  ],
+  "languages": [
+    {
+      "name": "Español",
+      "level": "Nativo"
+    },
+    {
+      "name": "Catalán",
+      "level": "Nativo"
+    },
+    {
+      "name": "Inglés",
+      "level": "B1–B2 técnico"
+    }
+  ],
+  "project": {
+    "name": "cv-bot",
+    "text": "Este mismo asistente: responde preguntas sobre su perfil en varios idiomas y compara el perfil con ofertas de empleo.",
+    "stack": "Python · Flask · Groq LLM · Docker"
+  }
+}

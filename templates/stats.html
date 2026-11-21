@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex">
+  <title>CV Bot Stats</title>
+  <style nonce="{{ nonce }}">
+    :root { --bg:#0d0d0d; --surface:#141420; --border:#252535; --accent:#7c5cbf; --text:#e2e2e2; --muted:#888; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); padding: 24px 16px; }
+    main { max-width: 980px; margin: 0 auto; display: grid; gap: 18px; }
+    h1 { font-size: 1.2rem; } h2 { font-size: 0.95rem; margin-bottom: 10px; color: #c9a8ff; }
+    .sub { color: var(--muted); font-size: 0.8rem; margin-top: 4px; }
+    .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
+    .tile, section { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 14px; }
+    .tile b { display: block; font-size: 1.6rem; font-variant-numeric: tabular-nums; }
+    .tile span { color: var(--muted); font-size: 0.75rem; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+    th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--border); vertical-align: top; }
+    th { color: var(--muted); font-weight: 500; }
+    td.n { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+    progress { width: 100%; height: 8px; accent-color: var(--accent); }
+    details summary { cursor: pointer; }
+    details div { white-space: pre-wrap; color: #bbb; margin-top: 6px; font-size: 0.78rem; }
+    .empty { color: var(--muted); font-size: 0.8rem; }
+    .two { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 18px; }
+  </style>
+</head>
+<body>
+<main>
+  <div>
+    <h1>CV Bot &middot; estad&iacute;sticas</h1>
+    <p class="sub">An&oacute;nimas (sin IPs) &middot; &uacute;ltimos {{ s.days }} d&iacute;as salvo indicaci&oacute;n &middot; v{{ version }}</p>
+  </div>
+
+  {% if s.error %}<section>{{ s.error }}</section>{% endif %}
+  <div class="tiles">
+    <div class="tile"><b>{{ s.recent_conversations }}</b><span>conversaciones ({{ s.days }} d)</span></div>
+    <div class="tile"><b>{{ s.recent_questions }}</b><span>preguntas ({{ s.days }} d)</span></div>
+    <div class="tile"><b>{{ s.total_conversations }}</b><span>conversaciones en total</span></div>
+    <div class="tile"><b>{{ s.feedback.up or 0 }} / {{ s.feedback.down or 0 }}</b><span>&#128077; / &#128078; ({{ s.days }} d)</span></div>
+  </div>
+
+  <section>
+    <h2>Actividad por d&iacute;a</h2>
+    {% set maxq = (s.per_day | map(attribute='questions') | max) if s.per_day else 1 %}
+    {% if s.per_day %}
+    <table>
+      <tr><th>D&iacute;a</th><th>Conversaciones</th><th>Preguntas</th><th></th></tr>
+      {% for d in s.per_day %}
+      <tr><td>{{ d.day }}</td><td class="n">{{ d.conversations }}</td><td class="n">{{ d.questions }}</td>
+          <td><progress value="{{ d.questions }}" max="{{ maxq }}"></progress></td></tr>
+      {% endfor %}
+    </table>
+    {% else %}<p class="empty">Sin datos todav&iacute;a.</p>{% endif %}
+  </section>
+
+  <div class="two">
+    <section>
+      <h2>Idiomas</h2>
+      {% if s.languages %}<table>{% for l in s.languages %}<tr><td>{{ l.lang }}</td><td class="n">{{ l.n }}</td></tr>{% endfor %}</table>
+      {% else %}<p class="empty">Sin datos.</p>{% endif %}
+    </section>
+    <section>
+      <h2>Tipo</h2>
+      {% if s.modes %}<table>{% for m in s.modes %}<tr><td>{{ 'Oferta de empleo' if m.mode == 'job' else 'Chat' }}</td><td class="n">{{ m.n }}</td></tr>{% endfor %}</table>
+      {% else %}<p class="empty">Sin datos.</p>{% endif %}
+    </section>
+  </div>
+
+  <section>
+    <h2>Preguntas m&aacute;s frecuentes</h2>
+    {% if s.top_questions %}<table>{% for t in s.top_questions %}<tr><td>{{ t.question }}</td><td class="n">{{ t.n }}</td></tr>{% endfor %}</table>
+    {% else %}<p class="empty">Sin datos.</p>{% endif %}
+  </section>
+
+  {% macro qa_list(rows, empty) %}
+    {% if rows %}<table>{% for r in rows %}<tr><td class="n">{{ r.ts }}</td><td>
+      <details><summary>{{ r.question[:160] }}{% if r.question|length > 160 %}&hellip;{% endif %}</summary><div>{{ r.answer }}</div></details>
+    </td></tr>{% endfor %}</table>
+    {% else %}<p class="empty">{{ empty }}</p>{% endif %}
+  {% endmacro %}
+
+  <section>
+    <h2>Preguntas que el perfil no cubre (todas las fechas)</h2>
+    <p class="sub">Respuestas donde el asistente dijo que algo no figura en el perfil: pistas de qu&eacute; a&ntilde;adir a perfil.txt.</p><br>
+    {{ qa_list(s.not_covered, 'Ninguna por ahora.') }}
+  </section>
+
+  <section>
+    <h2>Respuestas valoradas con &#128078; (todas las fechas)</h2>
+    {{ qa_list(s.disliked, 'Ninguna por ahora.') }}
+  </section>
+
+  <section>
+    <h2>&Uacute;ltimas ofertas de empleo analizadas</h2>
+    {{ qa_list(s.job_offers, 'Ninguna por ahora.') }}
+  </section>
+
+  <section>
+    <h2>&Uacute;ltimas preguntas</h2>
+    {% if s.recent %}<table>
+      <tr><th>Fecha (UTC)</th><th>Idioma</th><th>Origen</th><th>Valoraci&oacute;n</th><th>Pregunta</th></tr>
+      {% for r in s.recent %}<tr><td class="n">{{ r.ts }}</td><td>{{ r.lang }}</td><td>{{ r.source }}{% if r.mode == 'job' %} &middot; oferta{% endif %}</td>
+        <td>{{ '👍' if r.rating == 1 else ('👎' if r.rating == -1 else '') }}</td><td>{{ r.question[:200] }}</td></tr>{% endfor %}
+    </table>{% else %}<p class="empty">Sin datos.</p>{% endif %}
+  </section>
+</main>
+</body>
+</html>

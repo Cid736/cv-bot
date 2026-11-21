@@ -3,10 +3,16 @@ services:
     name: cv-bot
     runtime: python
     buildCommand: pip install -r requirements.txt
-    startCommand: python app.py
+    startCommand: gunicorn --workers 1 --threads 8 --timeout 90 --bind 0.0.0.0:$PORT app:app
     healthCheckPath: /health
     envVars:
       - key: GROQ_API_KEY
         sync: false        # set manually in Render dashboard
+      - key: CONTACT_EMAIL       # shown in the header and given by the bot
+        sync: false
+      - key: CONTACT_LINKEDIN
+        sync: false
+      - key: STATS_TOKEN         # long random string; enables /stats?token=...
+        sync: false
       - key: PORT
         value: 10000       # Render assigns this automatically

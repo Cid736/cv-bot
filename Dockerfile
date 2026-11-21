@@ -3,6 +3,9 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
-EXPOSE 5000
-ENV PORT=5000
-CMD ["python", "app.py"]
+RUN useradd --create-home appuser && mkdir -p /app/data && chown appuser /app/data
+USER appuser
+ENV PORT=5001
+EXPOSE 5001
+# One worker: sessions and caches live in process memory. Threads handle concurrency.
+CMD ["sh", "-c", "exec gunicorn --workers 1 --threads 8 --timeout 90 --bind 0.0.0.0:${PORT} app:app"]

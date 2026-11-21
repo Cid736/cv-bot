@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Pregunta lo que quieras sobre {{ cv.name }} ({{ cv.title }}) o comprueba si encaja con tu oferta. Respuestas basadas en su CV.">
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0f1419" media="(prefers-color-scheme: dark)">
+  <title>{{ cv.name }} — Asistente de CV</title>
+  <meta property="og:type" content="profile">
+  <meta property="og:title" content="{{ cv.name }} — {{ cv.title }}">
+  <meta property="og:description" content="Pregunta por su experiencia o comprueba si encaja con tu oferta. Respuestas basadas en su CV.">
+  <meta property="og:image" content="{{ og_image }}">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="{{ url_for('static', filename='favicon.svg') }}" type="image/svg+xml">
+  <link rel="preload" href="{{ url_for('static', filename='fonts/inter-latin.woff2') }}" as="font" type="font/woff2" crossorigin>
+  <script nonce="{{ nonce }}">try { var t = localStorage.getItem('cvbot-theme'); if (t === 'dark' || t === 'light') document.documentElement.dataset.theme = t; } catch (e) {}</script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v={{ version }}">
+  <!-- Same-origin and deferred: no third-party round trip, no render blocking. -->
+  <script defer src="{{ url_for('static', filename='vendor/marked-15.0.12.min.js') }}" nonce="{{ nonce }}"></script>
+  <script defer src="{{ url_for('static', filename='vendor/purify-3.2.6.min.js') }}" nonce="{{ nonce }}"></script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="#asistente"><span class="mono" aria-hidden="true">EC</span><span>{{ cv.name }}</span></a>
+      <button class="tool theme-toggle" id="theme-toggle" type="button" title="Cambiar entre modo claro y oscuro" aria-label="Cambiar entre modo claro y oscuro">
+        <span class="when-light">{{ icon('moon', 17) }}</span><span class="when-dark">{{ icon('sun', 17) }}</span></button>
+      <nav class="contact" aria-label="Contacto">
+        {% if 'yourprofile' not in contact_linkedin %}<a class="btn ghost" href="{{ contact_linkedin }}" target="_blank" rel="noopener" aria-label="LinkedIn">{{ icon('linkedin', 16) }}<span class="label">LinkedIn</span></a>{% endif %}
+        {% if 'example.com' not in contact_email %}<a class="btn ghost" href="mailto:{{ contact_email }}" aria-label="Email">{{ icon('mail', 16) }}<span class="label">Email</span></a>{% endif %}
+        {% if cv_available %}<a class="btn primary" href="{{ url_for('cv_pdf') }}" download aria-label="Descargar CV">{{ icon('download', 16) }}<span class="label">Descargar CV</span></a>{% endif %}
+      </nav>
+    </div>
+  </header>
+
+  <div class="layout">
+    <!-- ── Asistente (lo principal) ──────────────────────────────── -->
+    <main class="card assistant" id="asistente" aria-labelledby="as-title">
+      <div class="as-head">
+        <img class="as-photo" src="{{ url_for('static', filename='foto.webp') }}" width="40" height="40" alt="">
+        <div>
+          <h1 id="as-title">Asistente de CV de {{ cv.name }}</h1>
+          <p class="as-sub">Respuestas basadas únicamente en su CV · {{ cv.title }}</p>
+        </div>
+        <div class="tools">
+          <button class="tool" id="speak-toggle" type="button" hidden title="Leer las respuestas en voz alta" aria-label="Leer respuestas en voz alta" aria-pressed="false">{{ icon('volume-off', 16) }}</button>
+          <button class="tool" id="export" type="button" title="Descargar la conversación (.md)" aria-label="Descargar conversación">{{ icon('download', 16) }}</button>
+          <button class="tool" id="print" type="button" title="Imprimir o guardar la conversación como PDF" aria-label="Imprimir conversación">{{ icon('printer', 16) }}</button>
+          <button class="tool" id="reset" type="button" title="Empezar de nuevo" aria-label="Nueva conversación">{{ icon('rotate', 16) }}</button>
+        </div>
+      </div>
+      <div class="tabs" role="tablist" aria-label="Modo del asistente">
+        <button role="tab" id="tab-chat" type="button" aria-selected="true">Preguntar sobre el perfil</button>
+        <button role="tab" id="tab-job" type="button" aria-selected="false">Comprobar encaje con una oferta</button>
+      </div>
+
+      <div id="chat" aria-live="polite"></div>
+      <div id="rate-banner" role="status"></div>
+      <div id="chips"></div>
+
+      <form id="form">
+        <p class="form-note" id="form-note" hidden></p>
+        <div class="composer">
+          <textarea id="input" rows="1" maxlength="{{ max_question_len }}" aria-label="Pregunta"
+                    data-chat-max="{{ max_question_len }}" data-job-max="{{ job_max_len }}"
+                    placeholder="Escribe tu pregunta sobre Eric…"></textarea>
+          <div class="composer-actions">
+            <span class="hint" id="hint">Enter para enviar · cualquier idioma</span>
+            <button class="tool" id="mic" type="button" hidden title="Preguntar por voz" aria-label="Preguntar por voz">{{ icon('mic', 16) }}</button>
+            <button id="btn" type="submit"><span id="btn-label">Enviar</span></button>
+          </div>
+        </div>
+      </form>
+    </main>
+
+    <!-- ── Perfil resumido ───────────────────────────────────────── -->
+    <aside class="side" aria-label="Resumen del perfil">
+      <section class="card mini" aria-labelledby="name">
+        <div class="mini-top">
+          <img class="photo" src="{{ url_for('static', filename='foto.webp') }}" width="64" height="64" alt="Foto de {{ cv.name }}">
+          <div>
+            <h2 id="name">{{ cv.name }}</h2>
+            <p class="role">{{ cv.title }}</p>
+            <p class="meta">{{ icon('map-pin', 13) }} {{ cv.location }}</p>
+          </div>
+        </div>
+        <dl class="facts">
+          {% for f in cv.facts %}<div><dt>{{ f.label }}</dt><dd>{{ f.value }}</dd></div>{% endfor %}
+        </dl>
+        <button class="btn ghost wide" id="open-profile" type="button">{{ icon('file-text', 16) }}<span>Ver perfil completo</span></button>
+      </section>
+
+      <section class="card" aria-labelledby="h-path">
+        <h2 id="h-path">Trayectoria</h2>
+        <ol class="path">
+          {% for job in cv.experience %}
+          <li class="{{ 'current' if job.current }}"><strong>{{ job.role }}</strong>
+            <span>{{ job.company }}{% if job.internship %} · prácticas{% endif %}</span><span class="dates">{{ job.dates }}</span></li>
+          {% endfor %}
+        </ol>
+      </section>
+
+      <section class="card" aria-labelledby="h-key">
+        <h2 id="h-key">Competencias clave</h2>
+        <ul class="tags">{% for g in cv.skills[:2] %}{% for s in g['items'] %}<li>{{ s }}</li>{% endfor %}{% endfor %}</ul>
+      </section>
+
+      <footer class="footer">
+        <span class="ab">Alpha v{{ version }}</span>
+        <a href="https://github.com/Cid736/cv-bot/issues" target="_blank" rel="noopener">Reportar un problema</a>
+      </footer>
+    </aside>
+  </div>
+
+  <!-- ── Perfil completo (ventana) ───────────────────────────────── -->
+  <dialog id="profile-dialog" aria-labelledby="pd-title">
+    <div class="pd-head">
+      <img class="photo" src="{{ url_for('static', filename='foto.webp') }}" width="56" height="56" alt="">
+      <div><h2 id="pd-title">{{ cv.name }}</h2><p class="role">{{ cv.title }} · {{ cv.location }}</p></div>
+      <button class="tool" id="close-profile" type="button" aria-label="Cerrar">{{ icon('x', 18) }}</button>
+    </div>
+    <div class="pd-body">
+      <p class="summary">{{ cv.summary }}</p>
+
+      <h3 class="pd-h">Experiencia</h3>
+      <ol class="timeline">
+        {% for job in cv.experience %}
+        <li class="{{ 'current' if job.current }}">
+          <div class="tl-head">
+            <div><h4>{{ job.role }}</h4>
+              <p class="company">{{ job.company }} · {{ job.place }}{% if job.internship %} <span class="tag">Prácticas</span>{% endif %}{% if job.current %} <span class="tag ok">Actual</span>{% endif %}</p></div>
+            <p class="dates">{{ job.dates }}</p>
+          </div>
+          <ul>{% for b in job.bullets %}<li>{{ b }}</li>{% endfor %}</ul>
+        </li>
+        {% endfor %}
+      </ol>
+
+      <h3 class="pd-h">Competencias</h3>
+      <div class="skills">
+        {% for g in cv.skills %}<div class="skill-group"><h4>{{ g.group }}</h4><ul class="tags">{% for s in g['items'] %}<li>{{ s }}</li>{% endfor %}</ul></div>{% endfor %}
+      </div>
+
+      <div class="two">
+        <div><h3 class="pd-h">Formación</h3>
+          <ul class="plain">{% for e in cv.education %}<li><strong>{{ e.title }}</strong><span>{{ e.school }} · {{ e.dates }}</span></li>{% endfor %}</ul></div>
+        <div><h3 class="pd-h">Idiomas</h3>
+          <ul class="plain">{% for l in cv.languages %}<li><strong>{{ l.name }}</strong><span>{{ l.level }}</span></li>{% endfor %}</ul>
+          <h3 class="pd-h">Proyecto destacado</h3>
+          <p class="project"><strong>{{ cv.project.name }}</strong> — {{ cv.project.text }}<br><span class="muted">{{ cv.project.stack }}</span></p></div>
+      </div>
+
+      <h3 class="pd-h">Certificaciones y formación complementaria</h3>
+      <div class="certs">
+        {% for g in cv.certifications %}<div><h4>{{ g.group }}</h4><ul class="plain compact">{% for c in g['items'] %}<li>{{ c }}</li>{% endfor %}</ul></div>{% endfor %}
+      </div>
+
+      <div class="cta">
+        <div><h3>¿Encaja con tu vacante?</h3><p>Descarga su CV o contacta directamente.</p></div>
+        <div class="cta-actions">
+          {% if 'yourprofile' not in contact_linkedin %}<a class="btn ghost" href="{{ contact_linkedin }}" target="_blank" rel="noopener">{{ icon('linkedin', 16) }}<span>LinkedIn</span></a>{% endif %}
+          {% if 'example.com' not in contact_email %}<a class="btn ghost" href="mailto:{{ contact_email }}">{{ icon('mail', 16) }}<span>Email</span></a>{% endif %}
+          {% if cv_available %}<a class="btn primary" href="{{ url_for('cv_pdf') }}" download>{{ icon('download', 16) }}<span>Descargar CV</span></a>{% endif %}
+        </div>
+      </div>
+    </div>
+  </dialog>
+
+  <script type="application/json" id="icons">{{ icons_json() }}</script>
+  <script defer src="{{ url_for('static', filename='app.js') }}?v={{ version }}" nonce="{{ nonce }}"></script>
+</body>
+</html>
