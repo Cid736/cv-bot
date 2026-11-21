@@ -60,6 +60,10 @@ docker run -p 5001:5001 -e GROQ_API_KEY=gsk_... cv-bot
 Edit `docs/perfil.txt` with your own profile and restart. The LLM sees the full document on every request.
 
 ## Changelog
+**v0.12.0** — 2026-11-21
+- The assistant is the main thing again: it takes the large column with "What do you want to know about Eric?", recruiter FAQs and the job-offer check; the profile becomes a compact aside (photo, key facts, career path, key skills) with "Ver perfil completo" opening the full profile in a dialog; on mobile the assistant comes first
+- Full review fixes: job offers during an outage get an "analysis unavailable" message instead of an unrelated canned answer; follow-ups see the whole pasted offer; fallback routing for "why hire him" and "programming languages"; truncated answers are never cached; empty completions fall back instead of 500; `/suggest` cache race; https og:image; `/stats` non-ASCII token; long text when switching tabs
+
 **v0.11.0** — 2026-11-21
 - More professional: self-hosted Inter font (same look on every device), job-offer table shows "Cumple / Parcial / No consta" labels instead of emojis, contact card at the end ("¿Encaja con tu vacante?"), link previews (Open Graph image) and favicon, neutral Alpha badge
 - Dark mode: follows the visitor's system setting, with a toggle in the header that is remembered

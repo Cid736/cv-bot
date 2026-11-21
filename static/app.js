@@ -4,6 +4,8 @@ const $ = id => document.getElementById(id);
 const chat = $('chat'), input = $('input'), btn = $('btn'), btnLabel = $('btn-label'), chips = $('chips');
 const banner = $('rate-banner'), micBtn = $('mic'), speakBtn = $('speak-toggle');
 const tabChat = $('tab-chat'), tabJob = $('tab-job');
+const formNote = $('form-note'), hint = $('hint');
+const PHOTO = document.querySelector('.as-photo')?.getAttribute('src') || '';
 
 let sid = null;          // server session id
 let lang = null;         // language of the last answer (Spanish, English, ...)
@@ -81,12 +83,12 @@ function addUserMsg(text, mode) {
 function addBotMsg() {
   const row = document.createElement('div');
   row.className = 'bot-row';
-  const label = document.createElement('div');
-  label.className = 'bot-label'; label.textContent = 'Asistente';
+  const av = document.createElement('img');
+  av.className = 'bot-avatar'; av.src = PHOTO; av.alt = ''; av.width = 28; av.height = 28;
   const d = document.createElement('div');
   d.className = 'msg bot';
   d.innerHTML = '<div class="dots"><span></span><span></span><span></span></div>';
-  row.append(label, d);
+  row.append(av, d);
   chat.appendChild(row);
   scrollDown();
   return d;
@@ -109,8 +111,10 @@ function showIntro() {
   const box = document.createElement('div');
   box.className = 'intro';
   if (!jobMode) {
-    box.innerHTML = '<p>Resuelve dudas sobre la experiencia, la formación o las competencias de Eric. '
-      + 'Puedes preguntar en cualquier idioma.</p><p class="label">Preguntas frecuentes</p>';
+    box.innerHTML = '<h2>¿Qué quieres saber sobre Eric?</h2>'
+      + '<p>Pregunta por su experiencia, sus funciones, las herramientas que domina o su formación, en cualquier idioma. '
+      + 'Las respuestas salen únicamente de su CV.</p><p class="label">Preguntas frecuentes de reclutadores</p>';
+    const grid = document.createElement('div'); grid.className = 'suggestions';
     for (const q of SUGGESTED) {
       const b = document.createElement('button');
       b.type = 'button'; b.className = 'suggestion';
@@ -118,17 +122,23 @@ function showIntro() {
       const a = document.createElement('span'); a.className = 'arrow'; a.textContent = '→';
       b.append(t, a);
       b.addEventListener('click', () => ask(q));
-      box.appendChild(b);
+      grid.appendChild(b);
     }
-    const link = document.createElement('button');
-    link.type = 'button'; link.className = 'link-btn';
-    link.textContent = '¿Tienes una oferta? Comprueba si encaja con el perfil →';
-    link.addEventListener('click', () => setMode('job'));
-    box.appendChild(link);
+    box.appendChild(grid);
+    const job = document.createElement('button');
+    job.type = 'button'; job.className = 'job-card';
+    const ico = document.createElement('span'); ico.className = 'ico'; ico.appendChild(svgIcon('clipboard', 18));
+    const txt = document.createElement('span');
+    txt.innerHTML = '<strong>¿Tienes una oferta? Comprueba si Eric encaja</strong>'
+      + '<small>Pega la descripción del puesto y obtén un análisis requisito a requisito</small>';
+    job.append(ico, txt);
+    job.addEventListener('click', () => setMode('job'));
+    box.appendChild(job);
   } else {
     box.classList.add('job-help');
-    box.innerHTML = '<p>Pega la descripción de la oferta y obtendrás un análisis requisito a requisito, '
-      + 'con los puntos fuertes, las carencias y una valoración general.</p>'
+    box.innerHTML = '<h2>Comprueba el encaje con tu oferta</h2>'
+      + '<p>Pega la descripción del puesto y el asistente revisará cada requisito frente al CV de Eric, '
+      + 'con sus puntos fuertes, las carencias y una valoración general.</p>'
       + '<ol><li>Copia el texto de la oferta (requisitos, funciones, nivel).</li>'
       + '<li>Pégalo en el cuadro de abajo.</li><li>Pulsa «Analizar encaje».</li></ol>'
       + '<p class="legend"><span class="fit fit-yes">Cumple</span> experiencia directa '
@@ -142,13 +152,22 @@ function hideIntro() { const i = chat.querySelector('.intro'); if (i) i.remove()
 
 function setMode(mode) {
   if (busy) return;
-  jobMode = mode === 'job';
+  const toJob = mode === 'job';
+  // A pasted offer is longer than a chat question allows: don't silently break the next send.
+  if (!toJob && input.value.length > Number(input.dataset.chatMax)) {
+    formNote.textContent = 'Este texto es demasiado largo para una pregunta. Analízalo como oferta o acórtalo.';
+    formNote.hidden = false;
+    return;
+  }
+  formNote.hidden = true;
+  jobMode = toJob;
   tabChat.setAttribute('aria-selected', String(!jobMode));
   tabJob.setAttribute('aria-selected', String(jobMode));
   input.classList.toggle('job', jobMode);
   input.maxLength = Number(jobMode ? input.dataset.jobMax : input.dataset.chatMax);
-  input.placeholder = jobMode ? 'Pega aquí la descripción de la oferta…' : 'Escribe tu pregunta…';
+  input.placeholder = jobMode ? 'Pega aquí la descripción de la oferta…' : 'Escribe tu pregunta sobre Eric…';
   btnLabel.textContent = jobMode ? 'Analizar encaje' : 'Enviar';
+  hint.textContent = jobMode ? 'Ctrl+Enter para analizar' : 'Enter para enviar · cualquier idioma';
   if (!transcript.length) showIntro();
   resize(input);
   input.focus();
@@ -273,12 +292,12 @@ async function send(e) {
       const r = await readStream(res, bubble, ev => { sid = ev.session_id; lang = ev.lang; });
       answer = r.text; messageId = r.messageId;
       if (r.error) {
-        if (!answer) bubble.textContent = r.error;
+        if (!answer) { bubble.textContent = r.error; transcript.pop(); }
         else { const p = document.createElement('p'); p.textContent = '⚠ ' + r.error; bubble.appendChild(p); }
       }
     } else {
       const data = await res.json();
-      if (data.error) { bubble.textContent = data.error; return; }
+      if (data.error) { bubble.textContent = data.error; transcript.pop(); return; }
       sid = data.session_id; lang = data.lang || lang;
       answer = data.answer; messageId = data.message_id; rateLimited = !!data.rate_limited;
       renderInto(bubble, answer);
@@ -295,8 +314,10 @@ async function send(e) {
     if (speakEnabled || viaVoice) speak(answer, lang);
   } catch {
     bubble.textContent = 'No se ha podido conectar. Inténtalo de nuevo.';
+    if (transcript.length && transcript[transcript.length - 1].role === 'user') transcript.pop();
   } finally {
     busy = false; btn.disabled = false;
+    formNote.hidden = true;
     if (mode === 'job') setMode('chat');   // follow-up questions about the offer
     resize(input); input.focus();
   }
@@ -420,14 +441,14 @@ function setupVoice() {
   });
 }
 
-// ── Mobile: hide the floating "ask" button while the assistant is on screen ──
+// ── Full profile dialog ──────────────────────────────────────────────────────
 
-function setupFab() {
-  const fab = document.querySelector('.ask-fab');
-  const panel = $('asistente');
-  if (!fab || !('IntersectionObserver' in window)) return;
-  new IntersectionObserver(([e]) => fab.classList.toggle('hide', e.isIntersecting), { threshold: 0.25 }).observe(panel);
-  fab.addEventListener('click', () => setTimeout(() => input.focus({ preventScroll: true }), 400));
+function setupProfileDialog() {
+  const dlg = $('profile-dialog');
+  if (!dlg || typeof dlg.showModal !== 'function') return;
+  $('open-profile').addEventListener('click', () => dlg.showModal());
+  $('close-profile').addEventListener('click', () => dlg.close());
+  dlg.addEventListener('click', e => { if (e.target === dlg) dlg.close(); });  // click on the backdrop
 }
 
 // ── Light / dark theme ───────────────────────────────────────────────────────
@@ -459,6 +480,6 @@ $('export').addEventListener('click', exportConversation);
 $('print').addEventListener('click', () => window.print());
 
 setupVoice();
-setupFab();
+setupProfileDialog();
 setupTheme();
 showIntro();

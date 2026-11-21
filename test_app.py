@@ -82,7 +82,10 @@ class AppBehaviorTests(unittest.TestCase):
     def test_static_fallback_matches_whole_words_and_ignores_accents(self):
         cases = [
             ("¿Cuánta experiencia tiene?", "Spanish", "Dos años de experiencia"),
-            ("¿Por qué deberíamos contratarle?", "Spanish", "contactar con Eric"),
+            ("¿Por qué deberíamos contratarle?", "Spanish", "Puntos fuertes"),
+            ("Why should we hire him?", "English", "strengths"),
+            ("What programming languages does he know?", "English", "Python"),
+            ("¿Cuál es su expectativa salarial?", "Spanish", "contactar con Eric"),
             ("Cuéntame sobre él", "Spanish", "Eric Cid López"),
             ("Does he know networking?", "English", "Systems and support"),
             ("¿Qué nivel de inglés tiene?", "Spanish", "B1–B2"),
@@ -277,6 +280,64 @@ class AppBehaviorTests(unittest.TestCase):
         self.assertNotIn("gpt-oss", html)  # no model name shown to recruiters
         for asset in ("/static/og.png", "/static/favicon.svg", "/static/fonts/inter-latin.woff2", "/static/foto.webp"):
             self.assertEqual(app.app.test_client().get(asset).status_code, 200, asset)
+
+    # ── Regression tests for the full review ─────────────────────────────────
+
+    def _rate_limit_error(self):
+        import httpx
+        return app.RateLimitError("Please try again in 7s.", response=httpx.Response(
+            429, request=httpx.Request("POST", "https://api.groq.com")), body=None)
+
+    def test_job_offer_during_outage_says_analysis_unavailable(self):
+        offer = "Buscamos técnico de soporte IT. Perfil: experiencia con Active Directory e Intune."
+        with patch.object(app, "_groq_chat", side_effect=self._rate_limit_error()):
+            data = self._post({"question": offer, "mode": "job"}).get_json()
+        self.assertTrue(data["rate_limited"])
+        self.assertIn("no puedo analizar la oferta", data["answer"])
+        self.assertNotIn("Eric Cid López** es", data["answer"])
+
+    def test_follow_up_sees_the_whole_long_offer(self):
+        offer = ("Requisito inicial. " + "relleno " * 600 + "ÚLTIMO REQUISITO: certificación ITIL.")
+        self.assertGreater(len(offer), 3000)
+        sent = []
+        def fake(messages, temperature, **kwargs):
+            sent.append(messages); return "ok"
+        with patch.object(app, "_groq_chat", side_effect=fake):
+            sid = self._post({"question": offer, "mode": "job"}).get_json()["session_id"]
+            self._post({"question": "¿Cumple el último requisito?", "session_id": sid})
+        history_q = sent[-1][1]["content"]
+        self.assertIn("ÚLTIMO REQUISITO", history_q)
+        self.assertIn("</job_description>", history_q)
+
+    def test_truncated_first_answer_is_not_cached(self):
+        def fake(messages, temperature, **kwargs):
+            app._last_finish.reason = "length"; return "Respuesta cortada a med"
+        app._answer_cache.clear()
+        with patch.object(app, "_groq_chat", side_effect=fake):
+            self._post({"question": "¿Qué certificaciones tiene exactamente?"})
+        self.assertEqual(app._answer_cache, {})
+
+    def test_truncated_stream_is_not_cached(self):
+        class Cut:
+            finish_reason = "length"
+            def __iter__(self): return iter(["Respuesta ", "cortada"])
+        app._answer_cache.clear()
+        with patch.object(app, "_groq_stream", return_value=Cut()):
+            self._post({"question": "¿Dónde estudió?", "stream": True}).get_data()
+        self.assertEqual(app._answer_cache, {})
+
+    def test_empty_completion_falls_back_instead_of_500(self):
+        with patch.object(app, "_groq_chat", return_value=""):
+            res = self._post({"question": "¿Qué experiencia tiene?"})
+        self.assertEqual(res.status_code, 200)
+        self.assertTrue(res.get_json()["rate_limited"])
+
+    def test_stats_token_with_non_ascii_is_404_not_500(self):
+        self.assertEqual(app.app.test_client().get("/stats?token=%C3%A9").status_code, 404)
+
+    def test_og_image_is_https_in_production(self):
+        html = app.app.test_client().get("/", base_url="http://cv-bot.example.com").get_data(as_text=True)
+        self.assertIn('content="https://cv-bot.example.com/static/og.png"', html)
 
     def test_eval_checks(self):
         from evals.run_evals import check

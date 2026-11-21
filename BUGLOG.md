@@ -1,4 +1,29 @@
 # Bug Log — cv-bot
+## 2026-11-21 — Revisión 8 (revisión completa de la rama)
+
+### [MEDIA] Oferta de empleo durante una caída devolvía una respuesta de respaldo ajena
+- **Archivo:** `app.py` — `fallback()` en `/chat`
+- **Fix:** en modo oferta se devuelve un aviso de «análisis no disponible, reintenta» en lugar de `static_answer()`.
+
+### [MEDIA] Las preguntas de seguimiento solo veían parte de una oferta larga
+- **Archivo:** `app.py` — `_save_turn()` recortaba a 3000 caracteres (oferta, etiqueta de cierre e instrucciones).
+- **Fix:** se guarda la oferta completa marcada con `<job_description>`; las preguntas antiguas se recortan igual que las respuestas.
+
+### [MEDIA] Respuestas de respaldo mal encaminadas
+- **Fix:** «contratar/hire» ya no lleva a «prefiere tratarlo directamente»; nueva entrada de puntos fuertes; «programming languages» ya no devuelve los idiomas.
+
+### [BAJA] Respuestas cortadas podían quedar en caché para todos
+- **Fix:** solo se cachea si `finish_reason == "stop"` (también en streaming).
+
+### [BAJA] Respuesta vacía del modelo → 500; carrera en la caché de `/suggest`; token no ASCII en `/stats` → 500
+- **Fix:** respaldo ante respuesta vacía; `dict.get()` en `/suggest`; `compare_digest` sobre bytes.
+
+### [BAJA] og:image con http detrás del proxy; texto largo al cambiar de pestaña rompía el siguiente envío
+- **Fix:** URL https absoluta; aviso y se mantiene la pestaña de oferta.
+
+### [PENDIENTE] Rate limit falseable en producción (`TRUSTED_PROXIES`)
+- No se activa por defecto en `render.yaml`: si el número de proxies no es el real, todos los visitantes compartirían el mismo límite. Hay que confirmar la cadena de proxies de Render y poner `TRUSTED_PROXIES=1` en su panel.
+
 ## 2026-11-21 — Revisión 7
 
 ### [MEDIA] Respuestas de respaldo incorrectas por coincidencias parciales

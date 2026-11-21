@@ -52,6 +52,10 @@ docker run -p 5001:5001 -e GROQ_API_KEY=gsk_... cv-bot
 Edita `docs/perfil.txt` con tu propio perfil y reinicia. El LLM recibe el documento completo en cada petición.
 
 ## Historial de versiones
+**v0.12.0** — 2026-11-21
+- El asistente vuelve a ser lo principal: ocupa la columna grande con «¿Qué quieres saber sobre Eric?», preguntas frecuentes de reclutadores y la comprobación de ofertas; el perfil pasa a un lateral compacto (foto, datos clave, trayectoria y competencias clave) con «Ver perfil completo» en una ventana; en móvil el asistente aparece primero
+- Arreglos de la revisión completa: ofertas durante una caída reciben un aviso de «análisis no disponible» en vez de una respuesta que no viene al caso; las preguntas de seguimiento ven la oferta completa; respuestas de respaldo correctas para «por qué contratarle» y «lenguajes de programación»; nunca se guardan en caché respuestas cortadas; una respuesta vacía usa el respaldo en vez de dar 500; condición de carrera en `/suggest`; og:image con https; token no ASCII en `/stats`; texto largo al cambiar de pestaña
+
 **v0.11.0** — 2026-11-21
 - Más profesional: fuente Inter integrada (se ve igual en todos los dispositivos), la tabla de encaje usa etiquetas «Cumple / Parcial / No consta» en lugar de emojis, tarjeta de contacto al final («¿Encaja con tu vacante?»), vista previa al compartir el enlace (imagen Open Graph) y favicon, etiqueta Alpha discreta
 - Modo oscuro: sigue la preferencia del sistema del visitante, con un botón en la cabecera que se recuerda
