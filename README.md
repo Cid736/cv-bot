@@ -44,6 +44,8 @@ Edit `docs/perfil.txt` with your own profile and restart. The LLM sees the full 
 
 ## Changelog
 **v0.6.2** — 2026-11-21
+- Profile: synced with the new CV — title *IT Systems & Support Technician*, two years of experience, exact FCT internship dates, IBM / Deloitte / Anthropic Claude Academy certifications; skills not on the CV removed (Jira, Slack, NoSQL)
+- AI: stricter scope — only questions about Eric and his CV; general questions, tutorials, coding help or other topics get a one-line redirect
 - Fix: rate-limit fallback answers matched keywords inside other words ("experiencia" → AI answer, "network" → projects); now whole-word, accent-insensitive matching
 - Reliability: Groq outages, timeouts and 5xx errors degrade to the static answers instead of a 500; 30 s request timeout
 - Deploy: served by gunicorn (1 worker, 8 threads) instead of Flask's dev server; shared state guarded by a lock; Docker runs as non-root and the port matches the README

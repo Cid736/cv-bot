@@ -76,11 +76,11 @@ class AppBehaviorTests(unittest.TestCase):
 
     def test_static_fallback_matches_whole_words_and_ignores_accents(self):
         cases = [
-            ("¿Cuánta experiencia tienes?", "Spanish", "más de dos años"),
+            ("¿Cuánta experiencia tienes?", "Spanish", "dos años de experiencia"),
             ("¿Por qué deberíamos contratarte?", "Spanish", "Porque tengo base"),
             ("Cuéntame sobre ti", "Spanish", "Soy Eric C."),
             ("Do you know networking?", "English", "systems & networking"),
-            ("How many years of experience?", "English", "2+ years"),
+            ("How many years of experience?", "English", "Two years"),
         ]
         for question, lang, expected in cases:
             with self.subTest(question=question):
@@ -108,6 +108,11 @@ class AppBehaviorTests(unittest.TestCase):
                                        headers=headers)
         self.assertEqual(chat_ip, "1.1.1.1")
         self.assertIn("1.1.1.1", app._suggest_rate_log)
+
+    def test_system_prompt_restricts_scope_to_eric(self):
+        self.assertIn("ONLY answer questions about Eric", app.SYSTEM_PROMPT)
+        self.assertIn("Cybersecurity Fundamentals", app.PROFILE)
+        self.assertNotIn("611 409 833", app.PROFILE)  # phone must never reach the model
 
     def test_index_pins_cdn_versions(self):
         html = app.app.test_client().get("/").get_data(as_text=True)

@@ -9,40 +9,27 @@ Permiso de conducción: B
 
 EXPERIENCIA Y TRAYECTORIA
 =========================
-Título profesional: Administrador de Sistemas y Redes.
+Título profesional: Técnico de Sistemas y Soporte IT.
 
-Eric tiene más de dos años de experiencia en soporte e infraestructura IT
-corporativa (NO tres: si preguntan por años de experiencia, la respuesta es
-"más de dos años"). Su perfil está orientado a sistemas, redes e
-infraestructura, y actualmente ocupa un puesto de configuración y evaluación
-de sistemas de IA en producción.
+Eric es técnico de sistemas y soporte IT con dos años de experiencia en
+soporte e infraestructura IT corporativa (si preguntan por años de
+experiencia, la respuesta es "dos años"; no tres). Actualmente configura y
+evalúa sistemas de IA en producción. Su base está en Linux, Windows Server,
+Active Directory y redes, ampliada con proyectos propios de automatización
+con Docker, Ansible y Python, y con formación continua en ciberseguridad.
 
-Actualmente trabaja como AI System Configurator en Infinity Neural (Badalona),
-desde octubre de 2025. Antes trabajó como IT Support Technician en AMC Networks
-(Barcelona) de marzo a octubre de 2025. Además, durante los ciclos formativos
-SMR y ASIR (2021–2024) hizo prácticas FCT de soporte IT en Factorial
-(Barcelona) y en el Instituto Escuela de Badalona; son prácticas curriculares,
-no contratos laborales.
-
-Su núcleo profesional está en administración de sistemas y redes:
-Linux/Ubuntu, Windows Server, Active Directory, TCP/IP, DNS, DHCP, VPN
-corporativas, gestión de endpoints con Microsoft Intune. Tiene formación
-continua en ciberseguridad. Sobre esa base ha construido competencias en
-automatización, contenedores, cloud y desarrollo, lo que le permite
-entender la infraestructura de extremo a extremo — desde el cable hasta
-el despliegue en producción.
-
-Sabe programar en Python, Bash, JavaScript/Node.js y C, lo que le permite
-automatizar tareas de sistemas, construir herramientas internas, APIs REST
-y trabajar con pipelines de IA — pero su identidad profesional es la de un
-especialista en sistemas e infraestructura, no solo un desarrollador.
+Trayectoria: prácticas FCT de soporte IT en el Instituto Escuela de Badalona
+(sept. 2021 – mar. 2022, CFGM SMR) y en Factorial (oct. 2023 – feb. 2024,
+CFGS ASIR) → IT Support Technician en AMC Networks (mar. – oct. 2025) →
+AI System Configurator en Infinity Neural (oct. 2025 – actualidad). Las FCT
+son prácticas curriculares, no contratos laborales.
 
 EXPERIENCIA PROFESIONAL
 =======================
 
 1. AI System Configurator
    Empresa: Infinity Neural · Badalona
-   Período: Oct 2025 – Actualidad (posición actual)
+   Período: oct. 2025 – actualidad (puesto actual)
    Funciones:
    - Evalúa la calidad de respuesta de sistemas de IA en producción mediante
      revisión estructurada de casos, identificando patrones de error
@@ -54,92 +41,60 @@ EXPERIENCIA PROFESIONAL
 
 2. IT Support Technician
    Empresa: AMC Networks · Barcelona
-   Período: Mar 2025 – Oct 2025
+   Período: mar. 2025 – oct. 2025
    Funciones:
-   - Resolvía una media de diez incidencias diarias de hardware, software y
-     conectividad, dentro del equipo de cuatro técnicos responsable de todo el
+   - Resolvió una media de diez incidencias diarias de hardware, software y
+     conectividad dentro del equipo de cuatro técnicos responsable de todo el
      soporte IT de AMC Networks España, con cobertura de Barcelona y Madrid.
-   - Gestionaba el ciclo completo de altas y bajas de empleados: provisión de
+   - Gestionó el ciclo completo de altas y bajas de empleados: provisión de
      equipos, cuentas de Google Workspace y políticas de dispositivo en
      Microsoft Intune.
-   - Administraba el parque de endpoints corporativos con Microsoft Intune,
+   - Administró el parque de endpoints corporativos con Microsoft Intune,
      aplicando políticas de cumplimiento y despliegue remoto de software.
-   - Diagnosticaba incidencias de red y acceso remoto en TCP/IP, VPN y Wi-Fi,
+   - Diagnosticó incidencias de red y acceso remoto en TCP/IP, VPN y Wi-Fi,
      gestionando los tickets en ServiceNow según los SLA del servicio.
 
-3. Prácticas FCT en soporte IT (prácticas curriculares de SMR y ASIR)
-   Empresas: Factorial · Barcelona (startup tecnológica) e
-             Instituto Escuela de Badalona · Badalona (centro educativo)
-   Período: 2021 – 2024
-   Funciones: soporte a usuarios, mantenimiento del parque informático y
-   resolución de incidencias de conectividad.
+PRÁCTICAS (FCT, no son empleos)
+===============================
 
-HABILIDADES TÉCNICAS
-====================
+1. Técnico de soporte IT (prácticas FCT del CFGS ASIR)
+   Empresa: Factorial · Barcelona (startup tecnológica)
+   Período: oct. 2023 – feb. 2024
+   Funciones: soporte a usuarios y resolución de incidencias de conectividad.
 
-Sistemas & Redes (núcleo):
-- Linux / Ubuntu — administración de servidores, servicios, permisos, cron
-- Windows Server — entornos corporativos, Active Directory, GPO
-- TCP/IP — protocolos de red, subredes, enrutamiento
-- DNS y DHCP — servicios de red
-- VPN — configuración y gestión de redes privadas
-- Pi-hole — servidor DNS con bloqueo de publicidad a nivel de red
-- Tailscale — red mesh VPN sobre WireGuard para acceso remoto seguro
-- MS Intune — gestión de dispositivos móviles y endpoints corporativos
-- Seguridad básica de redes — firewalls, accesos, políticas
+2. Técnico de soporte IT (prácticas FCT del CFGM SMR)
+   Centro: Instituto Escuela de Badalona (centro educativo)
+   Período: sept. 2021 – mar. 2022
+   Funciones: soporte a usuarios y mantenimiento de ordenadores y periféricos.
 
-Cloud & DevOps:
-- Google Cloud Platform (GCP) — despliegue de servicios, Cloud Run
-- Ansible — automatización de configuración e infraestructura como código
-- Kubernetes — orquestación de contenedores
-- Docker y Docker Compose — contenedores y entornos reproducibles
-- CI/CD con GitHub Actions — pipelines de test, build y despliegue automático
-- Celery + Redis — colas de tareas asíncronas
+COMPETENCIAS (según el CV)
+==========================
+- Sistemas y redes: Linux y Ubuntu, Windows Server, Active Directory, TCP/IP,
+  DNS, DHCP, VPN, Microsoft Intune.
+- Cloud y contenedores: Google Cloud, Kubernetes, Docker, Ansible, CI/CD,
+  GitHub Actions.
+- IA y evaluación de modelos: LLMs, evaluación de respuesta, prompt
+  engineering, RAG, LangChain.
+- Datos y programación: Excel y Google Sheets, SQL, PostgreSQL, Python,
+  Node.js, Bash, PowerShell.
+- Herramientas: ServiceNow, Git, Google Workspace, VS Code.
 
-IA & Automatización:
-- LLMs y Prompt Engineering — uso práctico de modelos de lenguaje
-- RAG (Retrieval-Augmented Generation) — chatbots con contexto de documentos
-- Vertex AI — plataforma de IA de Google Cloud
-- Agentes IA — construcción de asistentes inteligentes
-- LangChain — pipelines de IA
-- ChromaDB — base de datos vectorial para embeddings
+Otras tecnologías usadas en sus proyectos personales (no en empleos):
+FastAPI, React, C (Winsock2), SQLite, Celery, Redis, ChromaDB, Docker Compose,
+Tailscale, Pi-hole, Telegram Bot API.
 
-Programación & Scripting:
-- Python — scripting, automatización de sistemas, herramientas CLI, APIs
-- FastAPI — APIs REST modernas con Python
-- Bash — scripting de sistemas, administración, automatización
-- PowerShell — automatización en entornos Windows
-- JavaScript / Node.js — APIs REST, herramientas web
-- React — interfaces web (frontend)
-- C — programación de sistemas, herramientas de red de bajo nivel
-- SQL / PostgreSQL / SQLite — bases de datos relacionales
-- NoSQL — bases de datos no relacionales
-
-Datos:
-- Excel y Google Sheets — análisis de datos de negocio e informes periódicos
-
-IA y evaluación de modelos:
-- Evaluación de respuesta de LLMs en producción — revisión estructurada de
-  casos, detección de patrones de error, ajuste de prompts y configuración
-
-Herramientas:
-- ServiceNow — gestión de tickets según SLA (AMC Networks)
-- Git / GitHub — control de versiones, colaboración
-- Jira — gestión de proyectos y tickets
-- Google Workspace — suite ofimática colaborativa
-- VS Code — editor principal
-- MS Intune — gestión y políticas de dispositivos corporativos
-
-PROYECTOS PERSONALES
-====================
+PROYECTOS PERSONALES (repositorios en GitHub)
+=============================================
 
 1. CV Bot
    GitHub: github.com/Cid736/cv-bot
-   Estado: EN PRODUCCIÓN
-   Asistente conversacional que responde preguntas sobre el perfil de Eric
-   en español e inglés. Rate limiting, historial de sesión, preguntas
-   predictivas generadas por LLM, fallbacks estáticos ante límites de API.
-   Stack: Python, Flask, LangChain, Groq LLM.
+   Estado: DESPLEGADO (público en cv-bot-hxku.onrender.com). Es el proyecto
+   técnico destacado en su CV.
+   Asistente conversacional desplegado y accesible en público que responde
+   preguntas sobre su perfil profesional en español e inglés. Rate limiting,
+   historial de sesión, preguntas sugeridas generadas por LLM, respuestas de
+   respaldo ante límites de la API.
+   Stack: Python, Flask, Groq LLM, Docker.
 
 2. Ansible Platform
    GitHub: github.com/Cid736/ansible-platform
@@ -203,39 +158,48 @@ FORMACIÓN ACADÉMICA
 
 1. Grado en Ingeniería Informática (en curso)
    Institución: Universitat Oberta de Catalunya (UOC)
-   Período: Sep 2024 – Actualidad
+   Período: desde 2024
 
-2. CFGS — Administración de Sistemas Informáticos en Red
+2. CFGS — Administración de Sistemas Informáticos en Red (ASIR)
    Institución: INS La Pineda
    Período: 2022 – 2024
 
-3. CFGM — Sistemas Microinformáticos y Redes
+3. CFGM — Sistemas Microinformáticos y Redes (SMR)
    Institución: INS La Pineda
    Período: 2020 – 2022
 
 4. Ciberseguridad — formación continua (en curso)
 
-CERTIFICACIONES / CREDENCIALES
-==============================
-- Introduction to Cybersecurity — Cisco Networking Academy · 2026
-- Manage Kubernetes in Google Cloud — Google Cloud Skill Badge · 2025
-- Implement Load Balancing on Compute Engine — Google Cloud Skill Badge · 2025
-- Prompt Design in Vertex AI — Google Cloud Skill Badge · 2025
+CERTIFICACIONES Y FORMACIÓN COMPLEMENTARIA
+==========================================
+Ciberseguridad (2026):
+- Introduction to Cybersecurity — Cisco Networking Academy
+- Cybersecurity Fundamentals — IBM
+- Cyber Job Simulation — Deloitte
+
+Google Cloud Skill Badges (2025):
+- Manage Kubernetes in Google Cloud
+- Load Balancing on Compute Engine
+- Prompt Design in Vertex AI
+
+Anthropic · Claude Academy (2026):
+- Claude Code in action
+- Claude Platform 101
+- Deploying Claude Enterprise
 
 IDIOMAS
 =======
-- Español: Nativo
-- Catalán: Nativo
-- Inglés: B1–B2 Técnico
+- Español: nativo
+- Catalán: nativo
+- Inglés: B1–B2 técnico
 
 PREGUNTAS FRECUENTES DE ENTREVISTA
 ===================================
 
 P: Cuéntame sobre ti / Tell me about yourself
-R: Soy administrador de sistemas y redes con más de dos años de experiencia en
-soporte e infraestructura IT corporativa, con un perfil que cubre desde la
-administración de sistemas Linux y Windows Server hasta redes, contenedores y
-cloud. Actualmente trabajo como AI System Configurator en Infinity Neural,
+R: Soy técnico de sistemas y soporte IT con dos años de experiencia en
+soporte e infraestructura IT corporativa, con un perfil que cubre desde
+Linux, Windows Server y Active Directory hasta redes, contenedores y cloud. Actualmente trabajo como AI System Configurator en Infinity Neural,
 configurando y evaluando sistemas de IA en producción. Mi base es la infraestructura: sé montar, mantener y
 asegurar sistemas en entornos corporativos reales. Sobre esa base he añadido
 conocimientos en DevOps, automatización con Python y Bash, y IA aplicada.
@@ -304,18 +268,18 @@ Kubernetes, Ansible, Tailscale y las herramientas de IA. La teoría sin práctic
 no me queda. También uso documentación oficial más que cursos.
 
 P: Tienes experiencia con metodologías ágiles / Do you have experience with agile?
-R: Sí, conozco Jira para gestión de tickets y proyectos. He trabajado con
-flujos iterativos donde el objetivo es tener algo funcionando y desplegado
-en cada ciclo. En mis proyectos personales aplico el mismo principio:
+R: En AMC Networks trabajé con tickets en ServiceNow según SLA, y en
+Infinity Neural itero sobre prompts e integraciones según los resultados de
+la evaluación. En mis proyectos personales aplico el mismo principio:
 incremental, testeable y desplegable en cada iteración.
 
 P: Cuáles son tus expectativas salariales / What are your salary expectations?
-R: Es algo que Eric prefiere tratar directamente. Puedes contactarle a través de github.com/Cid736.
+R: Es algo que Eric prefiere tratar directamente, por LinkedIn o por email.
 
 P: Qué herramientas de colaboración conoces / What collaboration tools do you know?
-R: Git/GitHub para control de versiones, Jira para gestión de proyectos y
-tickets, Google Workspace para documentación y comunicación, MS Intune para
-gestión de dispositivos, y Slack para comunicación de equipo.
+R: Git/GitHub para control de versiones, ServiceNow para gestión de tickets,
+Google Workspace para documentación y comunicación, y Microsoft Intune para
+gestión de dispositivos.
 
 CONTACTO
 ========

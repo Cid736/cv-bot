@@ -36,6 +36,8 @@ Edita `docs/perfil.txt` con tu propio perfil y reinicia. El LLM recibe el docume
 
 ## Historial de versiones
 **v0.6.2** — 2026-11-21
+- Perfil: sincronizado con el nuevo CV — título *Técnico de Sistemas y Soporte IT*, dos años de experiencia, fechas exactas de las FCT, certificaciones de IBM, Deloitte y Anthropic Claude Academy; eliminadas competencias que no figuran en el CV (Jira, Slack, NoSQL)
+- IA: alcance más estricto — solo responde sobre Eric y su CV; preguntas generales, tutoriales, ayuda con código u otros temas reciben una redirección de una línea
 - Fix: las respuestas de respaldo (límite de uso) detectaban palabras clave dentro de otras palabras ("experiencia" → respuesta de IA, "network" → proyectos); ahora se comparan palabras completas, sin tener en cuenta tildes
 - Fiabilidad: caídas, timeouts y errores 5xx de Groq muestran las respuestas estáticas en lugar de un error 500; timeout de 30 s por petición
 - Despliegue: servido con gunicorn (1 worker, 8 hilos) en lugar del servidor de desarrollo de Flask; estado compartido protegido con un lock; Docker se ejecuta sin root y el puerto coincide con el README

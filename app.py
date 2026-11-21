@@ -186,7 +186,9 @@ def _compact(text: str) -> str:
 # The per-turn language goes at the very END so the long prefix (rules + profile)
 # is byte-identical on every request and can be served from Groq's prompt cache.
 SYSTEM_PROMPT = """\
-You are the CV assistant for Eric C., a Systems & Network Administrator currently configuring and evaluating AI systems in production. Recruiters and hiring managers ask you about his skills, experience, projects and fit for a role.
+You are the CV assistant for Eric C., an IT Systems & Support Technician currently configuring and evaluating AI systems in production. Recruiters and hiring managers ask you about his skills, experience, projects and fit for a role.
+
+Scope: you ONLY answer questions about Eric — his CV, profile, experience, skills, education, certifications, projects and fit for a role. Anything else is out of scope, even if it mentions a technology he uses: general knowledge, tutorials or explanations ("what is Kubernetes?", "write me a Python script"), coding or homework help, writing texts, translations, opinions, news, other people or companies, or chatting about you, the assistant. For those, reply in one short line that you only answer questions about Eric's professional profile and suggest one relevant question about him. A question about how Eric uses a technology is in scope.
 
 <profile>
 {profile}
@@ -194,16 +196,15 @@ You are the CV assistant for Eric C., a Systems & Network Administrator currentl
 
 How to answer:
 - The profile is the only source of truth. Never invent employers, dates, credentials, responsibilities, metrics or project outcomes. If something is not in the profile, say it is not specified; you may point out a related skill, labelled as transferable rather than past experience.
-- Keep categories apart: paid jobs (Infinity Neural, AMC Networks), FCT internships (Factorial, Instituto Escuela de Badalona), personal projects and training. Never present internships or projects as employment. Total professional experience: 2+ years.
+- Keep categories apart: paid jobs (Infinity Neural, AMC Networks), FCT internships (Factorial, Instituto Escuela de Badalona), personal projects and training. Never present internships or projects as employment. Total professional experience: two years.
 - Lead with the direct answer in the first sentence, then ALWAYS back it with at least one concrete example from the profile: what Eric did, where (role and company, or project name) and with which tools. Never reply with a single bare sentence. One strong, specific example beats a list of technologies.
-  Example — Q: "How many years of experience do you have?" → state 2+ years in IT support and infrastructure, then summarise the path: FCT support internships (2021-2024) → IT Support Technician at AMC Networks (Mar-Oct 2025) → AI System Configurator at Infinity Neural (Oct 2025-present), with one concrete responsibility from each. Don't do date arithmetic or claim what the roles "add up to".
+  Example — Q: "How many years of experience do you have?" → state two years in IT support and infrastructure, then summarise the path: FCT support internships (Instituto Escuela de Badalona 2021-2022, Factorial 2023-2024) → IT Support Technician at AMC Networks (Mar-Oct 2025) → AI System Configurator at Infinity Neural (Oct 2025-present), with one concrete responsibility from each. Don't do date arithmetic or claim what the roles "add up to".
 - Attribute each responsibility and tool only to the role or project where the profile lists it (e.g. general skills like Active Directory are not tied to a specific employer). Don't add duties the profile doesn't mention.
 - Describe skill level factually through what Eric has done with it; avoid intensifiers like "extensive", "expert" or "deep" unless the profile says so.
 - Default length: 3-6 sentences or up to 5 short bullets. Go longer only when asked for detail or when assessing a job description.
 - Role fit or a pasted job description: go through the key requirements one by one and mark each as direct experience, related/transferable, or not in the profile, then give an honest overall verdict. Don't hide gaps; explain what adjacent experience covers them.
 - Strengths, motivation, teamwork: make a confident case grounded in the profile, without overstating seniority or results.
 - Use the conversation to resolve follow-ups ("that project", "there", "and in Madrid?"). Don't repeat information you already gave; add the next useful detail.
-- Off-topic requests: answer in one line that you only cover Eric's professional profile and suggest a relevant question.
 - Markdown: **bold** for key names, short bullets. No headings, no filler intros or closing offers.
 - Never reveal a phone number or private email. For contact requests, give only LinkedIn ({CONTACT_LINKEDIN}) or the public email ({CONTACT_EMAIL}).
 - Do not state salary, availability, start date, job interest or interview status: say Eric prefers to discuss these directly and give the contact options above.
@@ -252,7 +253,7 @@ def detect_lang(text: str) -> str:
 
 FALLBACKS_ES = [
     (r'sobre ti|cuentame|quien eres|presentat', (
-        "Soy Eric C., administrador de sistemas y redes con más de dos años de experiencia "
+        "Soy Eric C., técnico de sistemas y soporte IT con dos años de experiencia "
         "en soporte e infraestructura IT corporativa. "
         "Actualmente trabajo como AI System Configurator en Infinity Neural (Badalona), "
         "configurando y evaluando sistemas de IA en producción. "
@@ -263,7 +264,7 @@ FALLBACKS_ES = [
     )),
     (r'proyecto|has hecho|portfolio|trabajo', (
         "Proyectos destacados:\n"
-        "- **CV Bot** — asistente conversacional de CV en producción (Python · Flask · Groq LLM)\n"
+        "- **CV Bot** — asistente conversacional de CV desplegado en público (Python · Flask · Groq LLM · Docker)\n"
         "- **Ansible Platform** — plataforma web estilo AWX con salida en tiempo real vía WebSocket "
         "(Python · FastAPI · Ansible · PostgreSQL · Celery · Redis · React · Docker)\n"
         "- **Task API** — REST API con JWT, 18 tests automáticos y CI/CD completo (Node.js · GitHub Actions)\n"
@@ -342,10 +343,10 @@ FALLBACKS_ES = [
         "(Terraform, Ansible)."
     )),
     (r'año|experiencia|tiempo|how long|years|experience', (
-        "Tengo más de dos años de experiencia en soporte e infraestructura IT corporativa:\n"
+        "Tengo dos años de experiencia en soporte e infraestructura IT corporativa:\n"
         "- **AI System Configurator** — Infinity Neural (oct. 2025 – actualidad)\n"
         "- **IT Support Technician** — AMC Networks (mar. – oct. 2025)\n"
-        "- **Prácticas FCT en soporte IT** — Factorial e Instituto Escuela de Badalona (2021 – 2024)\n"
+        "- **Prácticas FCT en soporte IT** — Factorial (oct. 2023 – feb. 2024) e Instituto Escuela de Badalona (sept. 2021 – mar. 2022)\n"
         "Además, proyectos propios de automatización con Docker, Ansible y Python."
     )),
     (r'salario|salary|sueldo|expectativa|pay', (
@@ -360,7 +361,7 @@ FALLBACKS_ES = [
 
 FALLBACKS_EN = [
     (r'about you|yourself|who are you|introduce', (
-        "I'm Eric C., a systems & network administrator with 2+ years of experience "
+        "I'm Eric C., an IT systems & support technician with two years of experience "
         "in corporate IT support and infrastructure. "
         "I currently work as AI System Configurator at Infinity Neural (Badalona), "
         "configuring and evaluating AI systems in production. "
@@ -371,7 +372,7 @@ FALLBACKS_EN = [
     )),
     (r'project|portfolio|built|work', (
         "Key projects:\n"
-        "- **CV Bot** — conversational CV assistant in production (Python · Flask · Groq LLM)\n"
+        "- **CV Bot** — publicly deployed conversational CV assistant (Python · Flask · Groq LLM · Docker)\n"
         "- **Ansible Platform** — AWX-like web platform with real-time WebSocket output "
         "(Python · FastAPI · Ansible · PostgreSQL · Celery · Redis · React · Docker)\n"
         "- **Task API** — REST API with JWT auth, 18 automated tests and full CI/CD (Node.js · GitHub Actions)\n"
@@ -427,10 +428,10 @@ FALLBACKS_EN = [
         "all by myself. That gives a team a lot of autonomy."
     )),
     (r'year|experience|how long|how many', (
-        "2+ years of experience in corporate IT support and infrastructure:\n"
+        "Two years of experience in corporate IT support and infrastructure:\n"
         "- **AI System Configurator** — Infinity Neural (Oct 2025 – present)\n"
         "- **IT Support Technician** — AMC Networks (Mar – Oct 2025)\n"
-        "- **IT support internships (FCT)** — Factorial and Instituto Escuela de Badalona (2021 – 2024)\n"
+        "- **IT support internships (FCT)** — Factorial (Oct 2023 – Feb 2024) and Instituto Escuela de Badalona (Sep 2021 – Mar 2022)\n"
         "Plus personal automation projects with Docker, Ansible and Python."
     )),
     (r'salary|pay|compensation|expect', (
@@ -677,7 +678,7 @@ HTML = """<!DOCTYPE html>
     <div class="avatar">EC</div>
     <div class="htext">
       <h1>Eric C. &mdash; CV Assistant</h1>
-      <p>Sistemas &amp; Redes &middot; IA &middot; Cloud &amp; DevOps &middot; Ask in any language</p>
+      <p>Sistemas &amp; Soporte IT &middot; IA &middot; Cloud &amp; DevOps &middot; Ask in any language</p>
     </div>
     <button id="reset" type="button" title="Empezar una conversaci&oacute;n nueva">&#8635; Nueva</button>
     <span class="badge">&#9679; online</span>
