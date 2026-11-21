@@ -126,6 +126,7 @@ class AppBehaviorTests(unittest.TestCase):
         self.assertIn("ONLY Eric", app.SYSTEM_PROMPT)
         self.assertIn("Cybersecurity Fundamentals", app.PROFILE)
         self.assertIn("Tool use with the Messages API", app.PROFILE)
+        self.assertIn("Model Context Protocol", app.PROFILE)
         self.assertNotIn("611 409 833", app.PROFILE)  # phone must never reach the model
 
     def test_language_detection(self):
