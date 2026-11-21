@@ -20,7 +20,7 @@ MAX_RATE_IPS = 10_000
 
 load_dotenv()
 
-APP_VERSION     = "0.9.0"
+APP_VERSION     = "0.10.0"
 DOCS_DIR        = Path("./docs")
 MODEL           = "openai/gpt-oss-120b"
 # Follow-up suggestions are a simple task: a smaller model is enough, and on
@@ -241,6 +241,8 @@ if not os.getenv("GROQ_API_KEY"):
 
 print("[~] Loading profile...")
 PROFILE = load_profile()
+# Structured CV shown on the page (the assistant reads perfil.txt above).
+CV = json.loads((DOCS_DIR / "cv.json").read_text(encoding="utf-8"))
 
 # ── Language detection ───────────────────────────────────────────────────────
 # Scores the message against small stopword lists per language. A word that
@@ -673,7 +675,7 @@ def _html(template: str, **ctx):
 
 @app.route('/')
 def index():
-    return _html('index.html', version=APP_VERSION, model=MODEL,
+    return _html('index.html', version=APP_VERSION, model=MODEL, cv=CV,
                  contact_email=CONTACT_EMAIL, contact_linkedin=CONTACT_LINKEDIN,
                  cv_available=CV_PDF.is_file(), job_max_len=JOB_MAX_LEN,
                  max_question_len=MAX_QUESTION_LEN)

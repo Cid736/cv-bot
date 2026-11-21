@@ -52,6 +52,12 @@ docker run -p 5001:5001 -e GROQ_API_KEY=gsk_... cv-bot
 Edita `docs/perfil.txt` con tu propio perfil y reinicia. El LLM recibe el documento completo en cada petición.
 
 ## Historial de versiones
+**v0.10.0** — 2026-11-21
+- Rediseño pensado para reclutadores/RRHH: estilo claro y sobrio; la página empieza por el perfil (foto, puesto, ubicación, resumen, datos clave, experiencia, competencias, formación, idiomas y certificaciones) generado desde `docs/cv.json`
+- El asistente pasa a un panel lateral con dos pestañas: «Preguntar» y «Comprobar encaje con una oferta»
+- Fuera elementos con «pinta de IA»: nombre del modelo, barras de tokens, emojis y degradados morados; la versión Alpha pasa al pie de página
+- Nombre completo en la cabecera; en móvil, botón flotante «Preguntar sobre el perfil»
+
 **v0.9.0** — 2026-11-21
 - Diseño en Figma: [CV Bot — Rediseño web](https://www.figma.com/design/GZdaoWyz3EofMczDP5ywrO) — tokens (colores, radios, espaciado), estilos de texto, 18 iconos y componentes (Pill, IconButton, Starter, Avatar, mensajes, Composer) más pantallas de bienvenida, análisis de oferta y móvil
 - La web sigue el diseño: iconos SVG nítidos en lugar de emojis (`icons.py` compartido), cabecera móvil compacta con los iconos de contacto en la misma fila, iconos en las preguntas de ejemplo

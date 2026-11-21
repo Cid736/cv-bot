@@ -3,69 +3,140 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Asistente de CV de Eric C. — Técnico de Sistemas y Soporte IT. Pregunta por su experiencia, proyectos o analiza una oferta de empleo.">
-  <meta name="theme-color" content="#0d0d12">
-  <title>Eric C. - CV Assistant</title>
+  <meta name="description" content="{{ cv.name }} — {{ cv.title }}. Experiencia, competencias, formación y un asistente para resolver dudas sobre el perfil o comprobar el encaje con una oferta.">
+  <meta name="theme-color" content="#ffffff">
+  <title>{{ cv.name }} — {{ cv.title }}</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v={{ version }}">
   <script src="https://cdn.jsdelivr.net/npm/marked@15.0.12/marked.min.js" nonce="{{ nonce }}"></script>
   <script src="https://cdn.jsdelivr.net/npm/dompurify@3.2.6/dist/purify.min.js" nonce="{{ nonce }}"></script>
 </head>
 <body>
-  <div id="alpha-banner">
-    <span class="ab">ALPHA v{{ version }}</span>
-    <span class="ab-text">En desarrollo &mdash; pueden existir errores.</span>
-    <a href="https://github.com/Cid736/cv-bot/issues" target="_blank" rel="noopener">Reportar</a>
-  </div>
-
-  <header>
-    <div class="avatar" aria-hidden="true">EC<span class="online" title="online"></span></div>
-    <div class="htext">
-      <h1>Eric C. <span class="sep">&middot;</span> <span class="role">CV Assistant</span></h1>
-      <p>T&eacute;cnico de Sistemas y Soporte IT &middot; Ask in any language</p>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="#perfil"><span class="mono" aria-hidden="true">EC</span><span>{{ cv.name }}</span></a>
+      <nav class="contact" aria-label="Contacto">
+        {% if 'yourprofile' not in contact_linkedin %}<a class="btn ghost" href="{{ contact_linkedin }}" target="_blank" rel="noopener" aria-label="LinkedIn">{{ icon('linkedin', 16) }}<span class="label">LinkedIn</span></a>{% endif %}
+        {% if 'example.com' not in contact_email %}<a class="btn ghost" href="mailto:{{ contact_email }}" aria-label="Email">{{ icon('mail', 16) }}<span class="label">Email</span></a>{% endif %}
+        {% if cv_available %}<a class="btn primary" href="{{ url_for('cv_pdf') }}" download aria-label="Descargar CV">{{ icon('download', 16) }}<span class="label">Descargar CV</span></a>{% endif %}
+      </nav>
     </div>
-    <nav class="contact" aria-label="Contacto">
-      {% if cv_available %}<a class="pill primary" href="{{ url_for('cv_pdf') }}" download title="Descargar CV (PDF)" aria-label="Descargar CV">{{ icon('file-text', 15) }}<span class="label">CV</span></a>{% endif %}
-      {% if 'yourprofile' not in contact_linkedin %}<a class="pill" href="{{ contact_linkedin }}" target="_blank" rel="noopener" title="LinkedIn" aria-label="LinkedIn">{{ icon('linkedin', 15) }}<span class="label">LinkedIn</span></a>{% endif %}
-      {% if 'example.com' not in contact_email %}<a class="pill" href="mailto:{{ contact_email }}" title="Email" aria-label="Email">{{ icon('mail', 15) }}<span class="label">Email</span></a>{% endif %}
-    </nav>
   </header>
 
-  <div id="toolbar">
-    <div id="usage-panel" title="Uso real reportado por Groq para este modelo">
-      <span id="usage-title">{{ model }} &middot; v{{ version }}</span>
-      <span class="usage-row"><span class="usage-label">Req/d&iacute;a</span>
-        <span class="usage-bar-wrap"><span class="usage-bar" id="usage-bar-req"></span></span>
-        <span class="usage-pct" id="usage-pct-req">&ndash;</span></span>
-      <span class="usage-row"><span class="usage-label">Tok/min</span>
-        <span class="usage-bar-wrap"><span class="usage-bar" id="usage-bar-tok"></span></span>
-        <span class="usage-pct" id="usage-pct-tok">&ndash;</span></span>
-    </div>
-    <div class="tools">
-      <button class="tool" id="speak-toggle" type="button" hidden title="Leer las respuestas en voz alta" aria-label="Leer respuestas en voz alta" aria-pressed="false">{{ icon('volume-off') }}</button>
-      <button class="tool" id="export" type="button" title="Descargar la conversaci&oacute;n (.md)" aria-label="Descargar conversaci&oacute;n">{{ icon('download') }}</button>
-      <button class="tool" id="print" type="button" title="Imprimir o guardar como PDF" aria-label="Imprimir o guardar como PDF">{{ icon('printer') }}</button>
-      <button class="tool" id="reset" type="button" title="Empezar una conversaci&oacute;n nueva" aria-label="Nueva conversaci&oacute;n">{{ icon('rotate') }}</button>
+  <div class="layout" id="perfil">
+    <!-- ── Resumen ─────────────────────────────────────────────── -->
+    <section class="card hero" aria-labelledby="name">
+      <div class="hero-top">
+        <img class="photo" src="{{ url_for('static', filename='foto.webp') }}" width="96" height="96" alt="Foto de {{ cv.name }}">
+        <div>
+          <h1 id="name">{{ cv.name }}</h1>
+          <p class="role">{{ cv.title }}</p>
+          <p class="meta">{{ icon('map-pin', 14) }} {{ cv.location }}</p>
+        </div>
+      </div>
+      <p class="summary">{{ cv.summary }}</p>
+      <dl class="facts">
+        {% for f in cv.facts %}<div><dt>{{ f.label }}</dt><dd>{{ f.value }}</dd></div>{% endfor %}
+      </dl>
+    </section>
+
+    <!-- ── Asistente ───────────────────────────────────────────── -->
+    <aside class="card assistant" id="asistente" aria-labelledby="as-title">
+      <div class="as-head">
+        <div>
+          <h2 id="as-title">Asistente del perfil</h2>
+          <p class="as-sub">Respuestas basadas únicamente en el CV de Eric</p>
+        </div>
+        <div class="tools">
+          <button class="tool" id="speak-toggle" type="button" hidden title="Leer las respuestas en voz alta" aria-label="Leer respuestas en voz alta" aria-pressed="false">{{ icon('volume-off', 16) }}</button>
+          <button class="tool" id="export" type="button" title="Descargar la conversación (.md)" aria-label="Descargar conversación">{{ icon('download', 16) }}</button>
+          <button class="tool" id="print" type="button" title="Imprimir o guardar la conversación como PDF" aria-label="Imprimir conversación">{{ icon('printer', 16) }}</button>
+          <button class="tool" id="reset" type="button" title="Empezar de nuevo" aria-label="Nueva conversación">{{ icon('rotate', 16) }}</button>
+        </div>
+      </div>
+      <div class="tabs" role="tablist" aria-label="Modo del asistente">
+        <button role="tab" id="tab-chat" type="button" aria-selected="true">Preguntar</button>
+        <button role="tab" id="tab-job" type="button" aria-selected="false">Comprobar encaje con una oferta</button>
+      </div>
+
+      <div id="chat" aria-live="polite"></div>
+      <div id="rate-banner" role="status"></div>
+      <div id="chips"></div>
+
+      <form id="form">
+        <div class="composer">
+          <textarea id="input" rows="1" maxlength="{{ max_question_len }}" aria-label="Pregunta"
+                    data-chat-max="{{ max_question_len }}" data-job-max="{{ job_max_len }}"
+                    placeholder="Escribe tu pregunta…"></textarea>
+          <div class="composer-actions">
+            <button class="tool" id="mic" type="button" hidden title="Preguntar por voz" aria-label="Preguntar por voz">{{ icon('mic', 16) }}</button>
+            <button id="btn" type="submit"><span id="btn-label">Enviar</span></button>
+          </div>
+        </div>
+      </form>
+    </aside>
+
+    <!-- ── Detalle del perfil ──────────────────────────────────── -->
+    <div class="details">
+      <section class="card" aria-labelledby="h-exp">
+        <h2 id="h-exp">Experiencia</h2>
+        <ol class="timeline">
+          {% for job in cv.experience %}
+          <li class="{{ 'current' if job.current }}{{ ' internship' if job.internship }}">
+            <div class="tl-head">
+              <div>
+                <h3>{{ job.role }}</h3>
+                <p class="company">{{ job.company }} · {{ job.place }}{% if job.internship %} <span class="tag">Prácticas</span>{% endif %}{% if job.current %} <span class="tag ok">Actual</span>{% endif %}</p>
+              </div>
+              <p class="dates">{{ job.dates }}</p>
+            </div>
+            <ul>{% for b in job.bullets %}<li>{{ b }}</li>{% endfor %}</ul>
+          </li>
+          {% endfor %}
+        </ol>
+      </section>
+
+      <section class="card" aria-labelledby="h-skills">
+        <h2 id="h-skills">Competencias</h2>
+        <div class="skills">
+          {% for g in cv.skills %}
+          <div class="skill-group"><h3>{{ g.group }}</h3>
+            <ul class="tags">{% for s in g['items'] %}<li>{{ s }}</li>{% endfor %}</ul></div>
+          {% endfor %}
+        </div>
+      </section>
+
+      <div class="two">
+        <section class="card" aria-labelledby="h-edu">
+          <h2 id="h-edu">Formación</h2>
+          <ul class="plain">{% for e in cv.education %}<li><strong>{{ e.title }}</strong><span>{{ e.school }} · {{ e.dates }}</span></li>{% endfor %}</ul>
+        </section>
+        <section class="card" aria-labelledby="h-lang">
+          <h2 id="h-lang">Idiomas</h2>
+          <ul class="plain">{% for l in cv.languages %}<li><strong>{{ l.name }}</strong><span>{{ l.level }}</span></li>{% endfor %}</ul>
+          <h2 class="mt" id="h-proj">Proyecto destacado</h2>
+          <p class="project"><strong>{{ cv.project.name }}</strong> — {{ cv.project.text }}<br><span class="muted">{{ cv.project.stack }}</span></p>
+        </section>
+      </div>
+
+      <section class="card" aria-labelledby="h-cert">
+        <h2 id="h-cert">Certificaciones y formación complementaria</h2>
+        <div class="certs">
+          {% for g in cv.certifications %}
+          <div><h3>{{ g.group }}</h3><ul class="plain compact">{% for c in g['items'] %}<li>{{ c }}</li>{% endfor %}</ul></div>
+          {% endfor %}
+        </div>
+      </section>
+
+      <footer class="footer">
+        <span class="ab">Alpha v{{ version }}</span>
+        <a href="https://github.com/Cid736/cv-bot/issues" target="_blank" rel="noopener">Reportar un problema</a>
+        <span>·</span>
+        <a href="https://github.com/Cid736/cv-bot" target="_blank" rel="noopener">Código en GitHub</a>
+      </footer>
     </div>
   </div>
 
-  <main id="chat" aria-live="polite"></main>
-
-  <div id="rate-banner" role="status"></div>
-  <div id="chips"></div>
-
-  <form id="form">
-    <div id="job-pill" hidden>{{ icon('clipboard', 14) }} Modo oferta: pega la descripci&oacute;n del puesto
-      <button type="button" id="job-cancel" title="Volver al chat normal" aria-label="Salir del modo oferta">{{ icon('x', 13) }}</button></div>
-    <div class="composer">
-      <button class="tool" id="job" type="button" title="Analizar una oferta de empleo" aria-label="Analizar una oferta de empleo">{{ icon('clipboard') }}</button>
-      <textarea id="input" rows="1" maxlength="{{ max_question_len }}" aria-label="Pregunta"
-                data-chat-max="{{ max_question_len }}" data-job-max="{{ job_max_len }}"
-                placeholder="Pregunta sobre Eric / Ask about Eric"></textarea>
-      <button class="tool" id="mic" type="button" hidden title="Preguntar por voz" aria-label="Preguntar por voz">{{ icon('mic') }}</button>
-      <button id="btn" type="submit" title="Enviar" aria-label="Enviar">{{ icon('send', 18) }}</button>
-    </div>
-    <p class="hint">Responde solo sobre el perfil profesional de Eric &middot; Enter para enviar, May&uacute;s+Enter nueva l&iacute;nea</p>
-  </form>
+  <a class="ask-fab" href="#asistente">{{ icon('send', 16) }} Preguntar sobre el perfil</a>
 
   <script type="application/json" id="icons">{{ icons_json() }}</script>
   <script src="{{ url_for('static', filename='app.js') }}?v={{ version }}" nonce="{{ nonce }}"></script>

@@ -1,10 +1,9 @@
 'use strict';
 
 const $ = id => document.getElementById(id);
-const chat = $('chat'), input = $('input'), btn = $('btn'), chips = $('chips');
-const banner = $('rate-banner'), usagePanel = $('usage-panel');
-const jobBtn = $('job'), jobPill = $('job-pill');
-const micBtn = $('mic'), speakBtn = $('speak-toggle');
+const chat = $('chat'), input = $('input'), btn = $('btn'), btnLabel = $('btn-label'), chips = $('chips');
+const banner = $('rate-banner'), micBtn = $('mic'), speakBtn = $('speak-toggle');
+const tabChat = $('tab-chat'), tabJob = $('tab-job');
 
 let sid = null;          // server session id
 let lang = null;         // language of the last answer (Spanish, English, ...)
@@ -16,25 +15,20 @@ const transcript = [];   // [{role, text, mode}] for export
 // Same SVG set as icons.py / the Figma file, delivered as JSON in the page.
 let ICONS = {};
 try { ICONS = JSON.parse($('icons').textContent); } catch {}
-function svgIcon(name, size = 18) {
+function svgIcon(name, size = 16) {
   const span = document.createElement('span');
   span.innerHTML = `<svg class="icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" `
     + `stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[name] || ''}</svg>`;
   return span.firstChild;
 }
 
-const DEFAULTS = [
-  "¿Qué hace en su puesto actual en Infinity Neural?",
-  "What did he do as IT Support Technician at AMC Networks?",
-  "¿Qué proyectos ha desarrollado?",
-  "¿Qué certificaciones tiene?",
-  "Why is he a strong fit for an IT support or sysadmin role?",
-];
-const STARTERS = [  // [icon, question] shown on the welcome screen
-  ['briefcase', DEFAULTS[0]],
-  ['monitor', DEFAULTS[1]],
-  ['code', DEFAULTS[2]],
-  ['award', DEFAULTS[3]],
+// Questions recruiters typically ask first.
+const SUGGESTED = [
+  '¿Qué experiencia tiene en soporte IT y sistemas?',
+  '¿Qué hace en su puesto actual en Infinity Neural?',
+  '¿Qué herramientas corporativas ha usado (Intune, ServiceNow, Active Directory)?',
+  '¿Qué formación y certificaciones tiene?',
+  'What is his level of English?',
 ];
 
 // ── Rendering ────────────────────────────────────────────────────────────────
@@ -48,12 +42,10 @@ if (canRender) {
     }
   });
 }
-
 function renderInto(el, text) {
   if (canRender) el.innerHTML = DOMPurify.sanitize(marked.parse(text));
   else el.textContent = text;
 }
-
 function scrollDown() { chat.scrollTop = chat.scrollHeight; }
 
 function addUserMsg(text, mode) {
@@ -62,7 +54,7 @@ function addUserMsg(text, mode) {
   if (mode === 'job') {
     const det = document.createElement('details');
     const sum = document.createElement('summary');
-    sum.textContent = `📋 Oferta de empleo (${text.length} caracteres)`;
+    sum.textContent = `Oferta de empleo (${text.length} caracteres)`;
     det.append(sum, document.createTextNode(text));
     d.appendChild(det);
   } else {
@@ -72,90 +64,82 @@ function addUserMsg(text, mode) {
   scrollDown();
 }
 
-function addBotMsg(wide) {
+function addBotMsg() {
   const row = document.createElement('div');
-  row.className = 'bot-row' + (wide ? ' wide' : '');
-  const av = document.createElement('div');
-  av.className = 'mini-avatar'; av.textContent = 'EC'; av.setAttribute('aria-hidden', 'true');
+  row.className = 'bot-row';
+  const label = document.createElement('div');
+  label.className = 'bot-label'; label.textContent = 'Asistente';
   const d = document.createElement('div');
   d.className = 'msg bot';
   d.innerHTML = '<div class="dots"><span></span><span></span><span></span></div>';
-  row.append(av, d);
+  row.append(label, d);
   chat.appendChild(row);
   scrollDown();
   return d;
 }
 
-// ── Welcome screen (empty conversation) ──────────────────────────────────────
-
-function showWelcome() {
-  chat.innerHTML = '';
-  chips.innerHTML = '';
-  const w = document.createElement('section');
-  w.id = 'welcome';
-  w.innerHTML = `
-    <div class="welcome-card">
-      <div class="avatar" aria-hidden="true">EC<span class="online"></span></div>
-      <div>
-        <h2>Hola 👋 Soy el asistente de CV de Eric</h2>
-        <p class="lead">Pregúntame por su experiencia, proyectos o certificaciones, en cualquier idioma.
-          También puedo comparar su perfil con una oferta de empleo.</p>
-        <div class="facts">
-          <span class="fact">Técnico de Sistemas y Soporte IT</span>
-          <span class="fact">2 años de experiencia</span>
-          <span class="fact">AI System Configurator · Infinity Neural</span>
-          <span class="fact">Badalona, Barcelona</span>
-        </div>
-      </div>
-    </div>
-    <p class="starter-title">Prueba a preguntar</p>
-    <div class="starters"></div>`;
-  const grid = w.querySelector('.starters');
-  for (const [ico, q] of STARTERS) {
-    const b = document.createElement('button');
-    b.type = 'button'; b.className = 'starter';
-    const i = document.createElement('span'); i.className = 'ico'; i.appendChild(svgIcon(ico, 16));
-    const t = document.createElement('span'); t.textContent = q;
-    b.append(i, t);
-    b.addEventListener('click', () => ask(q));
-    grid.appendChild(b);
-  }
-  const job = document.createElement('button');
-  job.type = 'button'; job.className = 'starter job';
-  const ji = document.createElement('span'); ji.className = 'ico'; ji.appendChild(svgIcon('clipboard', 16));
-  const jt = document.createElement('span');
-  jt.innerHTML = 'Analizar una oferta de empleo<small>Pega la descripción del puesto y verás requisito a requisito si Eric encaja</small>';
-  job.append(ji, jt);
-  job.addEventListener('click', () => setJobMode(true));
-  grid.appendChild(job);
-  chat.appendChild(w);
-}
-
-function hideWelcome() {
-  const w = document.getElementById('welcome');
-  if (w) w.remove();
-}
-
 function setChips(list) {
-  [...chips.children].forEach(c => c.classList.add('out'));
-  setTimeout(() => {
-    chips.innerHTML = '';
-    list.forEach(q => {
-      const el = document.createElement('span');
-      el.className = 'chip in';
-      el.textContent = q;
-      el.addEventListener('click', () => ask(q));
-      chips.appendChild(el);
-    });
-    const job = document.createElement('span');
-    job.className = 'chip in job';
-    job.textContent = '📋 Analizar una oferta de empleo';
-    job.addEventListener('click', () => setJobMode(true));
-    chips.appendChild(job);
-  }, 220);
+  chips.innerHTML = '';
+  list.forEach(q => {
+    const el = document.createElement('button');
+    el.type = 'button'; el.className = 'chip'; el.textContent = q;
+    el.addEventListener('click', () => ask(q));
+    chips.appendChild(el);
+  });
 }
 
-// ── Feedback 👍 / 👎 ──────────────────────────────────────────────────────────
+// ── Empty states ─────────────────────────────────────────────────────────────
+
+function showIntro() {
+  chat.innerHTML = ''; chips.innerHTML = '';
+  const box = document.createElement('div');
+  box.className = 'intro';
+  if (!jobMode) {
+    box.innerHTML = '<p>Resuelve dudas sobre la experiencia, la formación o las competencias de Eric. '
+      + 'Puedes preguntar en cualquier idioma.</p><p class="label">Preguntas frecuentes</p>';
+    for (const q of SUGGESTED) {
+      const b = document.createElement('button');
+      b.type = 'button'; b.className = 'suggestion';
+      const t = document.createElement('span'); t.textContent = q;
+      const a = document.createElement('span'); a.className = 'arrow'; a.textContent = '→';
+      b.append(t, a);
+      b.addEventListener('click', () => ask(q));
+      box.appendChild(b);
+    }
+    const link = document.createElement('button');
+    link.type = 'button'; link.className = 'link-btn';
+    link.textContent = '¿Tienes una oferta? Comprueba si encaja con el perfil →';
+    link.addEventListener('click', () => setMode('job'));
+    box.appendChild(link);
+  } else {
+    box.classList.add('job-help');
+    box.innerHTML = '<p>Pega la descripción de la oferta y obtendrás un análisis requisito a requisito, '
+      + 'con los puntos fuertes, las carencias y una valoración general.</p>'
+      + '<ol><li>Copia el texto de la oferta (requisitos, funciones, nivel).</li>'
+      + '<li>Pégalo en el cuadro de abajo.</li><li>Pulsa «Analizar encaje».</li></ol>'
+      + '<p class="legend"><span>✅ Experiencia directa</span><span>🟡 Relacionada</span><span>❌ No figura</span></p>';
+  }
+  chat.appendChild(box);
+}
+function hideIntro() { const i = chat.querySelector('.intro'); if (i) i.remove(); }
+
+// ── Modes (tabs) ─────────────────────────────────────────────────────────────
+
+function setMode(mode) {
+  if (busy) return;
+  jobMode = mode === 'job';
+  tabChat.setAttribute('aria-selected', String(!jobMode));
+  tabJob.setAttribute('aria-selected', String(jobMode));
+  input.classList.toggle('job', jobMode);
+  input.maxLength = Number(jobMode ? input.dataset.jobMax : input.dataset.chatMax);
+  input.placeholder = jobMode ? 'Pega aquí la descripción de la oferta…' : 'Escribe tu pregunta…';
+  btnLabel.textContent = jobMode ? 'Analizar encaje' : 'Enviar';
+  if (!transcript.length) showIntro();
+  resize(input);
+  input.focus();
+}
+
+// ── Feedback 👍 / 👎 and copy ────────────────────────────────────────────────
 
 function addFeedback(bubble, messageId, answer) {
   const bar = document.createElement('div');
@@ -169,19 +153,19 @@ function addFeedback(bubble, messageId, answer) {
     b.appendChild(svgIcon(iconName, 14));
     b.addEventListener('click', async () => {
       current = current === value ? 0 : value;
-      bar.querySelectorAll('button').forEach(x => x.classList.remove('on'));
+      bar.querySelectorAll('button[data-rate]').forEach(x => x.classList.remove('on'));
       if (current) b.classList.add('on');
       thanks.textContent = current ? '¡Gracias!' : '';
       try {
         await fetch('/feedback', {
-          method: 'POST', headers: {'Content-Type': 'application/json'},
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ message_id: messageId, rating: current }),
         });
       } catch {}
     });
+    b.dataset.rate = String(value);
     return b;
   };
-  // Copy works for every answer, rating only for ones the server stored.
   const copy = document.createElement('button');
   copy.type = 'button'; copy.title = 'Copiar respuesta'; copy.setAttribute('aria-label', 'Copiar respuesta');
   copy.appendChild(svgIcon('copy', 14));
@@ -197,60 +181,33 @@ function addFeedback(bubble, messageId, answer) {
   bubble.appendChild(bar);
 }
 
-// ── Job-offer mode ───────────────────────────────────────────────────────────
-
-const narrow = window.matchMedia('(max-width: 600px)');
-function placeholder(job) {
-  if (job) return narrow.matches ? 'Pega la oferta…' : 'Pega la oferta de empleo / Paste the job description';
-  return narrow.matches ? 'Pregunta / Ask…' : 'Pregunta sobre Eric / Ask about Eric';
-}
-
-function setJobMode(on) {
-  if (busy) return;
-  jobMode = on;
-  jobPill.hidden = !on;
-  jobBtn.classList.toggle('active', on);
-  input.classList.toggle('job', on);
-  input.maxLength = Number(on ? input.dataset.jobMax : input.dataset.chatMax);
-  input.placeholder = placeholder(on);
-  input.focus();
-}
-
 // ── Sending & streaming ──────────────────────────────────────────────────────
 
 function resize(el) {
   el.style.height = 'auto';
-  el.style.height = Math.min(el.scrollHeight, jobMode ? 240 : 120) + 'px';
+  el.style.height = Math.min(el.scrollHeight, jobMode ? 260 : 140) + 'px';
 }
 
 async function ask(q) {
   if (busy) return;
+  if (jobMode) setMode('chat');
   input.value = q; resize(input);
   await send();
 }
 
 function showRateBanner(resetMsg) {
-  banner.textContent = '';
-  const strong = document.createElement('strong');
-  strong.textContent = resetMsg || 'consulta la consola de Groq';
-  const link = document.createElement('a');
-  link.href = 'https://github.com/Cid736'; link.target = '_blank'; link.rel = 'noopener';
-  link.textContent = 'github.com/Cid736';
-  banner.append('⚠ Asistente IA pausado (Groq). Respuestas estáticas. ', strong, '. Perfil completo: ', link);
+  banner.textContent = 'El asistente no está disponible en este momento; se muestran respuestas resumidas del perfil. '
+    + (resetMsg ? `(${resetMsg})` : '');
   banner.classList.add('visible');
 }
 
 async function readStream(res, bubble, onMeta) {
   const reader = res.body.getReader();
   const decoder = new TextDecoder();
-  let buffer = '', text = '', result = { text: '', messageId: null, error: null };
+  let buffer = '', text = '';
+  const result = { text: '', messageId: null, error: null };
   let frame = 0;  // pending requestAnimationFrame id (0 = none)
-  const paint = () => {
-    frame = 0;
-    renderInto(bubble, text);
-    bubble.classList.add('cursor');
-    scrollDown();
-  };
+  const paint = () => { frame = 0; renderInto(bubble, text); bubble.classList.add('cursor'); scrollDown(); };
   for (;;) {
     const { value, done } = await reader.read();
     if (done) break;
@@ -261,10 +218,7 @@ async function readStream(res, bubble, onMeta) {
       if (!raw.startsWith('data: ')) continue;
       let ev; try { ev = JSON.parse(raw.slice(6)); } catch { continue; }
       if (ev.type === 'meta') onMeta(ev);
-      else if (ev.type === 'delta') {
-        text += ev.text;
-        if (!frame) frame = requestAnimationFrame(paint);
-      }
+      else if (ev.type === 'delta') { text += ev.text; if (!frame) frame = requestAnimationFrame(paint); }
       else if (ev.type === 'done') result.messageId = ev.message_id;
       else if (ev.type === 'error') result.error = ev.message;
     }
@@ -282,18 +236,17 @@ async function send(e) {
   if (e) e.preventDefault();
   const q = input.value.trim();
   if (!q || busy) return;
-  busy = true; btn.disabled = true;
   const mode = jobMode ? 'job' : 'chat';
+  busy = true; btn.disabled = true;
   const myTurn = ++turn;
   const viaVoice = askedByVoice; askedByVoice = false;
   stopSpeaking();
 
-  hideWelcome();
+  hideIntro(); chips.innerHTML = '';
   addUserMsg(q, mode);
   transcript.push({ role: 'user', text: q, mode });
-  input.value = ''; resize(input);
-  if (jobMode) setJobModeAfterSend();
-  const bubble = addBotMsg(mode === 'job');
+  input.value = '';
+  const bubble = addBotMsg();
 
   try {
     const res = await fetch('/chat', {
@@ -320,24 +273,18 @@ async function send(e) {
     transcript.push({ role: 'bot', text: answer });
     addFeedback(bubble, messageId, answer);
     scrollDown();
-    if (!chips.children.length) setChips(DEFAULTS.filter(d => d !== q).slice(0, 3));
     if (!rateLimited) {
       banner.classList.remove('visible');
-      getSuggestions(mode === 'job' ? 'Análisis de oferta de empleo' : q, answer, lang, myTurn);
-      pollUsage();
+      getSuggestions(mode === 'job' ? 'Análisis de encaje con una oferta de empleo' : q, answer, lang, myTurn);
     }
     if (speakEnabled || viaVoice) speak(answer, lang);
   } catch {
-    bubble.textContent = 'Error de conexión.';
+    bubble.textContent = 'No se ha podido conectar. Inténtalo de nuevo.';
   } finally {
-    busy = false; btn.disabled = false; input.focus();
+    busy = false; btn.disabled = false;
+    if (mode === 'job') setMode('chat');   // follow-up questions about the offer
+    resize(input); input.focus();
   }
-}
-
-function setJobModeAfterSend() {
-  jobMode = false; jobPill.hidden = true; jobBtn.classList.remove('active');
-  input.classList.remove('job'); input.maxLength = Number(input.dataset.chatMax);
-  input.placeholder = placeholder(false);
 }
 
 async function getSuggestions(q, a, answerLang, myTurn) {
@@ -358,9 +305,9 @@ function resetChat() {
   transcript.length = 0;
   banner.classList.remove('visible');
   stopSpeaking();
-  if (jobMode) setJobMode(false);
-  showWelcome();
-  input.value = ''; resize(input); input.focus();
+  input.value = '';
+  setMode('chat');
+  showIntro();
 }
 
 // ── Export ───────────────────────────────────────────────────────────────────
@@ -368,23 +315,15 @@ function resetChat() {
 function exportConversation() {
   if (!transcript.length) { alert('Todavía no hay conversación que exportar.'); return; }
   const date = new Date();
-  const lines = [
-    '# Conversación con el asistente de CV de Eric C.',
-    '',
-    `_${date.toLocaleString()} · ${location.origin}_`,
-    '',
-  ];
+  const lines = ['# Conversación sobre el perfil de Eric Cid López', '', `_${date.toLocaleString()} · ${location.origin}_`, ''];
   for (const m of transcript) {
-    if (m.role === 'user') {
-      lines.push(m.mode === 'job' ? '## 📋 Oferta de empleo' : '## Pregunta', '', m.text, '');
-    } else {
-      lines.push('**Respuesta:**', '', m.text, '', '---', '');
-    }
+    if (m.role === 'user') lines.push(m.mode === 'job' ? '## Oferta de empleo' : '## Pregunta', '', m.text, '');
+    else lines.push('**Respuesta:**', '', m.text, '', '---', '');
   }
   const blob = new Blob([lines.join('\n')], { type: 'text/markdown;charset=utf-8' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = `conversacion-cv-eric-${date.toISOString().slice(0, 10)}.md`;
+  a.download = `conversacion-perfil-eric-cid-${date.toISOString().slice(0, 10)}.md`;
   document.body.appendChild(a); a.click(); a.remove();
   setTimeout(() => URL.revokeObjectURL(a.href), 1000);
 }
@@ -403,14 +342,13 @@ function storageSet(k, v) { try { localStorage.setItem(k, v); } catch {} }
 function plainText(md) {
   return md
     .replace(/```[\s\S]*?```/g, ' ')
-    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')       // links → text
-    .replace(/^\s*\|?\s*:?-{3,}.*$/gm, '')          // table separators
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+    .replace(/^\s*\|?\s*:?-{3,}.*$/gm, '')
     .replace(/\|/g, ', ')
     .replace(/[*_#>`~]/g, '')
     .replace(/✅/g, 'sí').replace(/❌/g, 'no').replace(/🟡/g, 'parcial')
     .replace(/\s+/g, ' ').trim();
 }
-
 function speak(text, answerLang) {
   if (!synth) return;
   stopSpeaking();
@@ -421,7 +359,6 @@ function speak(text, answerLang) {
   u.rate = 1.05;
   synth.speak(u);
 }
-
 function stopSpeaking() { if (synth && (synth.speaking || synth.pending)) synth.cancel(); }
 
 function setupVoice() {
@@ -449,7 +386,6 @@ function setupVoice() {
     recognizer = new Recognition();
     recognizer.lang = BCP47[lang] || navigator.language || 'es-ES';
     recognizer.interimResults = true;
-    recognizer.maxAlternatives = 1;
     let finalText = '';
     recognizer.onresult = ev => {
       let interim = '';
@@ -459,12 +395,9 @@ function setupVoice() {
       }
       input.value = (finalText + interim).trim(); resize(input);
     };
-    recognizer.onerror = ev => {
-      if (ev.error === 'not-allowed') alert('Permite el acceso al micrófono para preguntar por voz.');
-    };
+    recognizer.onerror = ev => { if (ev.error === 'not-allowed') alert('Permite el acceso al micrófono para preguntar por voz.'); };
     recognizer.onend = () => {
-      micBtn.classList.remove('listening');
-      recognizer = null;
+      micBtn.classList.remove('listening'); recognizer = null;
       if (finalText.trim()) { askedByVoice = true; send(); }
     };
     micBtn.classList.add('listening');
@@ -472,29 +405,14 @@ function setupVoice() {
   });
 }
 
-// ── Groq usage bar ───────────────────────────────────────────────────────────
+// ── Mobile: hide the floating "ask" button while the assistant is on screen ──
 
-function paintUsageBar(barEl, pctEl, entry) {
-  if (entry.pct === null || entry.pct === undefined) {
-    pctEl.textContent = '–'; barEl.style.width = '0%'; return;
-  }
-  barEl.style.width = entry.pct + '%';
-  barEl.style.background = entry.pct > 85 ? '#c0392b' : entry.pct > 60 ? '#e09a3a' : 'var(--accent)';
-  pctEl.textContent = Math.round(entry.pct) + '%';
-}
-
-async function pollUsage() {
-  if (document.hidden) return;  // no point polling a background tab
-  try {
-    const data = await (await fetch('/usage')).json();
-    paintUsageBar($('usage-bar-req'), $('usage-pct-req'), data.requests);
-    paintUsageBar($('usage-bar-tok'), $('usage-pct-tok'), data.tokens);
-    const reqTxt = data.requests.remaining !== null
-      ? `${data.requests.remaining}/${data.requests.limit} requests restantes hoy` : 'sin datos aún';
-    const tokTxt = data.tokens.remaining !== null
-      ? `${data.tokens.remaining}/${data.tokens.limit} tokens restantes este minuto` : 'sin datos aún';
-    usagePanel.title = `${reqTxt} · ${tokTxt}`;
-  } catch {}
+function setupFab() {
+  const fab = document.querySelector('.ask-fab');
+  const panel = $('asistente');
+  if (!fab || !('IntersectionObserver' in window)) return;
+  new IntersectionObserver(([e]) => fab.classList.toggle('hide', e.isIntersecting), { threshold: 0.25 }).observe(panel);
+  fab.addEventListener('click', () => setTimeout(() => input.focus({ preventScroll: true }), 400));
 }
 
 // ── Wiring ───────────────────────────────────────────────────────────────────
@@ -502,19 +420,15 @@ async function pollUsage() {
 $('form').addEventListener('submit', send);
 input.addEventListener('input', () => resize(input));
 input.addEventListener('keydown', e => {
-  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); }
+  // In job mode Enter adds lines (pasted offers); Ctrl/Cmd+Enter sends.
+  if (e.key === 'Enter' && !e.shiftKey && (!jobMode || e.ctrlKey || e.metaKey)) { e.preventDefault(); send(); }
 });
+tabChat.addEventListener('click', () => setMode('chat'));
+tabJob.addEventListener('click', () => setMode('job'));
 $('reset').addEventListener('click', resetChat);
 $('export').addEventListener('click', exportConversation);
 $('print').addEventListener('click', () => window.print());
-jobBtn.addEventListener('click', () => setJobMode(!jobMode));
-$('job-cancel').addEventListener('click', () => setJobMode(false));
-document.addEventListener('visibilitychange', () => { if (!document.hidden) pollUsage(); });
 
 setupVoice();
-pollUsage();
-setInterval(pollUsage, 5000);
-input.placeholder = placeholder(false);
-narrow.addEventListener('change', () => { input.placeholder = placeholder(jobMode); });
-showWelcome();
-input.focus();
+setupFab();
+showIntro();
