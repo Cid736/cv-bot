@@ -1,4 +1,25 @@
 # Bug Log — cv-bot
+## 2026-11-21 — Revisión 7
+
+### [MEDIA] Respuestas de respaldo incorrectas por coincidencias parciales
+- **Archivo:** `app.py` — `static_answer()`
+- **Descripción:** Los patrones se buscaban en cualquier posición: "¿Cuánta experiencia tienes?" devolvía la respuesta de IA (`ia` dentro de "experiencia"), "credencial" la de redes (`red`) y "networking" la de proyectos (`work`). Además, las tildes impedían coincidencias ("cuéntame", "por qué").
+- **Fix:** Coincidencia al inicio de palabra (`\b`) y normalización sin tildes. Tests añadidos.
+
+### [MEDIA] Caídas de Groq devolvían 500
+- **Archivo:** `app.py` — `/chat`
+- **Descripción:** Solo `RateLimitError` tenía respuesta de respaldo; un timeout, error de conexión o 5xx terminaba en "Error interno del servidor".
+- **Fix:** `APIConnectionError`/`APIStatusError` usan las respuestas estáticas; cliente con timeout de 30 s y 1 reintento.
+
+### [MEDIA] Servidor de desarrollo de Flask en producción
+- **Archivo:** `render.yaml`, `Dockerfile`
+- **Fix:** gunicorn con 1 worker y 8 hilos (el estado está en memoria); lock para sesiones, cachés y rate limit. Docker sin root y puerto 5001 coherente con el README.
+
+### [BAJA] IP del cliente calculada distinto en `/chat` y `/suggest`
+- **Fix:** Función única `_client_ip()`. Con `TRUSTED_PROXIES=N` se usa `ProxyFix` y la IP escrita por el proxy (no falseable). El hallazgo de la revisión 6 queda resuelto en cuanto se configure ese valor en producción.
+
+### [BAJA] Librerías del CDN sin versión fija
+- **Fix:** `marked@15.0.12` y `dompurify@3.2.6`; el chat sigue funcionando en texto plano si el CDN falla.
 ## 2026-09-28 — Revisión 6
 
 ### [MEDIA] Rate-limit de IP falsificable si el proxy no sanea las cabeceras

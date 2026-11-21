@@ -35,6 +35,13 @@ docker run -p 5001:5001 -e GROQ_API_KEY=gsk_... cv-bot
 Edita `docs/perfil.txt` con tu propio perfil y reinicia. El LLM recibe el documento completo en cada petición.
 
 ## Historial de versiones
+**v0.6.2** — 2026-11-21
+- Fix: las respuestas de respaldo (límite de uso) detectaban palabras clave dentro de otras palabras ("experiencia" → respuesta de IA, "network" → proyectos); ahora se comparan palabras completas, sin tener en cuenta tildes
+- Fiabilidad: caídas, timeouts y errores 5xx de Groq muestran las respuestas estáticas en lugar de un error 500; timeout de 30 s por petición
+- Despliegue: servido con gunicorn (1 worker, 8 hilos) en lugar del servidor de desarrollo de Flask; estado compartido protegido con un lock; Docker se ejecuta sin root y el puerto coincide con el README
+- Seguridad: una sola función de IP de cliente para `/chat` y `/suggest`; `TRUSTED_PROXIES` opcional hace que el rate limit no se pueda falsear tras un proxy; librerías del CDN fijadas a versiones exactas
+- Web: botón "Nueva" para reiniciar la conversación; los enlaces de las respuestas se abren en otra pestaña; las sugerencias tardías de una pregunta anterior ya no sustituyen a las actuales; el sondeo de uso se pausa en pestañas en segundo plano; el chat sigue funcionando (texto plano) si el CDN no responde
+
 **v0.6.1** — 2026-10-01
 - IA: respuestas más completas — cada respuesta incluye al menos un ejemplo concreto (puesto, proyecto, herramientas); la experiencia se explica como trayectoria prácticas → AMC Networks → Infinity Neural
 - IA: más fiel al perfil — cada función se atribuye solo al puesto donde figura, sin cálculos de fechas ni niveles de dominio exagerados

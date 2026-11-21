@@ -43,6 +43,13 @@ docker run -p 5001:5001 -e GROQ_API_KEY=gsk_... cv-bot
 Edit `docs/perfil.txt` with your own profile and restart. The LLM sees the full document on every request.
 
 ## Changelog
+**v0.6.2** — 2026-11-21
+- Fix: rate-limit fallback answers matched keywords inside other words ("experiencia" → AI answer, "network" → projects); now whole-word, accent-insensitive matching
+- Reliability: Groq outages, timeouts and 5xx errors degrade to the static answers instead of a 500; 30 s request timeout
+- Deploy: served by gunicorn (1 worker, 8 threads) instead of Flask's dev server; shared state guarded by a lock; Docker runs as non-root and the port matches the README
+- Security: single client-IP lookup for `/chat` and `/suggest`; optional `TRUSTED_PROXIES` makes the rate limiter unspoofable behind a proxy; CDN libraries pinned to exact versions
+- Web: "New" button to restart the conversation; answer links open in a new tab; late suggestions from a previous question no longer replace the current chips; usage polling pauses in background tabs; chat keeps working (plain text) if the CDN is unreachable
+
 **v0.6.1** — 2026-10-01
 - AI: fuller answers — every reply is backed by at least one concrete example (role, project, tools); experience answers walk through internships → AMC Networks → Infinity Neural
 - AI: stricter grounding — responsibilities only attributed to the role that lists them, no date arithmetic, no inflated skill levels

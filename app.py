@@ -1,13 +1,14 @@
 """
 CV Bot - conversational assistant about Eric C.'s professional profile
-Flask + Groq llama-3.3-70b  (no embeddings, no torch, full profile in context)
+Flask + Groq gpt-oss  (no embeddings, no torch, full profile in context)
 """
 
-import os, sys, json, re, secrets, time, logging
+import os, sys, json, re, secrets, time, logging, threading, unicodedata
 from pathlib import Path
 from collections import defaultdict
 from flask import Flask, request, jsonify, render_template_string
-from groq import Groq, RateLimitError
+from groq import Groq, RateLimitError, APIConnectionError, APIStatusError
+from werkzeug.middleware.proxy_fix import ProxyFix
 from dotenv import load_dotenv
 
 # Maximum number of distinct IPs tracked in rate-limit logs.
@@ -16,7 +17,7 @@ MAX_RATE_IPS = 10_000
 
 load_dotenv()
 
-APP_VERSION     = "0.6.1"
+APP_VERSION     = "0.6.2"
 DOCS_DIR        = Path("./docs")
 MODEL           = "openai/gpt-oss-120b"
 # Follow-up suggestions are a simple task: a smaller model is enough, and on
@@ -29,6 +30,18 @@ CHAT_MAX_TOKENS    = 1500  # includes gpt-oss reasoning tokens
 SUGGEST_MAX_TOKENS = 400
 CONTACT_EMAIL   = os.getenv("CONTACT_EMAIL",   "contact@example.com")
 CONTACT_LINKEDIN = os.getenv("CONTACT_LINKEDIN", "https://www.linkedin.com/in/yourprofile/")
+# Number of reverse proxies in front of the app that append to X-Forwarded-For
+# (e.g. 1 on Render). When set, the client IP is taken from the hop those
+# proxies wrote, so it can't be spoofed by the client. When unset (0), the
+# legacy header lookup is used — fine locally, spoofable behind an open proxy.
+try:
+    TRUSTED_PROXIES = max(0, int(os.getenv("TRUSTED_PROXIES", "0")))
+except ValueError:
+    TRUSTED_PROXIES = 0
+GROQ_TIMEOUT = 30  # seconds per request to Groq
+
+# Sessions, caches and rate-limit logs are shared between server threads.
+_state_lock = threading.Lock()
 
 sessions: dict[str, list] = {}  # session_id -> [{"role":"user"|"assistant","content":str}]
 MAX_SESSIONS = 500
@@ -143,13 +156,15 @@ def _rate_ok(ip: str, store: dict | None = None, max_req: int | None = None) -> 
     if max_req is None:
         max_req = RATE_MAX
     now = time.time()
-    if ip not in store and len(store) >= MAX_RATE_IPS:
-        store.pop(next(iter(store)))
-    hits = [t for t in store.get(ip, []) if now - t < RATE_WINDOW]
-    if len(hits) >= max_req:
-        return False
-    store[ip] = hits + [now]
-    return True
+    with _state_lock:
+        if ip not in store and len(store) >= MAX_RATE_IPS:
+            store.pop(next(iter(store)))
+        hits = [t for t in store.get(ip, []) if now - t < RATE_WINDOW]
+        if len(hits) >= max_req:
+            store[ip] = hits
+            return False
+        store[ip] = hits + [now]
+        return True
 
 def load_profile() -> str:
     txts = list(DOCS_DIR.glob("**/*.txt"))
@@ -436,11 +451,23 @@ SYSTEM_PROMPT   = _fill(SYSTEM_PROMPT)
 FALLBACKS_ES    = [(p, _fill(a)) for p, a in FALLBACKS_ES]
 FALLBACKS_EN    = [(p, _fill(a)) for p, a in FALLBACKS_EN]
 
+def _normalize(text: str) -> str:
+    """Lowercase and strip accents so 'cuéntame' matches 'cuentame', 'por qué' matches 'por que'."""
+    text = unicodedata.normalize('NFKD', text.lower())
+    return ''.join(c for c in text if not unicodedata.combining(c))
+
+# Each keyword must start at a word boundary: otherwise 'ia' matches
+# "experiencia", 'red' matches "credencial" and 'work' matches "network".
+_FALLBACK_RES = {
+    lang: [(re.compile(r'\b(?:' + p + ')'), a) for p, a in table]
+    for lang, table in (("Spanish", FALLBACKS_ES), ("English", FALLBACKS_EN))
+}
+
 def static_answer(question: str, lang: str) -> str:
-    q = question.lower()
-    table = FALLBACKS_ES if lang == "Spanish" else FALLBACKS_EN
+    q = _normalize(question)
+    table = _FALLBACK_RES["Spanish" if lang == "Spanish" else "English"]
     for pattern, answer in table:
-        if re.search(pattern, q):
+        if pattern.search(q):
             return answer
     if lang == "Spanish":
         return (
@@ -455,7 +482,7 @@ def static_answer(question: str, lang: str) -> str:
     )
 
 
-groq_client = Groq()  # reads GROQ_API_KEY from env
+groq_client = Groq(timeout=GROQ_TIMEOUT, max_retries=1)  # reads GROQ_API_KEY from env
 
 def _groq_chat(messages: list[dict], temperature: float, *, model: str = MODEL,
                max_tokens: int = CHAT_MAX_TOKENS, reasoning_effort: str = "low") -> str:
@@ -475,9 +502,10 @@ def _groq_chat(messages: list[dict], temperature: float, *, model: str = MODEL,
     return (completion.choices[0].message.content or "").strip()
 
 def _cache_put(cache: dict, key, value) -> None:
-    if len(cache) >= MAX_CACHE:
-        cache.pop(next(iter(cache)))
-    cache[key] = value
+    with _state_lock:
+        if key not in cache and len(cache) >= MAX_CACHE:
+            cache.pop(next(iter(cache)))
+        cache[key] = value
 
 def _cache_key(text: str, lang: str) -> tuple:
     return (lang, re.sub(r'[\s¿?¡!.,]+', ' ', text.lower()).strip())
@@ -491,8 +519,8 @@ HTML = """<!DOCTYPE html>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Eric C. - CV Assistant</title>
-  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js" nonce="__CSP_NONCE__"></script>
-  <script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js" nonce="__CSP_NONCE__"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked@15.0.12/marked.min.js" nonce="__CSP_NONCE__"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@3.2.6/dist/purify.min.js" nonce="__CSP_NONCE__"></script>
   <style nonce="__CSP_NONCE__">
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
@@ -518,8 +546,14 @@ HTML = """<!DOCTYPE html>
     }
     .htext h1 { font-size: 1rem; color: #fff; font-weight: 600; }
     .htext p  { font-size: 0.76rem; color: var(--muted); margin-top: 2px; }
+    #reset {
+      margin-left: auto; height: 28px; padding: 0 11px;
+      background: transparent; border: 1px solid var(--border);
+      border-radius: 20px; font-size: 0.72rem; color: #aaa;
+    }
+    #reset:hover { background: transparent; border-color: var(--accent); color: #c9a8ff; }
     .badge {
-      margin-left: auto; padding: 4px 10px;
+      padding: 4px 10px;
       background: #1a2e1a; border: 1px solid #2a4a2a;
       border-radius: 20px; font-size: 0.72rem; color: #5a9a5a;
     }
@@ -645,6 +679,7 @@ HTML = """<!DOCTYPE html>
       <h1>Eric C. &mdash; CV Assistant</h1>
       <p>Sistemas &amp; Redes &middot; IA &middot; Cloud &amp; DevOps &middot; Ask in any language</p>
     </div>
+    <button id="reset" type="button" title="Empezar una conversaci&oacute;n nueva">&#8635; Nueva</button>
     <span class="badge">&#9679; online</span>
   </header>
 
@@ -688,6 +723,17 @@ HTML = """<!DOCTYPE html>
     const usagePctTok = document.getElementById('usage-pct-tok');
     let sid  = null;
     let busy = false;
+    let turn = 0;  // bumped on every question/reset so late suggestions are discarded
+
+    // Links in answers (LinkedIn, GitHub) open in a new tab, safely.
+    // If the CDN is unreachable the chat still works, falling back to plain text.
+    const canRender = !!(window.marked && window.DOMPurify);
+    if (canRender) DOMPurify.addHook('afterSanitizeAttributes', node => {
+      if (node.tagName === 'A') {
+        node.setAttribute('target', '_blank');
+        node.setAttribute('rel', 'noopener noreferrer');
+      }
+    });
 
     const DEFAULTS = [
       "¿Qué proyectos has desarrollado y cuál demuestra mejor tu perfil?",
@@ -714,7 +760,7 @@ HTML = """<!DOCTYPE html>
     function addMsg(html, role, markdown) {
       const d = document.createElement('div');
       d.className = 'msg ' + role;
-      if (markdown) d.innerHTML = DOMPurify.sanitize(marked.parse(html));
+      if (markdown && canRender) d.innerHTML = DOMPurify.sanitize(marked.parse(html));
       else d.textContent = html;
       chat.appendChild(d);
       chat.scrollTop = chat.scrollHeight;
@@ -739,13 +785,26 @@ HTML = """<!DOCTYPE html>
       if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(e); }
     }
 
-    async function ask(q) { input.value = q; resize(input); await send(new Event('submit')); }
+    async function ask(q) {
+      if (busy) return;
+      input.value = q; resize(input); await send(new Event('submit'));
+    }
+
+    function resetChat() {
+      if (busy) return;
+      sid = null; turn++;
+      chat.innerHTML = '';
+      banner.classList.remove('visible');
+      setChips(DEFAULTS);
+      input.value = ''; resize(input); input.focus();
+    }
 
     async function send(e) {
       e.preventDefault();
       const q = input.value.trim();
       if (!q || busy) return;
       busy = true; btn.disabled = true;
+      const myTurn = ++turn;
 
       addMsg(q, 'user', false);
       input.value = ''; resize(input);
@@ -775,7 +834,7 @@ HTML = """<!DOCTYPE html>
             banner.classList.add('visible');
           } else {
             banner.classList.remove('visible');
-            getSuggestions(q, data.answer);
+            getSuggestions(q, data.answer, myTurn);
             pollUsage();
           }
         }
@@ -783,14 +842,14 @@ HTML = """<!DOCTYPE html>
       finally { busy = false; btn.disabled = false; input.focus(); }
     }
 
-    async function getSuggestions(q, a) {
+    async function getSuggestions(q, a, myTurn) {
       try {
         const res  = await fetch('/suggest', {
           method: 'POST', headers: {'Content-Type':'application/json'},
           body: JSON.stringify({ question: q, answer: a })
         });
         const data = await res.json();
-        if (Array.isArray(data.suggestions) && data.suggestions.length)
+        if (myTurn === turn && Array.isArray(data.suggestions) && data.suggestions.length)
           setChips(data.suggestions);
       } catch {}
     }
@@ -807,6 +866,7 @@ HTML = """<!DOCTYPE html>
     }
 
     async function pollUsage() {
+      if (document.hidden) return;  // no point polling a background tab
       try {
         const res = await fetch('/usage');
         const data = await res.json();
@@ -823,6 +883,8 @@ HTML = """<!DOCTYPE html>
     document.getElementById('form').addEventListener('submit', send);
     input.addEventListener('input', function () { resize(this); });
     input.addEventListener('keydown', onKey);
+    document.getElementById('reset').addEventListener('click', resetChat);
+    document.addEventListener('visibilitychange', () => { if (!document.hidden) pollUsage(); });
 
     pollUsage();
     setInterval(pollUsage, 5000);
@@ -835,6 +897,16 @@ HTML = """<!DOCTYPE html>
 # ── Flask ─────────────────────────────────────────────────────────────────────
 
 app = Flask(__name__)
+if TRUSTED_PROXIES:
+    app.wsgi_app = ProxyFix(app.wsgi_app, x_for=TRUSTED_PROXIES)
+
+def _client_ip() -> str:
+    """Single source of truth for the rate-limit key, shared by every endpoint."""
+    if TRUSTED_PROXIES:
+        return request.remote_addr or 'unknown'  # already resolved by ProxyFix
+    return (request.headers.get('X-Real-IP') or
+            request.headers.get('X-Forwarded-For', '').split(',')[0].strip() or
+            request.remote_addr or 'unknown')
 
 @app.after_request
 def security_headers(resp):
@@ -899,16 +971,14 @@ def chat_route():
         return jsonify({'error': 'Empty question'}), 400
     if len(question) > MAX_QUESTION_LEN:
         return jsonify({'error': f'Pregunta demasiado larga (máx. {MAX_QUESTION_LEN} caracteres)'}), 400
-    client_ip = (request.headers.get('X-Real-IP') or
-                 request.headers.get('X-Forwarded-For', '').split(',')[0].strip() or
-                 request.remote_addr or '')
-    if not _rate_ok(client_ip):
+    if not _rate_ok(_client_ip()):
         return jsonify({'error': 'Demasiadas peticiones. Espera un momento.'}), 429
 
-    history = sessions.get(sid, [])
+    with _state_lock:
+        history = list(sessions.get(sid, []))
 
     lang    = detect_lang(question)
-    # Escape braces in PROFILE so user-supplied docs with {} (JSON, code) don't crash .format()
+    # str.replace (not .format) so a profile containing {} (JSON, code) can't break it
     system  = SYSTEM_PROMPT.replace('{profile}', PROFILE).replace('{lang}', lang)
     messages = [{"role": "system", "content": system}]
     recent = history[-HISTORY_SENT:]
@@ -934,11 +1004,12 @@ def chat_route():
             if cache_key:
                 _cache_put(_answer_cache, cache_key, answer)
         history.append({"q": question, "a": answer})
-        if sid in sessions:
-            sessions.pop(sid)
-        elif len(sessions) >= MAX_SESSIONS:
-            sessions.pop(next(iter(sessions)))
-        sessions[sid] = history[-MAX_HISTORY:]
+        with _state_lock:
+            if sid in sessions:
+                sessions.pop(sid)
+            elif len(sessions) >= MAX_SESSIONS:
+                sessions.pop(next(iter(sessions)))
+            sessions[sid] = history[-MAX_HISTORY:]
         return jsonify({"answer": answer, "session_id": sid})
     except RateLimitError as e:
         # Groq includes "Please try again in Xs" or "Xm Ys" in the message
@@ -953,16 +1024,20 @@ def chat_route():
             reset_msg = "Reintentar en ~60 segundos (limite por minuto)"
         answer = static_answer(question, lang)
         return jsonify({"answer": answer, "session_id": sid, "rate_limited": True, "reset_msg": reset_msg})
+    except (APIConnectionError, APIStatusError):
+        # Groq down, timing out or returning 5xx: degrade to the static answers
+        # instead of a bare 500, same as when the quota runs out.
+        logging.exception("Groq API error in /chat")
+        answer = static_answer(question, lang)
+        return jsonify({"answer": answer, "session_id": sid, "rate_limited": True,
+                        "reset_msg": "Servicio de IA no disponible ahora mismo, reintenta en unos segundos"})
     except Exception:
         logging.exception("Unhandled error in /chat")
         return jsonify({'error': 'Error interno del servidor'}), 500
 
 @app.route('/suggest', methods=['POST'])
 def suggest():
-    ip = (request.headers.get('X-Forwarded-For') or
-          request.headers.get('X-Real-IP') or
-          request.remote_addr or 'unknown').split(',')[0].strip()
-    if not _rate_ok(ip, store=_suggest_rate_log, max_req=SUGGEST_RATE_MAX):
+    if not _rate_ok(_client_ip(), store=_suggest_rate_log, max_req=SUGGEST_RATE_MAX):
         return jsonify({'error': 'Too many requests'}), 429
     data = request.get_json(silent=True)
     if not isinstance(data, dict):

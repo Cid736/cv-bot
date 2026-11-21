@@ -74,6 +74,46 @@ class AppBehaviorTests(unittest.TestCase):
         self.assertIn("in English.", captured["prompt"])
         self.assertEqual(captured["temperature"], 0.3)
 
+    def test_static_fallback_matches_whole_words_and_ignores_accents(self):
+        cases = [
+            ("¿Cuánta experiencia tienes?", "Spanish", "más de dos años"),
+            ("¿Por qué deberíamos contratarte?", "Spanish", "Porque tengo base"),
+            ("Cuéntame sobre ti", "Spanish", "Soy Eric C."),
+            ("Do you know networking?", "English", "systems & networking"),
+            ("How many years of experience?", "English", "2+ years"),
+        ]
+        for question, lang, expected in cases:
+            with self.subTest(question=question):
+                self.assertIn(expected, app.static_answer(question, lang))
+
+    def test_groq_outage_degrades_to_static_answer(self):
+        import httpx
+        err = app.APIConnectionError(request=httpx.Request("POST", "https://api.groq.com"))
+        with patch.object(app, "_groq_chat", side_effect=err):
+            response = app.app.test_client().post(
+                "/chat", json={"question": "Cuéntame sobre ti"},
+                environ_base={"REMOTE_ADDR": "test-client"},
+            )
+        self.assertEqual(response.status_code, 200)
+        data = response.get_json()
+        self.assertTrue(data["rate_limited"])
+        self.assertIn("Soy Eric C.", data["answer"])
+
+    def test_chat_and_suggest_share_the_same_client_ip(self):
+        headers = {"X-Real-IP": "1.1.1.1", "X-Forwarded-For": "2.2.2.2"}
+        with app.app.test_request_context("/", headers=headers):
+            chat_ip = app._client_ip()
+        with patch.object(app, "_groq_chat", return_value='["a?"]'):
+            app.app.test_client().post("/suggest", json={"question": "q", "answer": "a"},
+                                       headers=headers)
+        self.assertEqual(chat_ip, "1.1.1.1")
+        self.assertIn("1.1.1.1", app._suggest_rate_log)
+
+    def test_index_pins_cdn_versions(self):
+        html = app.app.test_client().get("/").get_data(as_text=True)
+        self.assertIn("marked@15.0.12", html)
+        self.assertIn("dompurify@3.2.6", html)
+
 
 if __name__ == "__main__":
     unittest.main()
