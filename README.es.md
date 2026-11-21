@@ -52,6 +52,11 @@ docker run -p 5001:5001 -e GROQ_API_KEY=gsk_... cv-bot
 Edita `docs/perfil.txt` con tu propio perfil y reinicia. El LLM recibe el documento completo en cada petición.
 
 ## Historial de versiones
+**v0.14.0** — 2026-11-21
+- Botones de contacto (LinkedIn, Email) visibles por defecto con los datos públicos del CV; las variables de entorno siguen teniendo prioridad
+- Móvil: la página hace scroll de forma natural con la caja de escribir fija abajo (sin caja dentro de caja), más espacio, cabecera más corta y sugerencias compactas alineadas a la izquierda
+- Las respuestas ya no terminan con una pregunta; las sugerencias son cortas y en tercera persona
+
 **v0.13.0** — 2026-11-21
 - Respuestas más rápidas y más por minuto: el contexto de cada pregunta baja de ≈4 600 a ≈2 000 tokens (`perfil.txt` compacto con los mismos datos del CV y reglas más cortas), menos historial y límites de salida ajustados
 - Si `gpt-oss-120b` agota su cuota o falla, responde `gpt-oss-20b` (cuota propia y más rápido) en lugar de textos fijos; sin reintentos del SDK para no esperar antes de cambiar

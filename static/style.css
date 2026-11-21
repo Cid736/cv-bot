@@ -164,7 +164,7 @@ button.tool[aria-pressed="true"] { background: var(--accent-soft); color: var(--
 #rate-banner.visible { display: block; }
 #chips { display: flex; flex-wrap: wrap; gap: 6px; padding: 2px 20px 6px; }
 #chips:empty { display: none; }
-.chip { padding: 6px 11px; border: 1px solid var(--border); border-radius: 999px; font-size: .8rem; color: var(--text-2); cursor: pointer; background: var(--surface); }
+.chip { padding: 7px 12px; border: 1px solid var(--border); border-radius: 10px; font-size: .82rem; line-height: 1.35; text-align: left; color: var(--text-2); cursor: pointer; background: var(--surface); }
 .chip:hover { border-color: var(--accent); color: var(--accent); }
 
 #form { padding: 6px 20px 18px; }
@@ -242,7 +242,13 @@ dialog::backdrop { background: rgba(15, 20, 25, .55); }
 /* ── Responsive ───────────────────────────────────────────── */
 @media (max-width: 980px) {
   .layout { grid-template-columns: minmax(0, 1fr); }
-  .assistant { position: static; height: calc(100dvh - var(--topbar) - 24px); }
+  /* Narrow screens: the page itself scrolls (no box-in-a-box) and the composer
+     stays pinned to the bottom of the screen while reading. */
+  .assistant { position: static; height: auto; min-height: calc(100dvh - var(--topbar) - 24px); overflow: visible; }
+  #chat { overflow: visible; flex: 1 0 auto; }
+  .msg, .bot-row, .intro { scroll-margin-bottom: 150px; }
+  #form { position: sticky; bottom: 0; z-index: 3; background: var(--surface); border-radius: 0 0 var(--radius) var(--radius);
+          padding-bottom: calc(14px + env(safe-area-inset-bottom)); box-shadow: 0 -10px 16px -14px rgba(0, 0, 0, .35); }
   .side { display: grid; grid-template-columns: 1fr 1fr; }
   .side .mini { grid-row: span 2; }
 }
@@ -252,20 +258,25 @@ dialog::backdrop { background: rgba(15, 20, 25, .55); }
   .topbar .btn { width: 36px; padding: 0; justify-content: center; }
   .brand span:last-child { font-size: .92rem; }
   .layout { padding: 10px; gap: 12px; }
-  .assistant { height: calc(100dvh - var(--topbar) - 20px); min-height: 480px; }
+  .assistant { min-height: calc(100dvh - var(--topbar) - 20px); }
   .as-head { padding: 12px 10px 10px 14px; gap: 10px; }
   .as-photo { width: 34px; height: 34px; }
-  .as-head h1 { font-size: .95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .as-sub { font-size: .74rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .as-head h1 { font-size: 1rem; }
+  .as-sub { font-size: .78rem; }
+  .hide-sm { display: none; }
   .tools button.tool { width: 28px; }
-  .tabs { margin: 10px 12px 0; }
-  .tabs button { font-size: .78rem; padding: 7px 6px; }
-  #chat { padding: 14px 12px 6px; }
+  .tabs { margin: 12px 14px 0; }
+  .tabs button { font-size: .8rem; padding: 9px 6px; }
+  #chat { padding: 18px 14px 10px; gap: 16px; }
+  .msg { font-size: .95rem; line-height: 1.6; }
+  .msg.bot { padding: 12px 14px; }
+  .msg.user { max-width: 88%; }
   .intro h2 { font-size: 1.15rem; }
   .suggestions { grid-template-columns: 1fr; }
   .bot-row { max-width: 100%; }
   .bot-avatar { display: none; }
-  #chips, #form { padding-left: 12px; padding-right: 12px; }
+  #chips, #form { padding-left: 14px; padding-right: 14px; }
+  #chips { gap: 8px; padding-top: 4px; padding-bottom: 10px; }
   #rate-banner { margin: 0 12px 6px; }
   .hint { display: none; }
   .side { display: flex; }

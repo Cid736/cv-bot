@@ -80,7 +80,7 @@ class AppBehaviorTests(unittest.TestCase):
             )
 
         self.assertEqual(response.status_code, 200)
-        self.assertIn("in English.", captured["prompt"])
+        self.assertIn("questions in English", captured["prompt"])
         self.assertEqual(captured["temperature"], 0.3)
 
     def test_static_fallback_matches_whole_words_and_ignores_accents(self):
@@ -396,6 +396,16 @@ class AppBehaviorTests(unittest.TestCase):
     def test_system_prompt_stays_compact(self):
         system = app.SYSTEM_PROMPT.replace("{profile}", app.PROFILE)
         self.assertLess(len(system), 10_000)  # ≈2.7k tokens; was ≈4.6k tokens before
+
+    def test_contact_buttons_show_by_default(self):
+        html = app.app.test_client().get("/").get_data(as_text=True)
+        self.assertIn('href="mailto:cidlopezeric@gmail.com"', html)
+        self.assertIn("linkedin.com/in/eric-cid-l%C3%B3pez-b38b37273", html)
+        self.assertNotIn("example.com", app.SYSTEM_PROMPT)
+
+    def test_suggestions_are_third_person(self):
+        self.assertIn("third person", app.SUGGEST_PROMPT)
+        self.assertIn("Never end with a question", app.SYSTEM_PROMPT)
 
     def test_eval_checks(self):
         from evals.run_evals import check

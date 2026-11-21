@@ -40,8 +40,8 @@
       <div class="as-head">
         <img class="as-photo" src="{{ url_for('static', filename='foto.webp') }}" width="40" height="40" alt="">
         <div>
-          <h1 id="as-title">Asistente de CV de {{ cv.name }}</h1>
-          <p class="as-sub">Respuestas basadas únicamente en su CV · {{ cv.title }}</p>
+          <h1 id="as-title">Asistente de CV<span class="hide-sm"> de {{ cv.name }}</span></h1>
+          <p class="as-sub">Respuestas basadas en su CV<span class="hide-sm"> · {{ cv.title }}</span></p>
         </div>
         <div class="tools">
           <button class="tool" id="speak-toggle" type="button" hidden title="Leer las respuestas en voz alta" aria-label="Leer respuestas en voz alta" aria-pressed="false">{{ icon('volume-off', 16) }}</button>
