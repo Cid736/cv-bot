@@ -1,8 +1,13 @@
+import json
 import os
 import unittest
 from unittest.mock import patch
 
+import tempfile
+
 os.environ.setdefault("GROQ_API_KEY", "test-key")
+os.environ["STATS_DB"] = os.path.join(tempfile.mkdtemp(), "stats.db")
+os.environ["STATS_TOKEN"] = "secret-token"
 
 import app
 
@@ -164,6 +169,91 @@ class AppBehaviorTests(unittest.TestCase):
         html = app.app.test_client().get("/").get_data(as_text=True)
         self.assertIn("marked@15.0.12", html)
         self.assertIn("dompurify@3.2.6", html)
+
+    # ── v0.7 features ────────────────────────────────────────────────────────
+
+    def _post(self, payload, ip="t"):
+        return app.app.test_client().post("/chat", json=payload, environ_base={"REMOTE_ADDR": ip})
+
+    def test_streaming_sends_deltas_and_saves_session(self):
+        with patch.object(app, "_groq_stream", return_value=iter(["**Eric** ", "trabaja ", "en Infinity Neural."])):
+            res = self._post({"question": "¿Dónde trabaja?", "stream": True})
+        self.assertEqual(res.mimetype, "text/event-stream")
+        events = [json.loads(line[6:]) for line in res.get_data(as_text=True).split("\n\n") if line.startswith("data: ")]
+        self.assertEqual(events[0]["type"], "meta")
+        self.assertEqual("".join(e["text"] for e in events if e["type"] == "delta"),
+                         "**Eric** trabaja en Infinity Neural.")
+        self.assertEqual(events[-1]["type"], "done")
+        self.assertRegex(events[-1]["message_id"], r"^[0-9a-f]{16}$")
+        self.assertEqual(app.sessions[events[0]["session_id"]][-1]["a"], "**Eric** trabaja en Infinity Neural.")
+
+    def test_streaming_rate_limit_returns_static_json(self):
+        import httpx
+        err = app.RateLimitError("Please try again in 7s.", response=httpx.Response(
+            429, request=httpx.Request("POST", "https://api.groq.com")), body=None)
+        with patch.object(app, "_groq_stream", side_effect=err):
+            res = self._post({"question": "Cuéntame sobre ti", "stream": True})
+        data = res.get_json()
+        self.assertTrue(data["rate_limited"])
+        self.assertIn("7s", data["reset_msg"])
+
+    def test_job_mode_wraps_offer_and_allows_long_text(self):
+        captured = {}
+
+        def fake(messages, temperature, **kwargs):
+            captured.update(messages=messages, **kwargs)
+            return "| Requisito | Encaje |"
+
+        offer = "Requisitos: Intune, ServiceNow, Active Directory. " * 40  # > MAX_QUESTION_LEN
+        self.assertGreater(len(offer), app.MAX_QUESTION_LEN)
+        with patch.object(app, "_groq_chat", side_effect=fake):
+            res = self._post({"question": offer, "mode": "job"})
+        self.assertEqual(res.status_code, 200)
+        self.assertIn("<job_description>", captured["messages"][-1]["content"])
+        self.assertEqual(captured["max_tokens"], app.JOB_MAX_TOKENS)
+        self.assertEqual(captured["reasoning_effort"], "medium")
+        too_long = self._post({"question": "x" * (app.JOB_MAX_LEN + 1), "mode": "job"})
+        self.assertEqual(too_long.status_code, 400)
+
+    def test_feedback_is_stored_and_shown_in_stats(self):
+        with patch.object(app, "_groq_chat", return_value="Not specified in the profile."):
+            msg_id = self._post({"question": "Does he know Rust?"}).get_json()["message_id"]
+        client = app.app.test_client()
+        self.assertTrue(client.post("/feedback", json={"message_id": msg_id, "rating": -1}).get_json()["ok"])
+        self.assertEqual(client.post("/feedback", json={"message_id": "nope", "rating": 1}).status_code, 400)
+        self.assertEqual(client.post("/feedback", json={"message_id": msg_id, "rating": 5}).status_code, 400)
+        summary = client.get("/stats.json?token=secret-token").get_json()
+        self.assertIn("Does he know Rust?", [r["question"] for r in summary["disliked"]])
+        self.assertIn("Does he know Rust?", [r["question"] for r in summary["not_covered"]])
+
+    def test_stats_require_token(self):
+        client = app.app.test_client()
+        self.assertEqual(client.get("/stats").status_code, 404)
+        self.assertEqual(client.get("/stats?token=wrong").status_code, 404)
+        page = client.get("/stats?token=secret-token")
+        self.assertEqual(page.status_code, 200)
+        self.assertIn("estad", page.get_data(as_text=True))
+
+    def test_public_cv_has_no_phone_number(self):
+        res = app.app.test_client().get("/cv.pdf")
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.mimetype, "application/pdf")
+        try:
+            from pypdf import PdfReader
+        except ImportError:
+            self.skipTest("pypdf not installed")
+        import io
+        text = "".join(p.extract_text() for p in PdfReader(io.BytesIO(res.data)).pages)
+        self.assertIn("Infinity Neural", text)
+        self.assertNotIn("611", text)
+
+    def test_eval_checks(self):
+        from evals.run_evals import check
+        self.assertEqual(check({"lang": "English", "must_contain_any": ["two years"]},
+                               "He has two years of experience in IT support."), [])
+        self.assertTrue(check({"must_not_match": ["611"]}, "Call 611 409 833"))
+        self.assertTrue(check({"off_topic": True}, "Kubernetes is... ```kubectl get pods```"))
+        self.assertTrue(check({"lang": "English"}, "Tiene dos años de experiencia en soporte y sistemas."))
 
 
 if __name__ == "__main__":

@@ -8,5 +8,11 @@ services:
     envVars:
       - key: GROQ_API_KEY
         sync: false        # set manually in Render dashboard
+      - key: CONTACT_EMAIL       # shown in the header and given by the bot
+        sync: false
+      - key: CONTACT_LINKEDIN
+        sync: false
+      - key: STATS_TOKEN         # long random string; enables /stats?token=...
+        sync: false
       - key: PORT
         value: 10000       # Render assigns this automatically

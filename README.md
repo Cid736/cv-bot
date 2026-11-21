@@ -19,10 +19,27 @@ Python · Flask · Groq API — `openai/gpt-oss-120b` (chat) · `openai/gpt-oss-
 1. Loads `docs/perfil.txt` at startup (~15KB profile, compacted at load)
 2. On each question: sends the full profile + conversation history to the LLM
 3. The assistant answers from profile evidence, labels reasonable inferences, and avoids inventing experience
-4. Language is detected consistently for answers and recruiter follow-up suggestions in Spanish or English
+4. The language of each question is detected (7 languages) and used for the answer and the follow-up suggestions
 5. When Groq rate limit is hit (429): falls back to static answers from the profile, shows reset time
 
 No embeddings, no vector database, no GPU needed. The full profile fits comfortably in the 128K context window.
+
+## Features
+- **Streaming answers** — text appears word by word (Server-Sent Events)
+- **Job-offer analysis** — paste a job description (up to 6 000 chars) and get a requirement-by-requirement table (✅ direct · 🟡 related · ❌ missing), strengths, gaps and a verdict
+- **Contact & CV** — LinkedIn, email and a downloadable CV (phone number removed) always visible in the header
+- **Export** — download the conversation as Markdown, or print / save it as PDF
+- **Feedback** — 👍/👎 on every answer
+- **Voice** — ask with the microphone and hear the answer (browser Web Speech API, no server cost); asking by voice replies by voice
+- **Any language** — Spanish, English, Catalan, French, Portuguese, Italian, German
+- **Private stats** at `/stats?token=…` — conversations per day, languages, top questions, questions the profile doesn't cover, 👎 answers, job offers analysed. Anonymous: no IPs stored
+
+## Quality checks (real model)
+```bash
+GROQ_API_KEY=gsk_... python evals/run_evals.py        # 19 cases, exit code 1 on failure
+python evals/run_evals.py --only phone,offtopic-code -v
+```
+Checks reply language, required facts, no phone number / invented years / salary figures, off-topic refusals and the job-offer table.
 
 ## Setup
 ```bash
@@ -43,6 +60,10 @@ docker run -p 5001:5001 -e GROQ_API_KEY=gsk_... cv-bot
 Edit `docs/perfil.txt` with your own profile and restart. The LLM sees the full document on every request.
 
 ## Changelog
+**v0.7.0** — 2026-11-21
+- New: streaming answers, job-offer analysis with fit table, contact/CV buttons, conversation export (Markdown / PDF), 👍/👎 feedback, voice input and spoken answers, private anonymous stats dashboard, real-model quality checks (`evals/`)
+- Front-end moved out of `app.py` into `templates/` and `static/`
+
 **v0.6.2** — 2026-11-21
 - Languages: new language detector (Spanish, English, Catalan, French, Portuguese, Italian, German) that ignores CV names like "Málaga" or "Instituto Escuela de Badalona"; short follow-ups ("ok", "Docker?") keep the conversation's language; the model must translate the Spanish profile instead of mixing languages; suggestions use the same language as the answer. On a set of 30 unseen questions: 2 misses vs 19 with the old detector
 - Profile: synced with the new CV — title *IT Systems & Support Technician*, two years of experience, exact FCT internship dates, IBM / Deloitte / Anthropic Claude Academy certifications; skills not on the CV removed (Jira, Slack, NoSQL)
@@ -144,6 +165,23 @@ Python · Flask · Groq API — `openai/gpt-oss-120b` (chat) · `openai/gpt-oss-
 5. Si Groq alcanza el límite de peticiones (429): responde con datos estáticos del perfil y muestra el tiempo de espera
 
 Sin embeddings, sin base de datos vectorial, sin GPU. El perfil completo cabe en la ventana de contexto de 128K.
+
+## Funciones
+- **Respuestas en streaming** — el texto aparece palabra a palabra (Server-Sent Events)
+- **Análisis de ofertas** — pega una oferta (hasta 6 000 caracteres) y obtén una tabla requisito por requisito (✅ directa · 🟡 relacionada · ❌ no figura), puntos fuertes, carencias y veredicto
+- **Contacto y CV** — LinkedIn, email y CV descargable (sin teléfono) siempre visibles en la cabecera
+- **Exportar** — descarga la conversación en Markdown o imprímela / guárdala como PDF
+- **Valoraciones** — 👍/👎 en cada respuesta
+- **Voz** — pregunta con el micrófono y escucha la respuesta (Web Speech API del navegador, sin coste de servidor); si preguntas por voz, responde por voz
+- **Cualquier idioma** — español, inglés, catalán, francés, portugués, italiano, alemán
+- **Estadísticas privadas** en `/stats?token=…` — conversaciones por día, idiomas, preguntas frecuentes, preguntas que el perfil no cubre, respuestas con 👎 y ofertas analizadas. Anónimas: no se guardan IPs
+
+## Pruebas de calidad (modelo real)
+```bash
+GROQ_API_KEY=gsk_... python evals/run_evals.py        # 19 casos, código de salida 1 si falla alguno
+python evals/run_evals.py --only phone,offtopic-code -v
+```
+Comprueba idioma de respuesta, datos clave, que no dé el teléfono ni invente años o cifras de salario, que rechace temas ajenos y la tabla de ofertas.
 
 ## Instalación
 ```bash
