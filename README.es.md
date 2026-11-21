@@ -8,7 +8,7 @@ Live: [cv-bot-hxku.onrender.com](https://cv-bot-hxku.onrender.com)
 Python · Flask · Groq API — `openai/gpt-oss-120b` (chat) · `openai/gpt-oss-20b` (sugerencias)
 
 ## Cómo funciona
-1. Carga `docs/perfil.txt` al arrancar (~15KB de perfil, compactado al cargar)
+1. Carga `docs/perfil.txt` al arrancar (~5KB, ≈1,4k tokens, compactado al cargar)
 2. En cada pregunta: envía el perfil completo + historial de conversación al LLM
 3. Basa las respuestas en el perfil, identifica las inferencias y evita inventar experiencia
 4. Detecta el idioma de cada pregunta (7 idiomas) y lo usa en la respuesta y en las sugerencias
@@ -52,6 +52,12 @@ docker run -p 5001:5001 -e GROQ_API_KEY=gsk_... cv-bot
 Edita `docs/perfil.txt` con tu propio perfil y reinicia. El LLM recibe el documento completo en cada petición.
 
 ## Historial de versiones
+**v0.13.0** — 2026-11-21
+- Respuestas más rápidas y más por minuto: el contexto de cada pregunta baja de ≈4 600 a ≈2 000 tokens (`perfil.txt` compacto con los mismos datos del CV y reglas más cortas), menos historial y límites de salida ajustados
+- Si `gpt-oss-120b` agota su cuota o falla, responde `gpt-oss-20b` (cuota propia y más rápido) en lugar de textos fijos; sin reintentos del SDK para no esperar antes de cambiar
+- Razonamiento medio solo para preguntas de encaje; las primeras respuestas también se guardan en SQLite (sobreviven a reinicios del proceso y se invalidan si cambia el perfil, el prompt o el modelo)
+- marked y DOMPurify servidos desde la propia web y diferidos: sin peticiones a terceros ni bloqueo del pintado; caché de una semana para los estáticos
+
 **v0.12.0** — 2026-11-21
 - El asistente vuelve a ser lo principal: ocupa la columna grande con «¿Qué quieres saber sobre Eric?», preguntas frecuentes de reclutadores y la comprobación de ofertas; el perfil pasa a un lateral compacto (foto, datos clave, trayectoria y competencias clave) con «Ver perfil completo» en una ventana; en móvil el asistente aparece primero
 - Arreglos de la revisión completa: ofertas durante una caída reciben un aviso de «análisis no disponible» en vez de una respuesta que no viene al caso; las preguntas de seguimiento ven la oferta completa; respuestas de respaldo correctas para «por qué contratarle» y «lenguajes de programación»; nunca se guardan en caché respuestas cortadas; una respuesta vacía usa el respaldo en vez de dar 500; condición de carrera en `/suggest`; og:image con https; token no ASCII en `/stats`; texto largo al cambiar de pestaña

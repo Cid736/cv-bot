@@ -16,7 +16,7 @@ Live: [cv-bot-hxku.onrender.com](https://cv-bot-hxku.onrender.com)
 Python · Flask · Groq API — `openai/gpt-oss-120b` (chat) · `openai/gpt-oss-20b` (suggestions)
 
 ## How it works
-1. Loads `docs/perfil.txt` at startup (~15KB profile, compacted at load)
+1. Loads `docs/perfil.txt` at startup (~5KB, ≈1.4k tokens, compacted at load)
 2. On each question: sends the full profile + conversation history to the LLM
 3. The assistant answers from profile evidence, labels reasonable inferences, and avoids inventing experience
 4. The language of each question is detected (7 languages) and used for the answer and the follow-up suggestions
@@ -60,6 +60,12 @@ docker run -p 5001:5001 -e GROQ_API_KEY=gsk_... cv-bot
 Edit `docs/perfil.txt` with your own profile and restart. The LLM sees the full document on every request.
 
 ## Changelog
+**v0.13.0** — 2026-11-21
+- Faster answers and more of them per minute: the context sent on every question drops from ≈4,600 to ≈2,000 tokens (compact `perfil.txt` with the same CV facts, shorter rules), fewer history turns and tighter output limits
+- When `gpt-oss-120b` runs out of quota or fails, the answer comes from `gpt-oss-20b` (own quota, faster) instead of static texts; SDK retries disabled so there is no waiting before switching
+- Medium reasoning only for real fit questions; first-turn answers cached in SQLite as well (survive worker restarts; invalidated when profile/prompt/model change)
+- marked and DOMPurify served locally and deferred: no third-party request and no render blocking; static files cached for a week
+
 **v0.12.0** — 2026-11-21
 - The assistant is the main thing again: it takes the large column with "What do you want to know about Eric?", recruiter FAQs and the job-offer check; the profile becomes a compact aside (photo, key facts, career path, key skills) with "Ver perfil completo" opening the full profile in a dialog; on mobile the assistant comes first
 - Full review fixes: job offers during an outage get an "analysis unavailable" message instead of an unrelated canned answer; follow-ups see the whole pasted offer; fallback routing for "why hire him" and "programming languages"; truncated answers are never cached; empty completions fall back instead of 500; `/suggest` cache race; https og:image; `/stats` non-ASCII token; long text when switching tabs
@@ -183,7 +189,7 @@ En producción: [cv-bot-hxku.onrender.com](https://cv-bot-hxku.onrender.com)
 Python · Flask · Groq API — `openai/gpt-oss-120b` (chat) · `openai/gpt-oss-20b` (suggestions)
 
 ## Cómo funciona
-1. Carga `docs/perfil.txt` al arrancar (~15KB de perfil, compactado al cargar)
+1. Carga `docs/perfil.txt` al arrancar (~5KB, ≈1,4k tokens, compactado al cargar)
 2. En cada pregunta: envía el perfil completo + historial de conversación al LLM
 3. La respuesta se basa en el perfil; las inferencias se identifican y no se inventa experiencia
 4. Detecta el idioma de forma coherente para las respuestas y preguntas de seguimiento, en español o inglés

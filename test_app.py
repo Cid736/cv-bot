@@ -14,6 +14,10 @@ import app
 
 class AppBehaviorTests(unittest.TestCase):
     def setUp(self):
+        import stats
+        app._answer_cache.clear()
+        with stats._lock:
+            stats._db().execute("DELETE FROM answer_cache"); stats._db().commit()
         app.sessions.clear()
         app._rate_log.clear()
         app._suggest_rate_log.clear()
@@ -119,7 +123,7 @@ class AppBehaviorTests(unittest.TestCase):
         self.assertIn("1.1.1.1", app._suggest_rate_log)
 
     def test_system_prompt_restricts_scope_to_eric(self):
-        self.assertIn("ONLY answer questions about Eric", app.SYSTEM_PROMPT)
+        self.assertIn("ONLY Eric", app.SYSTEM_PROMPT)
         self.assertIn("Cybersecurity Fundamentals", app.PROFILE)
         self.assertNotIn("611 409 833", app.PROFILE)  # phone must never reach the model
 
@@ -169,10 +173,16 @@ class AppBehaviorTests(unittest.TestCase):
     def test_catalan_rate_limit_falls_back_to_spanish_answers(self):
         self.assertIn("Dos años", app.static_answer("Quanta experiència té?", "Catalan"))
 
-    def test_index_pins_cdn_versions(self):
-        html = app.app.test_client().get("/").get_data(as_text=True)
-        self.assertIn("marked@15.0.12", html)
-        self.assertIn("dompurify@3.2.6", html)
+    def test_index_serves_pinned_libraries_locally(self):
+        client = app.app.test_client()
+        res = client.get("/")
+        html = res.get_data(as_text=True)
+        self.assertIn("vendor/marked-15.0.12.min.js", html)
+        self.assertIn("vendor/purify-3.2.6.min.js", html)
+        self.assertNotIn("cdn.jsdelivr.net", html)
+        self.assertNotIn("cdn.jsdelivr.net", res.headers["Content-Security-Policy"])
+        for lib in ("marked-15.0.12.min.js", "purify-3.2.6.min.js"):
+            self.assertEqual(client.get("/static/vendor/" + lib).status_code, 200)
 
     # ── v0.7 features ────────────────────────────────────────────────────────
 
@@ -338,6 +348,54 @@ class AppBehaviorTests(unittest.TestCase):
     def test_og_image_is_https_in_production(self):
         html = app.app.test_client().get("/", base_url="http://cv-bot.example.com").get_data(as_text=True)
         self.assertIn('content="https://cv-bot.example.com/static/og.png"', html)
+
+    # ── Speed / quota optimisations ──────────────────────────────────────────
+
+    def test_main_model_out_of_quota_switches_to_fallback_model(self):
+        err = self._rate_limit_error()
+        def fake(messages, temperature, model=app.MODEL, **kwargs):
+            if model == app.MODEL:
+                raise err
+            return "Respuesta del modelo de respaldo"
+        with patch.object(app, "_groq_chat", side_effect=fake):
+            data = self._post({"question": "¿Qué experiencia tiene en soporte?"}).get_json()
+        self.assertEqual(data["answer"], "Respuesta del modelo de respaldo")
+        self.assertNotIn("rate_limited", data)
+        self.assertEqual(app._answer_cache, {})  # fallback answers are not cached
+
+    def test_streaming_switches_to_fallback_model(self):
+        err = self._rate_limit_error()
+        def fake(messages, temperature, model=app.MODEL, **kwargs):
+            if model == app.MODEL:
+                raise err
+            return iter(["Hola ", "desde 20b"])
+        with patch.object(app, "_groq_stream", side_effect=fake):
+            body = self._post({"question": "¿Dónde trabaja?", "stream": True}).get_data(as_text=True)
+        self.assertIn("desde 20b", body)
+        self.assertIn('"type": "done"', body)
+
+    def test_first_turn_answers_survive_restart(self):
+        with patch.object(app, "_groq_chat", return_value="Respuesta completa") as first:
+            self._post({"question": "¿Qué idiomas habla?"})
+        self.assertEqual(first.call_count, 1)
+        app._answer_cache.clear()  # simulate a restart: memory cache gone
+        with patch.object(app, "_groq_chat", return_value="NO DEBERÍA LLAMARSE") as second:
+            data = self._post({"question": "¿qué idiomas habla"}).get_json()
+        self.assertEqual(second.call_count, 0)
+        self.assertEqual(data["answer"], "Respuesta completa")
+
+    def test_medium_reasoning_only_for_fit_questions(self):
+        efforts = []
+        def fake(messages, temperature, reasoning_effort="low", **kwargs):
+            efforts.append(reasoning_effort); return "ok"
+        with patch.object(app, "_groq_chat", side_effect=fake):
+            self._post({"question": "What was his role at AMC Networks?"})
+            self._post({"question": "Would he be a good fit for a sysadmin job?"})
+        self.assertEqual(efforts, ["low", "medium"])
+
+    def test_system_prompt_stays_compact(self):
+        system = app.SYSTEM_PROMPT.replace("{profile}", app.PROFILE)
+        self.assertLess(len(system), 10_000)  # ≈2.7k tokens; was ≈4.6k tokens before
 
     def test_eval_checks(self):
         from evals.run_evals import check

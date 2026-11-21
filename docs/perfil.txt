@@ -1,288 +1,59 @@
-PERFIL PROFESIONAL
-==================
-Nombre: Eric Cid López
-GitHub: github.com/Cid736
-LinkedIn: linkedin.com/in/eric-cid-lópez-b38b37273
-Email: cidlopezeric@gmail.com
-Ubicación: Badalona, Barcelona
-Permiso de conducción: B
+PERFIL — Eric Cid López
+Técnico de Sistemas y Soporte IT · Badalona, Barcelona · Permiso de conducir B
+GitHub: github.com/Cid736 · LinkedIn: linkedin.com/in/eric-cid-lópez-b38b37273
+Experiencia total: DOS años en soporte e infraestructura IT corporativa (no tres).
+Resumen: base en Linux, Windows Server, Active Directory y redes, ampliada con proyectos propios de automatización (Docker, Ansible, Python) y formación continua en ciberseguridad. Actualmente configura y evalúa sistemas de IA en producción.
 
-EXPERIENCIA Y TRAYECTORIA
-=========================
-Título profesional: Técnico de Sistemas y Soporte IT.
+EMPLEOS
+1. AI System Configurator — Infinity Neural, Badalona — oct. 2025–actualidad (puesto actual)
+- Evalúa la calidad de respuesta de sistemas de IA en producción mediante revisión estructurada de casos; identifica patrones de error recurrentes y los traduce en ajustes de prompt y configuración.
+- Analiza los datos de negocio de los clientes y elabora los informes periódicos para el seguimiento del servicio (Excel, Google Sheets).
+- Configura y despliega los sistemas de IA de cliente, iterando sobre prompts e integraciones según la evaluación.
+2. IT Support Technician — AMC Networks, Barcelona — mar.–oct. 2025
+- Media de diez incidencias diarias de hardware, software y conectividad, en el equipo de cuatro técnicos responsable de todo el soporte IT de AMC Networks España (Barcelona y Madrid).
+- Ciclo completo de altas y bajas de empleados: equipos, cuentas de Google Workspace y políticas de dispositivo en Microsoft Intune.
+- Administró los endpoints corporativos con Microsoft Intune: políticas de cumplimiento y despliegue remoto de software.
+- Diagnosticó incidencias de red y acceso remoto (TCP/IP, VPN, Wi-Fi); tickets en ServiceNow según SLA.
 
-Eric es técnico de sistemas y soporte IT con dos años de experiencia en
-soporte e infraestructura IT corporativa (si preguntan por años de
-experiencia, la respuesta es "dos años"; no tres). Actualmente configura y
-evalúa sistemas de IA en producción. Su base está en Linux, Windows Server,
-Active Directory y redes, ampliada con proyectos propios de automatización
-con Docker, Ansible y Python, y con formación continua en ciberseguridad.
+PRÁCTICAS FCT (curriculares, NO son empleos)
+- Factorial, Barcelona (startup tecnológica) — oct. 2023–feb. 2024, CFGS ASIR: soporte a usuarios e incidencias de conectividad.
+- Instituto Escuela de Badalona (centro educativo) — sept. 2021–mar. 2022, CFGM SMR: soporte a usuarios y mantenimiento de ordenadores y periféricos.
 
-Trayectoria: prácticas FCT de soporte IT en el Instituto Escuela de Badalona
-(sept. 2021 – mar. 2022, CFGM SMR) y en Factorial (oct. 2023 – feb. 2024,
-CFGS ASIR) → IT Support Technician en AMC Networks (mar. – oct. 2025) →
-AI System Configurator en Infinity Neural (oct. 2025 – actualidad). Las FCT
-son prácticas curriculares, no contratos laborales.
-
-EXPERIENCIA PROFESIONAL
-=======================
-
-1. AI System Configurator
-   Empresa: Infinity Neural · Badalona
-   Período: oct. 2025 – actualidad (puesto actual)
-   Funciones:
-   - Evalúa la calidad de respuesta de sistemas de IA en producción mediante
-     revisión estructurada de casos, identificando patrones de error
-     recurrentes y traduciéndolos en ajustes de prompt y configuración.
-   - Analiza los datos de negocio de los clientes y elabora los informes
-     periódicos que sirven de base para el seguimiento del servicio.
-   - Configura y despliega los sistemas de IA de cliente, iterando sobre
-     prompts e integraciones según los resultados de la evaluación.
-
-2. IT Support Technician
-   Empresa: AMC Networks · Barcelona
-   Período: mar. 2025 – oct. 2025
-   Funciones:
-   - Resolvió una media de diez incidencias diarias de hardware, software y
-     conectividad dentro del equipo de cuatro técnicos responsable de todo el
-     soporte IT de AMC Networks España, con cobertura de Barcelona y Madrid.
-   - Gestionó el ciclo completo de altas y bajas de empleados: provisión de
-     equipos, cuentas de Google Workspace y políticas de dispositivo en
-     Microsoft Intune.
-   - Administró el parque de endpoints corporativos con Microsoft Intune,
-     aplicando políticas de cumplimiento y despliegue remoto de software.
-   - Diagnosticó incidencias de red y acceso remoto en TCP/IP, VPN y Wi-Fi,
-     gestionando los tickets en ServiceNow según los SLA del servicio.
-
-PRÁCTICAS (FCT, no son empleos)
-===============================
-
-1. Técnico de soporte IT (prácticas FCT del CFGS ASIR)
-   Empresa: Factorial · Barcelona (startup tecnológica)
-   Período: oct. 2023 – feb. 2024
-   Funciones: soporte a usuarios y resolución de incidencias de conectividad.
-
-2. Técnico de soporte IT (prácticas FCT del CFGM SMR)
-   Centro: Instituto Escuela de Badalona (centro educativo)
-   Período: sept. 2021 – mar. 2022
-   Funciones: soporte a usuarios y mantenimiento de ordenadores y periféricos.
-
-COMPETENCIAS (según el CV)
-==========================
-- Sistemas y redes: Linux y Ubuntu, Windows Server, Active Directory, TCP/IP,
-  DNS, DHCP, VPN, Microsoft Intune.
-- Cloud y contenedores: Google Cloud, Kubernetes, Docker, Ansible, CI/CD,
-  GitHub Actions.
-- IA y evaluación de modelos: LLMs, evaluación de respuesta, prompt
-  engineering, RAG, LangChain.
-- Datos y programación: Excel y Google Sheets, SQL, PostgreSQL, Python,
-  Node.js, Bash, PowerShell.
+COMPETENCIAS (del CV; no están ligadas a un empleo concreto salvo que arriba se indique)
+- Sistemas y redes: Linux/Ubuntu, Windows Server, Active Directory, TCP/IP, DNS, DHCP, VPN, Microsoft Intune.
+- Cloud y contenedores: Google Cloud, Kubernetes, Docker, Ansible, CI/CD, GitHub Actions.
+- IA: LLMs, evaluación de respuesta, prompt engineering, RAG, LangChain.
+- Datos y programación: Excel, Google Sheets, SQL, PostgreSQL, Python, Node.js, Bash, PowerShell.
 - Herramientas: ServiceNow, Git, Google Workspace, VS Code.
+- Solo en proyectos personales: FastAPI, React, C (Winsock2), SQLite, Celery, Redis, ChromaDB, Tailscale, Pi-hole.
 
-Otras tecnologías usadas en sus proyectos personales (no en empleos):
-FastAPI, React, C (Winsock2), SQLite, Celery, Redis, ChromaDB, Docker Compose,
-Tailscale, Pi-hole, Telegram Bot API.
+PROYECTOS PERSONALES (github.com/Cid736)
+- cv-bot (proyecto destacado del CV, desplegado en público): este asistente; Python, Flask, Groq LLM, Docker.
+- ansible-platform: plataforma web tipo AWX para inventarios, playbooks y jobs de Ansible con salida en tiempo real; FastAPI, PostgreSQL, Celery, Redis, React, Docker.
+- task-api: API REST con JWT, 18 tests y CI/CD en GitHub Actions; Node.js, Express, SQLite, Docker.
+- rag-chatbot: chatbot RAG con embeddings locales, sin GPU; LangChain, ChromaDB, Groq.
+- net-monitor: monitor de red (ICMP, TCP, HTTP) con historial en SQLite y alertas por Telegram; Python.
+- syswatch: monitor de CPU, RAM y disco para servidores Linux con umbrales en YAML y alertas por Telegram; Python.
+- portscanner: escáner de puertos TCP para Windows estilo nmap; C, Winsock2.
+- medical-bot (chatbot para clínicas, Node.js), price-tracker (CLI de precios, Python), smart-notes (notas con grafo, Node.js).
 
-PROYECTOS PERSONALES (repositorios en GitHub)
-=============================================
+FORMACIÓN
+- Grado en Ingeniería Informática, UOC — desde 2024, en curso.
+- CFGS Administración de Sistemas Informáticos en Red (ASIR), INS La Pineda — 2022–2024.
+- CFGM Sistemas Microinformáticos y Redes (SMR), INS La Pineda — 2020–2022.
+- Ciberseguridad — formación continua, en curso.
 
-1. CV Bot
-   GitHub: github.com/Cid736/cv-bot
-   Estado: DESPLEGADO (público en cv-bot-hxku.onrender.com). Es el proyecto
-   técnico destacado en su CV.
-   Asistente conversacional desplegado y accesible en público que responde
-   preguntas sobre su perfil profesional en español e inglés. Rate limiting,
-   historial de sesión, preguntas sugeridas generadas por LLM, respuestas de
-   respaldo ante límites de la API.
-   Stack: Python, Flask, Groq LLM, Docker.
+CERTIFICACIONES
+- Ciberseguridad (2026): Introduction to Cybersecurity (Cisco Networking Academy), Cybersecurity Fundamentals (IBM), Cyber Job Simulation (Deloitte).
+- Google Cloud Skill Badges (2025): Manage Kubernetes in Google Cloud, Load Balancing on Compute Engine, Prompt Design in Vertex AI.
+- Anthropic Claude Academy (2026): Claude Code in action, Claude Platform 101, Deploying Claude Enterprise.
 
-2. Ansible Platform
-   GitHub: github.com/Cid736/ansible-platform
-   Plataforma web estilo AWX para gestionar inventarios Ansible, playbooks,
-   credenciales y ejecución de jobs — self-hosted con Docker, salida en
-   tiempo real vía WebSocket.
-   Stack: Python, FastAPI, Ansible, PostgreSQL, Celery, Redis, React, Docker.
+IDIOMAS: español y catalán nativos; inglés B1–B2 técnico.
 
-3. Task API
-   GitHub: github.com/Cid736/task-api
-   REST API de tareas con autenticación JWT, CRUD completo, 18 tests
-   automáticos (100% pass), CI/CD con GitHub Actions: tests, build Docker,
-   smoke test del contenedor en producción.
-   Stack: Node.js, Express, SQLite, Docker, GitHub Actions.
-
-4. RAG Chatbot
-   GitHub: github.com/Cid736/rag-chatbot
-   Chatbot con arquitectura RAG, embeddings locales, sin GPU necesaria,
-   usando Groq como LLM. Sin coste de infraestructura GPU.
-   Stack: Python, LangChain, ChromaDB, Groq API.
-
-5. Net Monitor
-   GitHub: github.com/Cid736/net-monitor
-   Monitor de disponibilidad de red. Comprueba hosts (ping ICMP), puertos TCP
-   y endpoints HTTP/HTTPS. Guarda historial de uptime en SQLite y envía alertas
-   por Telegram cuando un objetivo cae o se recupera. Modo daemon configurable.
-   Stack: Python, socket, requests, SQLite, Telegram Bot API.
-
-6. Portscanner
-   GitHub: github.com/Cid736/portscanner
-   Escáner de puertos TCP para Windows — estados open/closed/filtered,
-   banner grabbing, salida estilo nmap. Herramienta de sistemas de bajo nivel.
-   Stack: C, Winsock2.
-
-7. Medical Bot
-   GitHub: github.com/Cid736/medical-bot
-   SaaS chatbot para clínicas médicas. Responde consultas de pacientes 24/7,
-   captura leads y gestiona citas. Dashboard web con KPIs en tiempo real.
-   Stack: Node.js, Express, SQLite, Docker.
-
-8. Price Tracker
-   GitHub: github.com/Cid736/price-tracker
-   CLI para rastrear precios web con historial SQLite y alertas de precio.
-   Automatización con scripting Python, scraping y base de datos local.
-   Stack: Python, BeautifulSoup, SQLite, argparse, requests.
-
-9. Smart Notes
-   GitHub: github.com/Cid736/smart-notes
-   App de notas tipo Obsidian con WikiLinks, grafo de conexiones, IA local.
-   Stack: Node.js, Express, SQLite, Vanilla JS.
-
-10. Syswatch
-    GitHub: github.com/Cid736/syswatch
-    Monitor de recursos del sistema para servidores Linux. Rastrea CPU, RAM,
-    disco y carga del sistema. Umbrales configurables via YAML. Alerta por
-    Telegram. Integrable con cron.
-    Stack: Python, psutil, PyYAML, Telegram Bot API.
-
-FORMACIÓN ACADÉMICA
-===================
-
-1. Grado en Ingeniería Informática (en curso)
-   Institución: Universitat Oberta de Catalunya (UOC)
-   Período: desde 2024
-
-2. CFGS — Administración de Sistemas Informáticos en Red (ASIR)
-   Institución: INS La Pineda
-   Período: 2022 – 2024
-
-3. CFGM — Sistemas Microinformáticos y Redes (SMR)
-   Institución: INS La Pineda
-   Período: 2020 – 2022
-
-4. Ciberseguridad — formación continua (en curso)
-
-CERTIFICACIONES Y FORMACIÓN COMPLEMENTARIA
-==========================================
-Ciberseguridad (2026):
-- Introduction to Cybersecurity — Cisco Networking Academy
-- Cybersecurity Fundamentals — IBM
-- Cyber Job Simulation — Deloitte
-
-Google Cloud Skill Badges (2025):
-- Manage Kubernetes in Google Cloud
-- Load Balancing on Compute Engine
-- Prompt Design in Vertex AI
-
-Anthropic · Claude Academy (2026):
-- Claude Code in action
-- Claude Platform 101
-- Deploying Claude Enterprise
-
-IDIOMAS
-=======
-- Español: nativo
-- Catalán: nativo
-- Inglés: B1–B2 técnico
-
-PREGUNTAS FRECUENTES DE ENTREVISTA
-===================================
-
-P: Cuéntame sobre ti / Tell me about yourself
-R: Soy técnico de sistemas y soporte IT con dos años de experiencia en
-soporte e infraestructura IT corporativa, con un perfil que cubre desde
-Linux, Windows Server y Active Directory hasta redes, contenedores y cloud. Actualmente trabajo como AI System Configurator en Infinity Neural,
-configurando y evaluando sistemas de IA en producción. Mi base es la infraestructura: sé montar, mantener y
-asegurar sistemas en entornos corporativos reales. Sobre esa base he añadido
-conocimientos en DevOps, automatización con Python y Bash, y IA aplicada.
-Estoy cursando el Grado en Ingeniería Informática en la UOC.
-
-P: Por qué te llama la atención este sector / Why are you interested in this field?
-R: Porque los sistemas son la base de todo. Sin infraestructura bien montada
-no hay nada. Me gusta que el trabajo en sistemas tiene impacto real e inmediato:
-cuando un servidor cae o una red falla, todo para. Eso me exige rigor, criterio
-y capacidad de resolver bajo presión. Además, la combinación de sistemas con
-automatización e IA está abriendo posibilidades nuevas que me interesan mucho.
-
-P: Cuáles son tus puntos fuertes / What are your strengths?
-R: Primero, visibilidad de extremo a extremo: entiendo tanto la capa de red
-como la de contenedores y cloud. Segundo, la autonomía: configuro, despliego
-y mantengo sistemas sin depender de nadie. Tercero, la capacidad de automatizar:
-cuando algo se repite, lo scripto en Python, Bash o Ansible. Y cuarto, aprendo
-rápido — en pocos años he pasado de sistemas básicos a tener CI/CD, Kubernetes,
-Ansible y pipelines de IA funcionando.
-
-P: Cuáles son tus áreas de mejora / What are your weaknesses?
-R: Quiero profundizar más en seguridad de sistemas y redes — firewalls avanzados,
-hardening de servidores, certificaciones tipo CompTIA Security+. Es un área
-donde tengo base pero quiero más profundidad. También estoy mejorando mis
-habilidades para documentar y comunicar configuraciones técnicas a perfiles
-no técnicos.
-
-P: Dónde te ves en 5 años / Where do you see yourself in 5 years?
-R: En un rol de administrador de sistemas senior o arquitecto de infraestructura,
-gestionando entornos complejos que combinen on-premise y cloud. Me interesa
-especializarme más en seguridad de sistemas y en infraestructura como código
-(Terraform, Ansible). A largo plazo me gustaría liderar equipos de sistemas
-en organizaciones donde la infraestructura sea crítica.
-
-P: Por qué deberíamos contratarte / Why should we hire you?
-R: Porque tengo una base sólida en sistemas y redes, con exposición real a
-entornos corporativos (Intune, ServiceNow, VPN, Google Workspace en AMC Networks),
-y encima de eso sé automatizar con Ansible, contenerizar y desplegar en cloud.
-No soy solo un administrador clásico: puedo montar un servidor Linux,
-configurar la red, automatizar con Ansible, dockerizarlo, subirlo a GCP y
-poner CI/CD — todo yo. Eso da mucha autonomía a cualquier equipo.
-
-P: Cuál es tu mayor logro / What is your biggest achievement?
-R: Montar la Ansible Platform — una plataforma web completa estilo AWX con
-FastAPI, React, PostgreSQL, Celery, Redis y Docker, con salida en tiempo real
-vía WebSocket. Ver que una infraestructura que monté desde cero funciona de
-forma fiable es lo que más satisfacción me da. También el haber desplegado
-en producción una API con CI/CD completo y tests automatizados.
-
-P: Cómo trabajas bajo presión / How do you work under pressure?
-R: Con calma y metódicamente. En sistemas, el pánico lleva a errores que
-empeoran la situación. Mi proceso es: primero aislar el problema (cuál es el
-servicio afectado, desde cuándo, qué cambió), luego reproducirlo si puedo,
-y después aplicar el cambio mínimo necesario.
-
-P: Prefieres trabajar solo o en equipo / Do you prefer working alone or in a team?
-R: Las dos modalidades me funcionan. En sistemas suelo trabajar con bastante
-autonomía, lo que me gusta. Pero valoro mucho el trabajo en equipo en
-situaciones de incidencia, revisión de configuraciones o discusión de
-arquitectura.
-
-P: Cómo manejas el aprendizaje de nuevas tecnologías / How do you learn new technologies?
-R: Montando un laboratorio. Si quiero aprender una tecnología, la instalo,
-la configuro y la rompo para ver cómo se comporta. Así aprendí Docker,
-Kubernetes, Ansible, Tailscale y las herramientas de IA. La teoría sin práctica
-no me queda. También uso documentación oficial más que cursos.
-
-P: Tienes experiencia con metodologías ágiles / Do you have experience with agile?
-R: En AMC Networks trabajé con tickets en ServiceNow según SLA, y en
-Infinity Neural itero sobre prompts e integraciones según los resultados de
-la evaluación. En mis proyectos personales aplico el mismo principio:
-incremental, testeable y desplegable en cada iteración.
-
-P: Cuáles son tus expectativas salariales / What are your salary expectations?
-R: Es algo que Eric prefiere tratar directamente, por LinkedIn o por email.
-
-P: Qué herramientas de colaboración conoces / What collaboration tools do you know?
-R: Git/GitHub para control de versiones, ServiceNow para gestión de tickets,
-Google Workspace para documentación y comunicación, y Microsoft Intune para
-gestión de dispositivos.
-
-CONTACTO
-========
-GitHub: github.com/Cid736
-LinkedIn: linkedin.com/in/eric-cid-lópez-b38b37273
-Email: cidlopezeric@gmail.com
+ENFOQUE PERSONAL (para preguntas de entrevista; preséntalo como lo que Eric cuenta de sí mismo)
+- Fortalezas: visión de extremo a extremo (red, sistemas, contenedores, cloud), autonomía, automatizar lo repetitivo con Python, Bash o Ansible, aprendizaje rápido montando laboratorios.
+- Bajo presión: aísla el problema, lo reproduce y aplica el cambio mínimo necesario.
+- Área de mejora: profundizar en seguridad de sistemas (hardening, firewalls, posible CompTIA Security+) y en comunicar conceptos técnicos a perfiles no técnicos.
+- A 5 años: administrador de sistemas sénior o arquitecto de infraestructura en entornos híbridos (on-premise y cloud), especializado en seguridad e infraestructura como código.
+- Motivación: los sistemas son la base de todo; le atrae su impacto inmediato y combinar sistemas con automatización e IA.
+- Trabajo en equipo: cómodo con autonomía y en equipo (incidencias, revisiones, arquitectura).

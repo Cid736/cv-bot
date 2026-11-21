@@ -47,7 +47,13 @@ CREATE TABLE IF NOT EXISTS messages (
     rating      INTEGER        -- 1 = 👍, -1 = 👎, NULL = no feedback
 );
 CREATE INDEX IF NOT EXISTS idx_messages_ts ON messages(ts);
+CREATE TABLE IF NOT EXISTS answer_cache (
+    key    TEXT PRIMARY KEY,
+    answer TEXT NOT NULL,
+    ts     REAL NOT NULL
+);
 """
+CACHE_MAX_ROWS = 2000
 
 
 def _db() -> sqlite3.Connection:
@@ -88,6 +94,29 @@ def record(session_id: str, question: str, answer: str, *, lang: str,
         return msg_id
     except Exception:  # stats must never break the chat (disk full, read-only FS...)
         return None  # stats must never break the chat
+
+
+def cache_get(key: str) -> str | None:
+    """First-turn answers that survive restarts (Render's free plan sleeps often)."""
+    try:
+        with _lock:
+            row = _db().execute("SELECT answer FROM answer_cache WHERE key = ?", (key,)).fetchone()
+        return row["answer"] if row else None
+    except Exception:
+        return None
+
+
+def cache_put(key: str, answer: str) -> None:
+    try:
+        with _lock:
+            db = _db()
+            db.execute("INSERT OR REPLACE INTO answer_cache (key, answer, ts) VALUES (?, ?, ?)",
+                       (key, answer, time.time()))
+            db.execute("DELETE FROM answer_cache WHERE key NOT IN "
+                       "(SELECT key FROM answer_cache ORDER BY ts DESC LIMIT ?)", (CACHE_MAX_ROWS,))
+            db.commit()
+    except Exception:
+        pass
 
 
 def rate(msg_id: str, rating: int) -> bool:
