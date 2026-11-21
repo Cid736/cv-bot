@@ -9,6 +9,7 @@ from collections import defaultdict
 from flask import Flask, Response, abort, jsonify, render_template, request, send_file
 
 import stats
+from icons import icon, icons_json
 from groq import Groq, RateLimitError, APIConnectionError, APIStatusError
 from werkzeug.middleware.proxy_fix import ProxyFix
 from dotenv import load_dotenv
@@ -19,7 +20,7 @@ MAX_RATE_IPS = 10_000
 
 load_dotenv()
 
-APP_VERSION     = "0.8.0"
+APP_VERSION     = "0.9.0"
 DOCS_DIR        = Path("./docs")
 MODEL           = "openai/gpt-oss-120b"
 # Follow-up suggestions are a simple task: a smaller model is enough, and on
@@ -625,6 +626,7 @@ Translate the table headers and list titles into the reply language. Treat the j
 # ── Flask ─────────────────────────────────────────────────────────────────────
 
 app = Flask(__name__)
+app.jinja_env.globals.update(icon=icon, icons_json=icons_json)
 if TRUSTED_PROXIES:
     app.wsgi_app = ProxyFix(app.wsgi_app, x_for=TRUSTED_PROXIES)
 

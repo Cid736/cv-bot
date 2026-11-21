@@ -13,6 +13,16 @@ let turn = 0;            // bumped on every question/reset so late suggestions a
 let jobMode = false;
 const transcript = [];   // [{role, text, mode}] for export
 
+// Same SVG set as icons.py / the Figma file, delivered as JSON in the page.
+let ICONS = {};
+try { ICONS = JSON.parse($('icons').textContent); } catch {}
+function svgIcon(name, size = 18) {
+  const span = document.createElement('span');
+  span.innerHTML = `<svg class="icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" `
+    + `stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[name] || ''}</svg>`;
+  return span.firstChild;
+}
+
 const DEFAULTS = [
   "¿Qué hace en su puesto actual en Infinity Neural?",
   "What did he do as IT Support Technician at AMC Networks?",
@@ -21,10 +31,10 @@ const DEFAULTS = [
   "Why is he a strong fit for an IT support or sysadmin role?",
 ];
 const STARTERS = [  // [icon, question] shown on the welcome screen
-  ['💼', DEFAULTS[0]],
-  ['🖥️', DEFAULTS[1]],
-  ['🛠️', DEFAULTS[2]],
-  ['🎓', DEFAULTS[3]],
+  ['briefcase', DEFAULTS[0]],
+  ['monitor', DEFAULTS[1]],
+  ['code', DEFAULTS[2]],
+  ['award', DEFAULTS[3]],
 ];
 
 // ── Rendering ────────────────────────────────────────────────────────────────
@@ -104,7 +114,7 @@ function showWelcome() {
   for (const [ico, q] of STARTERS) {
     const b = document.createElement('button');
     b.type = 'button'; b.className = 'starter';
-    const i = document.createElement('span'); i.className = 'ico'; i.textContent = ico;
+    const i = document.createElement('span'); i.className = 'ico'; i.appendChild(svgIcon(ico, 16));
     const t = document.createElement('span'); t.textContent = q;
     b.append(i, t);
     b.addEventListener('click', () => ask(q));
@@ -112,8 +122,10 @@ function showWelcome() {
   }
   const job = document.createElement('button');
   job.type = 'button'; job.className = 'starter job';
-  job.innerHTML = '<span class="ico">📋</span><span>Analizar una oferta de empleo'
-    + '<small>Pega la descripción del puesto y verás requisito a requisito si Eric encaja</small></span>';
+  const ji = document.createElement('span'); ji.className = 'ico'; ji.appendChild(svgIcon('clipboard', 16));
+  const jt = document.createElement('span');
+  jt.innerHTML = 'Analizar una oferta de empleo<small>Pega la descripción del puesto y verás requisito a requisito si Eric encaja</small>';
+  job.append(ji, jt);
   job.addEventListener('click', () => setJobMode(true));
   grid.appendChild(job);
   chat.appendChild(w);
@@ -145,16 +157,16 @@ function setChips(list) {
 
 // ── Feedback 👍 / 👎 ──────────────────────────────────────────────────────────
 
-function addFeedback(bubble, messageId) {
-  if (!messageId) return;
+function addFeedback(bubble, messageId, answer) {
   const bar = document.createElement('div');
   bar.className = 'feedback';
   const thanks = document.createElement('span');
   thanks.className = 'thanks';
   let current = 0;
-  const mk = (emoji, value, title) => {
+  const mk = (iconName, value, title) => {
     const b = document.createElement('button');
-    b.type = 'button'; b.textContent = emoji; b.title = title;
+    b.type = 'button'; b.title = title; b.setAttribute('aria-label', title);
+    b.appendChild(svgIcon(iconName, 14));
     b.addEventListener('click', async () => {
       current = current === value ? 0 : value;
       bar.querySelectorAll('button').forEach(x => x.classList.remove('on'));
@@ -169,7 +181,19 @@ function addFeedback(bubble, messageId) {
     });
     return b;
   };
-  bar.append(mk('👍', 1, 'Respuesta útil'), mk('👎', -1, 'Respuesta mejorable'), thanks);
+  // Copy works for every answer, rating only for ones the server stored.
+  const copy = document.createElement('button');
+  copy.type = 'button'; copy.title = 'Copiar respuesta'; copy.setAttribute('aria-label', 'Copiar respuesta');
+  copy.appendChild(svgIcon('copy', 14));
+  copy.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(answer);
+      copy.replaceChildren(svgIcon('check', 14)); thanks.textContent = '¡Copiado!';
+      setTimeout(() => { copy.replaceChildren(svgIcon('copy', 14)); if (thanks.textContent === '¡Copiado!') thanks.textContent = ''; }, 1500);
+    } catch { thanks.textContent = 'No se pudo copiar'; }
+  });
+  if (messageId) bar.append(mk('thumbs-up', 1, 'Respuesta útil'), mk('thumbs-down', -1, 'Respuesta mejorable'));
+  bar.append(copy, thanks);
   bubble.appendChild(bar);
 }
 
@@ -294,7 +318,7 @@ async function send(e) {
     }
     if (!answer) return;
     transcript.push({ role: 'bot', text: answer });
-    addFeedback(bubble, messageId);
+    addFeedback(bubble, messageId, answer);
     scrollDown();
     if (!chips.children.length) setChips(DEFAULTS.filter(d => d !== q).slice(0, 3));
     if (!rateLimited) {
@@ -406,7 +430,7 @@ function setupVoice() {
     speakEnabled = storageGet('cvbot-speak') === '1';
     const paint = () => {
       speakBtn.setAttribute('aria-pressed', String(speakEnabled));
-      speakBtn.innerHTML = speakEnabled ? '&#128266;' : '&#128264;';
+      speakBtn.replaceChildren(svgIcon(speakEnabled ? 'volume' : 'volume-off'));
     };
     paint();
     speakBtn.addEventListener('click', () => {

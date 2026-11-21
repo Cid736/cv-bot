@@ -15,6 +15,7 @@ body {
 [hidden] { display: none !important; }
 a { color: var(--accent-text); }
 :focus-visible { outline: 2px solid var(--accent-h); outline-offset: 2px; }
+.icon { display: block; flex-shrink: 0; }
 
 /* ── Alpha banner ─────────────────────────────────────────── */
 #alpha-banner {
@@ -46,6 +47,7 @@ header {
 .htext p { font-size: 0.76rem; color: var(--muted); margin-top: 2px; }
 .contact { display: flex; gap: 6px; flex-wrap: wrap; }
 .pill {
+  display: inline-flex; align-items: center; gap: 6px;
   padding: 6px 12px; border: 1px solid var(--border); border-radius: 999px;
   font-size: 0.76rem; color: var(--text); text-decoration: none; background: var(--surface);
   transition: border-color .15s, background .15s;
@@ -75,6 +77,7 @@ button {
   transition: background .15s, border-color .15s, color .15s;
 }
 button.tool {
+  display: inline-flex; align-items: center; justify-content: center;
   width: 34px; height: 34px; border-radius: 10px; font-size: 0.92rem; flex-shrink: 0;
   background: transparent; border: 1px solid transparent; color: var(--text-2);
 }
@@ -124,11 +127,12 @@ button.tool[aria-pressed="true"], button.tool.active { background: var(--accent-
 
 .feedback { display: flex; gap: 4px; margin-top: 9px; }
 .feedback button {
-  height: 24px; padding: 0 7px; font-size: 0.78rem; border-radius: 6px;
-  background: transparent; border: 1px solid var(--border); filter: grayscale(1); opacity: .7;
+  display: inline-flex; align-items: center; justify-content: center;
+  height: 26px; width: 28px; border-radius: 7px;
+  background: transparent; border: 1px solid var(--border); color: var(--muted);
 }
-.feedback button:hover { border-color: var(--accent); filter: none; opacity: 1; }
-.feedback button.on { border-color: var(--accent); background: var(--accent-soft); filter: none; opacity: 1; }
+.feedback button:hover { border-color: var(--accent); color: var(--text); }
+.feedback button.on { border-color: var(--accent); background: var(--accent-soft); color: var(--accent-text); }
 .feedback .thanks { font-size: 0.7rem; color: var(--muted); align-self: center; margin-left: 4px; }
 
 .dots span { display: inline-block; width: 6px; height: 6px; background: var(--muted); border-radius: 50%; margin: 0 2px; animation: bounce 1.2s infinite ease-in-out; }
@@ -161,7 +165,13 @@ button.tool[aria-pressed="true"], button.tool.active { background: var(--accent-
   display: flex; gap: 10px; align-items: flex-start;
 }
 .starter:hover { border-color: var(--accent); background: var(--surface-2); }
-.starter .ico { font-size: 1rem; line-height: 1.3; }
+.starter { align-items: center; }
+.starter .ico {
+  width: 32px; height: 32px; border-radius: 10px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--surface-2); color: var(--accent-text);
+}
+.starter.job .ico { background: var(--accent); color: #fff; }
 .starter.job { grid-column: 1 / -1; background: var(--accent-soft); border-color: rgba(124,92,191,.55); }
 .starter.job small { display: block; color: var(--text-2); font-size: 0.76rem; margin-top: 2px; }
 
@@ -204,6 +214,7 @@ button.tool[aria-pressed="true"], button.tool.active { background: var(--accent-
 #input.job { max-height: 260px; }
 #input::placeholder { color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 #btn {
+  display: inline-flex; align-items: center; justify-content: center;
   width: 38px; height: 38px; border-radius: 11px; flex-shrink: 0;
   background: var(--accent); font-size: 0.95rem;
 }
@@ -214,13 +225,19 @@ button.tool[aria-pressed="true"], button.tool.active { background: var(--accent-
   background: var(--accent-soft); border: 1px solid var(--accent); border-radius: 999px; padding: 3px 4px 3px 11px;
   display: flex; align-items: center; gap: 6px;
 }
-#job-pill button { height: 20px; width: 20px; padding: 0; border-radius: 50%; font-size: 0.85rem; background: transparent; }
+#job-pill button { display: inline-flex; align-items: center; justify-content: center; height: 20px; width: 20px; padding: 0; border-radius: 50%; background: transparent; color: var(--accent-text); }
+#job-pill button:hover { background: var(--accent); color: #fff; }
 .hint { font-size: 0.68rem; color: var(--muted); text-align: center; }
 
 /* ── Mobile ───────────────────────────────────────────────── */
 @media (max-width: 600px) {
-  header { padding: 12px 16px 6px; }
-  .htext p { display: none; }
+  header { padding: 12px 16px 6px; flex-wrap: nowrap; gap: 10px; }
+  .htext { min-width: 0; }
+  .htext p, .htext h1 .sep { display: none; }
+  .htext h1 .role { display: block; font-size: 0.74rem; font-weight: 400; color: var(--muted); }
+  .contact { flex-wrap: nowrap; gap: 4px; }
+  .pill { width: 34px; height: 34px; padding: 0; justify-content: center; border-radius: 10px; }
+  .pill .label { display: none; }
   #toolbar, #chat, #chips, #form { padding-left: 16px; padding-right: 16px; }
   #usage-title, .usage-label { display: none; }
   .usage-bar-wrap { width: 40px; }

@@ -24,9 +24,9 @@
       <p>T&eacute;cnico de Sistemas y Soporte IT &middot; Ask in any language</p>
     </div>
     <nav class="contact" aria-label="Contacto">
-      {% if cv_available %}<a class="pill primary" href="{{ url_for('cv_pdf') }}" download>&#128196; CV</a>{% endif %}
-      {% if 'yourprofile' not in contact_linkedin %}<a class="pill" href="{{ contact_linkedin }}" target="_blank" rel="noopener">LinkedIn</a>{% endif %}
-      {% if 'example.com' not in contact_email %}<a class="pill" href="mailto:{{ contact_email }}">&#9993; Email</a>{% endif %}
+      {% if cv_available %}<a class="pill primary" href="{{ url_for('cv_pdf') }}" download title="Descargar CV (PDF)" aria-label="Descargar CV">{{ icon('file-text', 15) }}<span class="label">CV</span></a>{% endif %}
+      {% if 'yourprofile' not in contact_linkedin %}<a class="pill" href="{{ contact_linkedin }}" target="_blank" rel="noopener" title="LinkedIn" aria-label="LinkedIn">{{ icon('linkedin', 15) }}<span class="label">LinkedIn</span></a>{% endif %}
+      {% if 'example.com' not in contact_email %}<a class="pill" href="mailto:{{ contact_email }}" title="Email" aria-label="Email">{{ icon('mail', 15) }}<span class="label">Email</span></a>{% endif %}
     </nav>
   </header>
 
@@ -41,10 +41,10 @@
         <span class="usage-pct" id="usage-pct-tok">&ndash;</span></span>
     </div>
     <div class="tools">
-      <button class="tool" id="speak-toggle" type="button" hidden title="Leer las respuestas en voz alta" aria-label="Leer respuestas en voz alta" aria-pressed="false">&#128264;</button>
-      <button class="tool" id="export" type="button" title="Descargar la conversaci&oacute;n (.md)" aria-label="Descargar conversaci&oacute;n">&#11015;</button>
-      <button class="tool" id="print" type="button" title="Imprimir o guardar como PDF" aria-label="Imprimir o guardar como PDF">&#128424;</button>
-      <button class="tool" id="reset" type="button" title="Empezar una conversaci&oacute;n nueva" aria-label="Nueva conversaci&oacute;n">&#8635;</button>
+      <button class="tool" id="speak-toggle" type="button" hidden title="Leer las respuestas en voz alta" aria-label="Leer respuestas en voz alta" aria-pressed="false">{{ icon('volume-off') }}</button>
+      <button class="tool" id="export" type="button" title="Descargar la conversaci&oacute;n (.md)" aria-label="Descargar conversaci&oacute;n">{{ icon('download') }}</button>
+      <button class="tool" id="print" type="button" title="Imprimir o guardar como PDF" aria-label="Imprimir o guardar como PDF">{{ icon('printer') }}</button>
+      <button class="tool" id="reset" type="button" title="Empezar una conversaci&oacute;n nueva" aria-label="Nueva conversaci&oacute;n">{{ icon('rotate') }}</button>
     </div>
   </div>
 
@@ -54,19 +54,20 @@
   <div id="chips"></div>
 
   <form id="form">
-    <div id="job-pill" hidden>&#128203; Modo oferta: pega la descripci&oacute;n del puesto
-      <button type="button" id="job-cancel" title="Volver al chat normal" aria-label="Salir del modo oferta">&times;</button></div>
+    <div id="job-pill" hidden>{{ icon('clipboard', 14) }} Modo oferta: pega la descripci&oacute;n del puesto
+      <button type="button" id="job-cancel" title="Volver al chat normal" aria-label="Salir del modo oferta">{{ icon('x', 13) }}</button></div>
     <div class="composer">
-      <button class="tool" id="job" type="button" title="Analizar una oferta de empleo" aria-label="Analizar una oferta de empleo">&#128203;</button>
+      <button class="tool" id="job" type="button" title="Analizar una oferta de empleo" aria-label="Analizar una oferta de empleo">{{ icon('clipboard') }}</button>
       <textarea id="input" rows="1" maxlength="{{ max_question_len }}" aria-label="Pregunta"
                 data-chat-max="{{ max_question_len }}" data-job-max="{{ job_max_len }}"
                 placeholder="Pregunta sobre Eric / Ask about Eric"></textarea>
-      <button class="tool" id="mic" type="button" hidden title="Preguntar por voz" aria-label="Preguntar por voz">&#127908;</button>
-      <button id="btn" type="submit" title="Enviar" aria-label="Enviar">&#10148;</button>
+      <button class="tool" id="mic" type="button" hidden title="Preguntar por voz" aria-label="Preguntar por voz">{{ icon('mic') }}</button>
+      <button id="btn" type="submit" title="Enviar" aria-label="Enviar">{{ icon('send', 18) }}</button>
     </div>
     <p class="hint">Responde solo sobre el perfil profesional de Eric &middot; Enter para enviar, May&uacute;s+Enter nueva l&iacute;nea</p>
   </form>
 
+  <script type="application/json" id="icons">{{ icons_json() }}</script>
   <script src="{{ url_for('static', filename='app.js') }}?v={{ version }}" nonce="{{ nonce }}"></script>
 </body>
 </html>

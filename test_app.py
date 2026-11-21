@@ -258,6 +258,14 @@ class AppBehaviorTests(unittest.TestCase):
             page = app.app.test_client().get("/stats?token=secret-token")
             self.assertEqual(page.status_code, 200)
 
+    def test_page_uses_svg_icons_and_valid_icon_json(self):
+        html = app.app.test_client().get("/").get_data(as_text=True)
+        self.assertIn('<svg class="icon"', html)
+        raw = html.split('<script type="application/json" id="icons">', 1)[1].split("</script>", 1)[0]
+        icons = json.loads(raw.replace("<\\/", "</"))
+        for name in ("thumbs-up", "thumbs-down", "copy", "clipboard", "briefcase"):
+            self.assertIn(name, icons)
+
     def test_eval_checks(self):
         from evals.run_evals import check
         self.assertEqual(check({"lang": "English", "must_contain_any": ["two years"]},

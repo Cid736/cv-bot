@@ -52,6 +52,11 @@ docker run -p 5001:5001 -e GROQ_API_KEY=gsk_... cv-bot
 Edita `docs/perfil.txt` con tu propio perfil y reinicia. El LLM recibe el documento completo en cada petición.
 
 ## Historial de versiones
+**v0.9.0** — 2026-11-21
+- Diseño en Figma: [CV Bot — Rediseño web](https://www.figma.com/design/GZdaoWyz3EofMczDP5ywrO) — tokens (colores, radios, espaciado), estilos de texto, 18 iconos y componentes (Pill, IconButton, Starter, Avatar, mensajes, Composer) más pantallas de bienvenida, análisis de oferta y móvil
+- La web sigue el diseño: iconos SVG nítidos en lugar de emojis (`icons.py` compartido), cabecera móvil compacta con los iconos de contacto en la misma fila, iconos en las preguntas de ejemplo
+- Nuevo: botón para copiar cada respuesta
+
 **v0.8.0** — 2026-11-21
 - Rediseño de la web: pantalla de bienvenida con resumen del perfil y preguntas de ejemplo (se acabó la pantalla vacía en móvil), barra de escritura unificada, uso de la IA más compacto, avatar en las respuestas, botón de CV destacado, mejor diseño móvil y etiquetas de accesibilidad
 - Fix: un repintado tardío al terminar una respuesta en streaming podía borrar los botones 👍/👎 y dejar el cursor parpadeando
