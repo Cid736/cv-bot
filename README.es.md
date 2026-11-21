@@ -36,6 +36,7 @@ Edita `docs/perfil.txt` con tu propio perfil y reinicia. El LLM recibe el docume
 
 ## Historial de versiones
 **v0.6.2** — 2026-11-21
+- Idiomas: nuevo detector (español, inglés, catalán, francés, portugués, italiano, alemán) que ignora nombres del CV como "Málaga" o "Instituto Escuela de Badalona"; los seguimientos cortos ("ok", "Docker?") mantienen el idioma de la conversación; el modelo debe traducir el perfil (escrito en español) en vez de mezclar idiomas; las sugerencias usan el idioma de la respuesta. Con 30 preguntas nuevas: 2 fallos frente a 19 del detector anterior
 - Perfil: sincronizado con el nuevo CV — título *Técnico de Sistemas y Soporte IT*, dos años de experiencia, fechas exactas de las FCT, certificaciones de IBM, Deloitte y Anthropic Claude Academy; eliminadas competencias que no figuran en el CV (Jira, Slack, NoSQL)
 - IA: alcance más estricto — solo responde sobre Eric y su CV; preguntas generales, tutoriales, ayuda con código u otros temas reciben una redirección de una línea
 - Fix: las respuestas de respaldo (límite de uso) detectaban palabras clave dentro de otras palabras ("experiencia" → respuesta de IA, "network" → proyectos); ahora se comparan palabras completas, sin tener en cuenta tildes

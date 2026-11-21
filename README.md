@@ -44,6 +44,7 @@ Edit `docs/perfil.txt` with your own profile and restart. The LLM sees the full 
 
 ## Changelog
 **v0.6.2** — 2026-11-21
+- Languages: new language detector (Spanish, English, Catalan, French, Portuguese, Italian, German) that ignores CV names like "Málaga" or "Instituto Escuela de Badalona"; short follow-ups ("ok", "Docker?") keep the conversation's language; the model must translate the Spanish profile instead of mixing languages; suggestions use the same language as the answer. On a set of 30 unseen questions: 2 misses vs 19 with the old detector
 - Profile: synced with the new CV — title *IT Systems & Support Technician*, two years of experience, exact FCT internship dates, IBM / Deloitte / Anthropic Claude Academy certifications; skills not on the CV removed (Jira, Slack, NoSQL)
 - AI: stricter scope — only questions about Eric and his CV; general questions, tutorials, coding help or other topics get a one-line redirect
 - Fix: rate-limit fallback answers matched keywords inside other words ("experiencia" → AI answer, "network" → projects); now whole-word, accent-insensitive matching
