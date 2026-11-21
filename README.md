@@ -60,6 +60,9 @@ docker run -p 5001:5001 -e GROQ_API_KEY=gsk_... cv-bot
 Edit `docs/perfil.txt` with your own profile and restart. The LLM sees the full document on every request.
 
 ## Changelog
+**v0.14.1** — 2026-11-21
+- Mobile: the keyboard no longer pops up after every answer (no auto-focus on touch devices; sending closes the keyboard so the answer is visible)
+
 **v0.14.0** — 2026-11-21
 - Contact buttons (LinkedIn, Email) shown by default with the public details from the CV; environment variables still override them
 - Mobile: the page scrolls naturally with the composer pinned to the bottom (no box-in-a-box), more spacing, shorter header, compact left-aligned suggestions

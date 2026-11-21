@@ -52,6 +52,9 @@ docker run -p 5001:5001 -e GROQ_API_KEY=gsk_... cv-bot
 Edita `docs/perfil.txt` con tu propio perfil y reinicia. El LLM recibe el documento completo en cada petición.
 
 ## Historial de versiones
+**v0.14.1** — 2026-11-21
+- Móvil: el teclado ya no se abre después de cada respuesta (sin foco automático en pantallas táctiles; al enviar se cierra el teclado para ver la respuesta)
+
 **v0.14.0** — 2026-11-21
 - Botones de contacto (LinkedIn, Email) visibles por defecto con los datos públicos del CV; las variables de entorno siguen teniendo prioridad
 - Móvil: la página hace scroll de forma natural con la caja de escribir fija abajo (sin caja dentro de caja), más espacio, cabecera más corta y sugerencias compactas alineadas a la izquierda
