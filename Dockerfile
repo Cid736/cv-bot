@@ -3,7 +3,7 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
-RUN useradd --create-home appuser
+RUN useradd --create-home appuser && mkdir -p /app/data && chown appuser /app/data
 USER appuser
 ENV PORT=5001
 EXPOSE 5001

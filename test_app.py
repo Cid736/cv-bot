@@ -247,6 +247,17 @@ class AppBehaviorTests(unittest.TestCase):
         self.assertIn("Infinity Neural", text)
         self.assertNotIn("611", text)
 
+    def test_chat_survives_unwritable_stats_db(self):
+        import stats
+        with patch.object(stats, "_conn", None), \
+             patch.object(stats, "DB_PATH", stats.Path("/proc/forbidden/stats.db")), \
+             patch.object(app, "_groq_chat", return_value="Respuesta"):
+            res = self._post({"question": "¿Qué certificaciones tiene?"})
+            self.assertEqual(res.status_code, 200)
+            self.assertIsNone(res.get_json()["message_id"])
+            page = app.app.test_client().get("/stats?token=secret-token")
+            self.assertEqual(page.status_code, 200)
+
     def test_eval_checks(self):
         from evals.run_evals import check
         self.assertEqual(check({"lang": "English", "must_contain_any": ["two years"]},

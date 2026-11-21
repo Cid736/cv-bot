@@ -60,6 +60,11 @@ docker run -p 5001:5001 -e GROQ_API_KEY=gsk_... cv-bot
 Edit `docs/perfil.txt` with your own profile and restart. The LLM sees the full document on every request.
 
 ## Changelog
+**v0.8.0** — 2026-11-21
+- Web redesign: welcome screen with profile summary and starter questions (no more empty screen on mobile), unified composer, compact usage bar, bot avatar on answers, primary CV button, better mobile layout and accessibility labels
+- Fix: a late repaint at the end of a streamed answer could wipe the 👍/👎 buttons and leave the cursor blinking
+- Fix: stats never break the chat if the database can't be written (e.g. read-only disk); Docker creates `data/` for the non-root user
+
 **v0.7.0** — 2026-11-21
 - New: streaming answers, job-offer analysis with fit table, contact/CV buttons, conversation export (Markdown / PDF), 👍/👎 feedback, voice input and spoken answers, private anonymous stats dashboard, real-model quality checks (`evals/`)
 - Front-end moved out of `app.py` into `templates/` and `static/`

@@ -34,6 +34,7 @@
     <p class="sub">An&oacute;nimas (sin IPs) &middot; &uacute;ltimos {{ s.days }} d&iacute;as salvo indicaci&oacute;n &middot; v{{ version }}</p>
   </div>
 
+  {% if s.error %}<section>{{ s.error }}</section>{% endif %}
   <div class="tiles">
     <div class="tile"><b>{{ s.recent_conversations }}</b><span>conversaciones ({{ s.days }} d)</span></div>
     <div class="tile"><b>{{ s.recent_questions }}</b><span>preguntas ({{ s.days }} d)</span></div>

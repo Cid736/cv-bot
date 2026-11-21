@@ -86,7 +86,7 @@ def record(session_id: str, question: str, answer: str, *, lang: str,
             )
             db.commit()
         return msg_id
-    except sqlite3.Error:
+    except Exception:  # stats must never break the chat (disk full, read-only FS...)
         return None  # stats must never break the chat
 
 
@@ -100,11 +100,26 @@ def rate(msg_id: str, rating: int) -> bool:
                              (rating or None, msg_id))
             db.commit()
             return cur.rowcount == 1
-    except sqlite3.Error:
+    except Exception:  # stats must never break the chat (disk full, read-only FS...)
         return False
 
 
 def summary(days: int = 14) -> dict:
+    try:
+        return _summary(days)
+    except Exception:
+        return _EMPTY | {"days": days, "error": "Estadísticas no disponibles (no se puede escribir en STATS_DB)"}
+
+
+_EMPTY = {
+    "total_questions": 0, "total_conversations": 0, "recent_questions": 0,
+    "recent_conversations": 0, "per_day": [], "languages": [], "modes": [],
+    "feedback": {"up": 0, "down": 0}, "top_questions": [], "not_covered": [],
+    "disliked": [], "job_offers": [], "recent": [],
+}
+
+
+def _summary(days: int) -> dict:
     since = time.time() - days * 86400
     with _lock:
         db = _db()

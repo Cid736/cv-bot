@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Asistente de CV de Eric C. — Técnico de Sistemas y Soporte IT. Pregunta por su experiencia, proyectos o analiza una oferta de empleo.">
+  <meta name="theme-color" content="#0d0d12">
   <title>Eric C. - CV Assistant</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v={{ version }}">
   <script src="https://cdn.jsdelivr.net/npm/marked@15.0.12/marked.min.js" nonce="{{ nonce }}"></script>
@@ -11,18 +13,18 @@
 <body>
   <div id="alpha-banner">
     <span class="ab">ALPHA v{{ version }}</span>
-    Versi&oacute;n en desarrollo &mdash; pueden existir errores.
-    Reporta en <a href="https://github.com/Cid736/cv-bot/issues" target="_blank" rel="noopener">github.com/Cid736/cv-bot</a>
+    <span class="ab-text">En desarrollo &mdash; pueden existir errores.</span>
+    <a href="https://github.com/Cid736/cv-bot/issues" target="_blank" rel="noopener">Reportar</a>
   </div>
 
   <header>
-    <div class="avatar">EC</div>
+    <div class="avatar" aria-hidden="true">EC<span class="online" title="online"></span></div>
     <div class="htext">
-      <h1>Eric C. &mdash; CV Assistant</h1>
-      <p>Sistemas &amp; Soporte IT &middot; IA &middot; Cloud &amp; DevOps &middot; Ask in any language</p>
+      <h1>Eric C. <span class="sep">&middot;</span> <span class="role">CV Assistant</span></h1>
+      <p>T&eacute;cnico de Sistemas y Soporte IT &middot; Ask in any language</p>
     </div>
     <nav class="contact" aria-label="Contacto">
-      {% if cv_available %}<a class="pill" href="{{ url_for('cv_pdf') }}" download>&#128196; CV</a>{% endif %}
+      {% if cv_available %}<a class="pill primary" href="{{ url_for('cv_pdf') }}" download>&#128196; CV</a>{% endif %}
       {% if 'yourprofile' not in contact_linkedin %}<a class="pill" href="{{ contact_linkedin }}" target="_blank" rel="noopener">LinkedIn</a>{% endif %}
       {% if 'example.com' not in contact_email %}<a class="pill" href="mailto:{{ contact_email }}">&#9993; Email</a>{% endif %}
     </nav>
@@ -30,23 +32,19 @@
 
   <div id="toolbar">
     <div id="usage-panel" title="Uso real reportado por Groq para este modelo">
-      <div id="usage-title">IA &middot; {{ model }} &middot; v{{ version }}</div>
-      <div class="usage-row">
-        <span class="usage-label">Requests/d&iacute;a</span>
-        <div class="usage-bar-wrap"><div class="usage-bar" id="usage-bar-req"></div></div>
-        <span class="usage-pct" id="usage-pct-req">&ndash;</span>
-      </div>
-      <div class="usage-row">
-        <span class="usage-label">Tokens/min</span>
-        <div class="usage-bar-wrap"><div class="usage-bar" id="usage-bar-tok"></div></div>
-        <span class="usage-pct" id="usage-pct-tok">&ndash;</span>
-      </div>
+      <span id="usage-title">{{ model }} &middot; v{{ version }}</span>
+      <span class="usage-row"><span class="usage-label">Req/d&iacute;a</span>
+        <span class="usage-bar-wrap"><span class="usage-bar" id="usage-bar-req"></span></span>
+        <span class="usage-pct" id="usage-pct-req">&ndash;</span></span>
+      <span class="usage-row"><span class="usage-label">Tok/min</span>
+        <span class="usage-bar-wrap"><span class="usage-bar" id="usage-bar-tok"></span></span>
+        <span class="usage-pct" id="usage-pct-tok">&ndash;</span></span>
     </div>
     <div class="tools">
-      <button class="tool" id="speak-toggle" type="button" hidden title="Leer las respuestas en voz alta" aria-pressed="false">&#128264;</button>
-      <button class="tool" id="export" type="button" title="Descargar la conversaci&oacute;n (.md)">&#11015;</button>
-      <button class="tool" id="print" type="button" title="Imprimir o guardar como PDF">&#128424;</button>
-      <button class="tool" id="reset" type="button" title="Empezar una conversaci&oacute;n nueva">&#8635;</button>
+      <button class="tool" id="speak-toggle" type="button" hidden title="Leer las respuestas en voz alta" aria-label="Leer respuestas en voz alta" aria-pressed="false">&#128264;</button>
+      <button class="tool" id="export" type="button" title="Descargar la conversaci&oacute;n (.md)" aria-label="Descargar conversaci&oacute;n">&#11015;</button>
+      <button class="tool" id="print" type="button" title="Imprimir o guardar como PDF" aria-label="Imprimir o guardar como PDF">&#128424;</button>
+      <button class="tool" id="reset" type="button" title="Empezar una conversaci&oacute;n nueva" aria-label="Nueva conversaci&oacute;n">&#8635;</button>
     </div>
   </div>
 
@@ -57,15 +55,16 @@
 
   <form id="form">
     <div id="job-pill" hidden>&#128203; Modo oferta: pega la descripci&oacute;n del puesto
-      <button type="button" id="job-cancel" title="Volver al chat normal">&times;</button></div>
-    <div class="row">
-      <button class="tool" id="job" type="button" title="Analizar una oferta de empleo">&#128203;</button>
-      <textarea id="input" rows="1" maxlength="{{ max_question_len }}"
+      <button type="button" id="job-cancel" title="Volver al chat normal" aria-label="Salir del modo oferta">&times;</button></div>
+    <div class="composer">
+      <button class="tool" id="job" type="button" title="Analizar una oferta de empleo" aria-label="Analizar una oferta de empleo">&#128203;</button>
+      <textarea id="input" rows="1" maxlength="{{ max_question_len }}" aria-label="Pregunta"
                 data-chat-max="{{ max_question_len }}" data-job-max="{{ job_max_len }}"
                 placeholder="Pregunta sobre Eric / Ask about Eric"></textarea>
-      <button class="tool" id="mic" type="button" hidden title="Preguntar por voz">&#127908;</button>
-      <button id="btn" type="submit" title="Enviar">&#9658;</button>
+      <button class="tool" id="mic" type="button" hidden title="Preguntar por voz" aria-label="Preguntar por voz">&#127908;</button>
+      <button id="btn" type="submit" title="Enviar" aria-label="Enviar">&#10148;</button>
     </div>
+    <p class="hint">Responde solo sobre el perfil profesional de Eric &middot; Enter para enviar, May&uacute;s+Enter nueva l&iacute;nea</p>
   </form>
 
   <script src="{{ url_for('static', filename='app.js') }}?v={{ version }}" nonce="{{ nonce }}"></script>

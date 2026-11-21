@@ -14,11 +14,17 @@ let jobMode = false;
 const transcript = [];   // [{role, text, mode}] for export
 
 const DEFAULTS = [
-  "¿Qué proyectos has desarrollado y cuál demuestra mejor tu perfil?",
   "¿Qué hace en su puesto actual en Infinity Neural?",
   "What did he do as IT Support Technician at AMC Networks?",
+  "¿Qué proyectos ha desarrollado?",
   "¿Qué certificaciones tiene?",
   "Why is he a strong fit for an IT support or sysadmin role?",
+];
+const STARTERS = [  // [icon, question] shown on the welcome screen
+  ['💼', DEFAULTS[0]],
+  ['🖥️', DEFAULTS[1]],
+  ['🛠️', DEFAULTS[2]],
+  ['🎓', DEFAULTS[3]],
 ];
 
 // ── Rendering ────────────────────────────────────────────────────────────────
@@ -56,13 +62,66 @@ function addUserMsg(text, mode) {
   scrollDown();
 }
 
-function addBotMsg() {
+function addBotMsg(wide) {
+  const row = document.createElement('div');
+  row.className = 'bot-row' + (wide ? ' wide' : '');
+  const av = document.createElement('div');
+  av.className = 'mini-avatar'; av.textContent = 'EC'; av.setAttribute('aria-hidden', 'true');
   const d = document.createElement('div');
   d.className = 'msg bot';
   d.innerHTML = '<div class="dots"><span></span><span></span><span></span></div>';
-  chat.appendChild(d);
+  row.append(av, d);
+  chat.appendChild(row);
   scrollDown();
   return d;
+}
+
+// ── Welcome screen (empty conversation) ──────────────────────────────────────
+
+function showWelcome() {
+  chat.innerHTML = '';
+  chips.innerHTML = '';
+  const w = document.createElement('section');
+  w.id = 'welcome';
+  w.innerHTML = `
+    <div class="welcome-card">
+      <div class="avatar" aria-hidden="true">EC<span class="online"></span></div>
+      <div>
+        <h2>Hola 👋 Soy el asistente de CV de Eric</h2>
+        <p class="lead">Pregúntame por su experiencia, proyectos o certificaciones, en cualquier idioma.
+          También puedo comparar su perfil con una oferta de empleo.</p>
+        <div class="facts">
+          <span class="fact">Técnico de Sistemas y Soporte IT</span>
+          <span class="fact">2 años de experiencia</span>
+          <span class="fact">AI System Configurator · Infinity Neural</span>
+          <span class="fact">Badalona, Barcelona</span>
+        </div>
+      </div>
+    </div>
+    <p class="starter-title">Prueba a preguntar</p>
+    <div class="starters"></div>`;
+  const grid = w.querySelector('.starters');
+  for (const [ico, q] of STARTERS) {
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'starter';
+    const i = document.createElement('span'); i.className = 'ico'; i.textContent = ico;
+    const t = document.createElement('span'); t.textContent = q;
+    b.append(i, t);
+    b.addEventListener('click', () => ask(q));
+    grid.appendChild(b);
+  }
+  const job = document.createElement('button');
+  job.type = 'button'; job.className = 'starter job';
+  job.innerHTML = '<span class="ico">📋</span><span>Analizar una oferta de empleo'
+    + '<small>Pega la descripción del puesto y verás requisito a requisito si Eric encaja</small></span>';
+  job.addEventListener('click', () => setJobMode(true));
+  grid.appendChild(job);
+  chat.appendChild(w);
+}
+
+function hideWelcome() {
+  const w = document.getElementById('welcome');
+  if (w) w.remove();
 }
 
 function setChips(list) {
@@ -116,6 +175,12 @@ function addFeedback(bubble, messageId) {
 
 // ── Job-offer mode ───────────────────────────────────────────────────────────
 
+const narrow = window.matchMedia('(max-width: 600px)');
+function placeholder(job) {
+  if (job) return narrow.matches ? 'Pega la oferta…' : 'Pega la oferta de empleo / Paste the job description';
+  return narrow.matches ? 'Pregunta / Ask…' : 'Pregunta sobre Eric / Ask about Eric';
+}
+
 function setJobMode(on) {
   if (busy) return;
   jobMode = on;
@@ -123,9 +188,7 @@ function setJobMode(on) {
   jobBtn.classList.toggle('active', on);
   input.classList.toggle('job', on);
   input.maxLength = Number(on ? input.dataset.jobMax : input.dataset.chatMax);
-  input.placeholder = on
-    ? 'Pega la oferta de empleo / Paste the job description'
-    : 'Pregunta sobre Eric / Ask about Eric';
+  input.placeholder = placeholder(on);
   input.focus();
 }
 
@@ -157,9 +220,9 @@ async function readStream(res, bubble, onMeta) {
   const reader = res.body.getReader();
   const decoder = new TextDecoder();
   let buffer = '', text = '', result = { text: '', messageId: null, error: null };
-  let pending = false;
+  let frame = 0;  // pending requestAnimationFrame id (0 = none)
   const paint = () => {
-    pending = false;
+    frame = 0;
     renderInto(bubble, text);
     bubble.classList.add('cursor');
     scrollDown();
@@ -176,12 +239,15 @@ async function readStream(res, bubble, onMeta) {
       if (ev.type === 'meta') onMeta(ev);
       else if (ev.type === 'delta') {
         text += ev.text;
-        if (!pending) { pending = true; requestAnimationFrame(paint); }
+        if (!frame) frame = requestAnimationFrame(paint);
       }
       else if (ev.type === 'done') result.messageId = ev.message_id;
       else if (ev.type === 'error') result.error = ev.message;
     }
   }
+  // A repaint still queued from the last delta would overwrite the final render
+  // (and the 👍/👎 buttons added right after), so cancel it first.
+  if (frame) cancelAnimationFrame(frame);
   bubble.classList.remove('cursor');
   result.text = text.trim();
   if (result.text) renderInto(bubble, result.text);
@@ -198,12 +264,12 @@ async function send(e) {
   const viaVoice = askedByVoice; askedByVoice = false;
   stopSpeaking();
 
+  hideWelcome();
   addUserMsg(q, mode);
   transcript.push({ role: 'user', text: q, mode });
   input.value = ''; resize(input);
   if (jobMode) setJobModeAfterSend();
-  const bubble = addBotMsg();
-  if (mode === 'job') bubble.classList.add('wide');
+  const bubble = addBotMsg(mode === 'job');
 
   try {
     const res = await fetch('/chat', {
@@ -230,6 +296,7 @@ async function send(e) {
     transcript.push({ role: 'bot', text: answer });
     addFeedback(bubble, messageId);
     scrollDown();
+    if (!chips.children.length) setChips(DEFAULTS.filter(d => d !== q).slice(0, 3));
     if (!rateLimited) {
       banner.classList.remove('visible');
       getSuggestions(mode === 'job' ? 'Análisis de oferta de empleo' : q, answer, lang, myTurn);
@@ -246,7 +313,7 @@ async function send(e) {
 function setJobModeAfterSend() {
   jobMode = false; jobPill.hidden = true; jobBtn.classList.remove('active');
   input.classList.remove('job'); input.maxLength = Number(input.dataset.chatMax);
-  input.placeholder = 'Pregunta sobre Eric / Ask about Eric';
+  input.placeholder = placeholder(false);
 }
 
 async function getSuggestions(q, a, answerLang, myTurn) {
@@ -265,11 +332,10 @@ function resetChat() {
   if (busy) return;
   sid = null; lang = null; turn++;
   transcript.length = 0;
-  chat.innerHTML = '';
   banner.classList.remove('visible');
   stopSpeaking();
   if (jobMode) setJobMode(false);
-  setChips(DEFAULTS);
+  showWelcome();
   input.value = ''; resize(input); input.focus();
 }
 
@@ -424,5 +490,7 @@ document.addEventListener('visibilitychange', () => { if (!document.hidden) poll
 setupVoice();
 pollUsage();
 setInterval(pollUsage, 5000);
-setChips(DEFAULTS);
+input.placeholder = placeholder(false);
+narrow.addEventListener('change', () => { input.placeholder = placeholder(jobMode); });
+showWelcome();
 input.focus();
