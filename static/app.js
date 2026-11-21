@@ -63,6 +63,10 @@ function renderInto(el, text) {
   else el.textContent = text;
 }
 const narrowLayout = window.matchMedia('(max-width: 980px)');
+// Phones/tablets: focusing the textarea pops up the on-screen keyboard and hides the
+// answer, so only focus it automatically on devices with a mouse/trackpad.
+const touchDevice = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+function focusInput() { if (!touchDevice) input.focus(); }
 function scrollDown() {
   if (!narrowLayout.matches) { chat.scrollTop = chat.scrollHeight; return; }
   // Narrow screens scroll the page: keep the newest message just above the pinned composer.
@@ -176,7 +180,7 @@ function setMode(mode) {
   hint.textContent = jobMode ? 'Ctrl+Enter para analizar' : 'Enter para enviar · cualquier idioma';
   if (!transcript.length) showIntro();
   resize(input);
-  input.focus();
+  focusInput();
 }
 
 // ── Feedback 👍 / 👎 and copy ────────────────────────────────────────────────
@@ -283,6 +287,7 @@ async function send(e) {
   stopSpeaking();
 
   hideIntro(); chips.innerHTML = '';
+  if (touchDevice) input.blur();   // close the keyboard so the answer is visible
   addUserMsg(q, mode);
   transcript.push({ role: 'user', text: q, mode });
   input.value = '';
@@ -325,7 +330,7 @@ async function send(e) {
     busy = false; btn.disabled = false;
     formNote.hidden = true;
     if (mode === 'job') setMode('chat');   // follow-up questions about the offer
-    resize(input); input.focus();
+    resize(input); focusInput();
   }
 }
 
