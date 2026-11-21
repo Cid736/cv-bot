@@ -42,8 +42,22 @@ if (canRender) {
     }
   });
 }
+// The model marks job-offer requirements with ✅ 🟡 ❌; show them as labels.
+const FIT = [['✅', 'fit-yes', 'Cumple'], ['🟡', 'fit-mid', 'Parcial'], ['❌', 'fit-no', 'No consta']];
+function fitBadges(el) {
+  for (const td of el.querySelectorAll('td')) {
+    const t = td.textContent.trim();
+    const hit = FIT.find(([e]) => t.startsWith(e));
+    if (!hit) continue;
+    const rest = t.slice(hit[0].length).replace(/^[\s:—-]+/, '');
+    const badge = document.createElement('span');
+    badge.className = 'fit ' + hit[1]; badge.textContent = hit[2];
+    td.replaceChildren(badge);
+    if (rest && !/^(direct|directa|relacionad|related|transfer|no )/i.test(rest)) td.append(' ', rest);
+  }
+}
 function renderInto(el, text) {
-  if (canRender) el.innerHTML = DOMPurify.sanitize(marked.parse(text));
+  if (canRender) { el.innerHTML = DOMPurify.sanitize(marked.parse(text)); fitBadges(el); }
   else el.textContent = text;
 }
 function scrollDown() { chat.scrollTop = chat.scrollHeight; }
@@ -117,7 +131,8 @@ function showIntro() {
       + 'con los puntos fuertes, las carencias y una valoración general.</p>'
       + '<ol><li>Copia el texto de la oferta (requisitos, funciones, nivel).</li>'
       + '<li>Pégalo en el cuadro de abajo.</li><li>Pulsa «Analizar encaje».</li></ol>'
-      + '<p class="legend"><span>✅ Experiencia directa</span><span>🟡 Relacionada</span><span>❌ No figura</span></p>';
+      + '<p class="legend"><span class="fit fit-yes">Cumple</span> experiencia directa '
+      + '<span class="fit fit-mid">Parcial</span> relacionada <span class="fit fit-no">No consta</span> no figura en el CV</p>';
   }
   chat.appendChild(box);
 }
@@ -415,6 +430,20 @@ function setupFab() {
   fab.addEventListener('click', () => setTimeout(() => input.focus({ preventScroll: true }), 400));
 }
 
+// ── Light / dark theme ───────────────────────────────────────────────────────
+
+function setupTheme() {
+  const btnTheme = $('theme-toggle');
+  if (!btnTheme) return;
+  const dark = () => document.documentElement.dataset.theme === 'dark'
+    || (!document.documentElement.dataset.theme && matchMedia('(prefers-color-scheme: dark)').matches);
+  btnTheme.addEventListener('click', () => {
+    const next = dark() ? 'light' : 'dark';
+    document.documentElement.dataset.theme = next;
+    storageSet('cvbot-theme', next);
+  });
+}
+
 // ── Wiring ───────────────────────────────────────────────────────────────────
 
 $('form').addEventListener('submit', send);
@@ -431,4 +460,5 @@ $('print').addEventListener('click', () => window.print());
 
 setupVoice();
 setupFab();
+setupTheme();
 showIntro();

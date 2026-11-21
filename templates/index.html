@@ -4,8 +4,17 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="{{ cv.name }} — {{ cv.title }}. Experiencia, competencias, formación y un asistente para resolver dudas sobre el perfil o comprobar el encaje con una oferta.">
-  <meta name="theme-color" content="#ffffff">
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0f1419" media="(prefers-color-scheme: dark)">
   <title>{{ cv.name }} — {{ cv.title }}</title>
+  <meta property="og:type" content="profile">
+  <meta property="og:title" content="{{ cv.name }} — {{ cv.title }}">
+  <meta property="og:description" content="{{ cv.location }} · Experiencia, competencias, formación y CV descargable.">
+  <meta property="og:image" content="{{ url_for('static', filename='og.png', _external=True) }}">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="{{ url_for('static', filename='favicon.svg') }}" type="image/svg+xml">
+  <link rel="preload" href="{{ url_for('static', filename='fonts/inter-latin.woff2') }}" as="font" type="font/woff2" crossorigin>
+  <script nonce="{{ nonce }}">try { var t = localStorage.getItem('cvbot-theme'); if (t === 'dark' || t === 'light') document.documentElement.dataset.theme = t; } catch (e) {}</script>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v={{ version }}">
   <script src="https://cdn.jsdelivr.net/npm/marked@15.0.12/marked.min.js" nonce="{{ nonce }}"></script>
   <script src="https://cdn.jsdelivr.net/npm/dompurify@3.2.6/dist/purify.min.js" nonce="{{ nonce }}"></script>
@@ -14,6 +23,8 @@
   <header class="topbar">
     <div class="topbar-inner">
       <a class="brand" href="#perfil"><span class="mono" aria-hidden="true">EC</span><span>{{ cv.name }}</span></a>
+      <button class="tool theme-toggle" id="theme-toggle" type="button" title="Cambiar entre modo claro y oscuro" aria-label="Cambiar entre modo claro y oscuro">
+        <span class="when-light">{{ icon('moon', 17) }}</span><span class="when-dark">{{ icon('sun', 17) }}</span></button>
       <nav class="contact" aria-label="Contacto">
         {% if 'yourprofile' not in contact_linkedin %}<a class="btn ghost" href="{{ contact_linkedin }}" target="_blank" rel="noopener" aria-label="LinkedIn">{{ icon('linkedin', 16) }}<span class="label">LinkedIn</span></a>{% endif %}
         {% if 'example.com' not in contact_email %}<a class="btn ghost" href="mailto:{{ contact_email }}" aria-label="Email">{{ icon('mail', 16) }}<span class="label">Email</span></a>{% endif %}
@@ -124,6 +135,18 @@
           {% for g in cv.certifications %}
           <div><h3>{{ g.group }}</h3><ul class="plain compact">{% for c in g['items'] %}<li>{{ c }}</li>{% endfor %}</ul></div>
           {% endfor %}
+        </div>
+      </section>
+
+      <section class="card cta" aria-labelledby="h-cta">
+        <div>
+          <h2 id="h-cta">¿Encaja con tu vacante?</h2>
+          <p>Eric estará encantado de hablar contigo. Puedes descargar su CV o contactar directamente.</p>
+        </div>
+        <div class="cta-actions">
+          {% if 'yourprofile' not in contact_linkedin %}<a class="btn ghost" href="{{ contact_linkedin }}" target="_blank" rel="noopener">{{ icon('linkedin', 16) }}<span>LinkedIn</span></a>{% endif %}
+          {% if 'example.com' not in contact_email %}<a class="btn ghost" href="mailto:{{ contact_email }}">{{ icon('mail', 16) }}<span>Email</span></a>{% endif %}
+          {% if cv_available %}<a class="btn primary" href="{{ url_for('cv_pdf') }}" download>{{ icon('download', 16) }}<span>Descargar CV</span></a>{% endif %}
         </div>
       </section>
 

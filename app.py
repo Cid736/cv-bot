@@ -20,7 +20,7 @@ MAX_RATE_IPS = 10_000
 
 load_dotenv()
 
-APP_VERSION     = "0.10.0"
+APP_VERSION     = "0.11.0"
 DOCS_DIR        = Path("./docs")
 MODEL           = "openai/gpt-oss-120b"
 # Follow-up suggestions are a simple task: a smaller model is enough, and on
@@ -327,195 +327,106 @@ def resolve_lang(text: str, previous: str | None = None) -> str:
 # ── Static fallbacks (shown when Groq rate limit is hit) ─────────────────────
 
 FALLBACKS_ES = [
-    (r'sobre ti|cuentame|quien eres|presentat', (
-        "Soy Eric C., técnico de sistemas y soporte IT con dos años de experiencia "
-        "en soporte e infraestructura IT corporativa. "
-        "Actualmente trabajo como AI System Configurator en Infinity Neural (Badalona), "
-        "configurando y evaluando sistemas de IA en producción. "
-        "Mi base es infraestructura: Linux, Windows Server, Active Directory, redes (TCP/IP, DNS, DHCP, VPN) "
-        "y gestión de endpoints con MS Intune. Sobre esa base tengo Cloud & DevOps "
-        "(GCP, Ansible, Docker, Kubernetes, CI/CD) y automatización con Python y Bash. "
-        "Estoy cursando el Grado en Ingeniería Informática en la UOC."
+    (r'sobre (ti|el|eric)|cuentame|quien es|quien eres|presenta|perfil|resumen', (
+        "**Eric Cid López** es técnico de sistemas y soporte IT con dos años de experiencia en soporte e "
+        "infraestructura IT corporativa. Actualmente trabaja como **AI System Configurator** en Infinity Neural "
+        "(Badalona), donde configura y evalúa sistemas de IA en producción. Antes fue **IT Support Technician** "
+        "en AMC Networks. Su base técnica es Linux, Windows Server, Active Directory y redes, y estudia el "
+        "Grado en Ingeniería Informática en la UOC."
     )),
-    (r'proyecto|has hecho|portfolio|trabajo', (
-        "Proyectos destacados:\n"
-        "- **CV Bot** — asistente conversacional de CV desplegado en público (Python · Flask · Groq LLM · Docker)\n"
-        "- **Ansible Platform** — plataforma web estilo AWX con salida en tiempo real vía WebSocket "
-        "(Python · FastAPI · Ansible · PostgreSQL · Celery · Redis · React · Docker)\n"
-        "- **Task API** — REST API con JWT, 18 tests automáticos y CI/CD completo (Node.js · GitHub Actions)\n"
-        "- **RAG Chatbot** — chatbot con embeddings locales, sin GPU (Python · LangChain · ChromaDB)\n"
-        "- **Net Monitor** — monitor de red con alertas Telegram (Python · SQLite)\n"
-        "- **Portscanner** — escáner de puertos TCP estilo nmap para Windows (C · Winsock2)\n"
-        "Todos están en github.com/Cid736"
+    (r'proyecto|portfolio|github', (
+        "Su proyecto técnico destacado es **cv-bot**, este mismo asistente, desplegado en público "
+        "(Python · Flask · Groq LLM · Docker). Tiene más proyectos de automatización en github.com/Cid736."
     )),
-    (r'sistema|linux|windows server|red|tcp|vpn|tailscale|pihole|pi-hole|intune', (
-        "Mi núcleo es sistemas y redes:\n"
-        "- **Linux/Ubuntu** — administración de servidores, servicios, permisos\n"
-        "- **Windows Server** — entornos corporativos, Active Directory\n"
-        "- **TCP/IP, VPN** — configuración y gestión de redes\n"
-        "- **Tailscale** — red mesh VPN sobre WireGuard para acceso remoto seguro\n"
-        "- **Pi-hole** — servidor DNS con bloqueo de publicidad a nivel de red\n"
-        "- **MS Intune** — gestión de dispositivos y endpoints corporativos"
+    (r'sistema|linux|windows|active directory|red|tcp|vpn|dns|dhcp|intune|servicenow|soporte', (
+        "Experiencia en sistemas y soporte:\n"
+        "- **AMC Networks** (IT Support Technician, mar.–oct. 2025): una media de diez incidencias diarias de "
+        "hardware, software y conectividad; altas y bajas de empleados; endpoints con **Microsoft Intune**; "
+        "tickets en **ServiceNow** según SLA.\n"
+        "- Competencias: Linux y Ubuntu, Windows Server, Active Directory, TCP/IP, DNS, DHCP y VPN.\n"
+        "- Prácticas FCT de soporte IT en Factorial y en el Instituto Escuela de Badalona."
     )),
-    (r'ansible|infraestructura como codigo|iac', (
-        "Ansible es una de mis herramientas clave:\n"
-        "- Automatización de configuración e infraestructura como código\n"
-        "- He construido **Ansible Platform** — una plataforma web estilo AWX completa "
-        "(FastAPI · React · PostgreSQL · Celery · Redis · Docker) con ejecución de playbooks "
-        "y salida en tiempo real vía WebSocket\n"
-        "- github.com/Cid736/ansible-platform"
+    (r'cloud|gcp|google cloud|kubernetes|docker|devops|ci.?cd|ansible', (
+        "En cloud y contenedores su CV recoge Google Cloud, Kubernetes, Docker, Ansible, CI/CD y GitHub Actions, "
+        "aplicados en proyectos propios de automatización, y las insignias de Google Cloud *Manage Kubernetes in "
+        "Google Cloud*, *Load Balancing on Compute Engine* y *Prompt Design in Vertex AI* (2025)."
     )),
-    (r'cloud|gcp|google cloud|kubernetes|docker|devops|ci.?cd', (
-        "En Cloud & DevOps manejo:\n"
-        "- **Google Cloud Platform (GCP)** — despliegue de servicios, Cloud Run\n"
-        "- **Ansible** — automatización de infraestructura, IaC\n"
-        "- **Docker y Docker Compose** — contenedores y entornos reproducibles\n"
-        "- **Kubernetes** — orquestación de contenedores\n"
-        "- **GitHub Actions** — CI/CD: pipelines de test, build y despliegue automático\n"
-        "- **Celery + Redis** — colas de tareas asíncronas"
+    (r'\bia\b|inteligencia artificial|llm|prompt|rag|evaluacion|infinity', (
+        "En **Infinity Neural** (AI System Configurator, desde oct. 2025) evalúa la calidad de respuesta de "
+        "sistemas de IA en producción, analiza los datos de negocio de los clientes para los informes periódicos "
+        "y configura y despliega los sistemas de IA de cliente, iterando sobre prompts e integraciones."
     )),
-    (r'ia|inteligencia artificial|llm|langchain|rag|vertex|automatizacion', (
-        "La IA la uso como complemento a mis habilidades de sistemas:\n"
-        "- LLMs y Prompt Engineering — uso práctico de modelos de lenguaje\n"
-        "- RAG (Retrieval-Augmented Generation) — chatbots con contexto de documentos\n"
-        "- Vertex AI — plataforma de IA de Google Cloud\n"
-        "- LangChain — pipelines de IA\n"
-        "- ChromaDB — base de datos vectorial para embeddings\n"
-        "Proyectos en producción: CV Bot, RAG Chatbot, Ansible Platform."
+    (r'formacion|estudi|titul|grado|uoc|asir|smr|certific', (
+        "Formación:\n"
+        "- **Grado en Ingeniería Informática**, UOC (desde 2024, en curso)\n"
+        "- **CFGS ASIR** y **CFGM SMR**, INS La Pineda (2020–2024)\n"
+        "- Certificaciones: Cisco *Introduction to Cybersecurity*, IBM *Cybersecurity Fundamentals*, "
+        "Deloitte *Cyber Job Simulation*, insignias de Google Cloud y Anthropic Claude Academy."
     )),
-    (r'python|bash|script|programacion|javascript|node|fastapi|react|powershell', (
-        "Programo principalmente para automatizar tareas de sistemas:\n"
-        "- **Python** — scripting, CLIs, automatización, APIs con FastAPI\n"
-        "- **Bash / PowerShell** — scripts de administración y automatización\n"
-        "- **JavaScript/Node.js + React** — APIs REST y frontend\n"
-        "- **C** — herramientas de sistemas de bajo nivel (portscanner con Winsock2)\n"
-        "- **SQL/PostgreSQL/SQLite** — bases de datos relacionales"
+    (r'idioma|ingles|catalan|english', (
+        "Español y catalán nativos; inglés **B1–B2** técnico."
     )),
-    (r'fuerte|habilidad|punto fuerte|strength|skill', (
-        "Mis puntos fuertes:\n"
-        "1. **Visión de extremo a extremo** — de la red al despliegue en cloud\n"
-        "2. **Autonomía** — configuro, despliego y mantengo sistemas sin depender de nadie\n"
-        "3. **Automatización** — si algo se repite, lo scripto en Python, Bash o Ansible\n"
-        "4. **Aprendizaje rápido** — en pocos años: sistemas → DevOps → Cloud → IA aplicada"
-    )),
-    (r'debil|mejora|weakness|mejorar', (
-        "Quiero profundizar en seguridad de sistemas y redes — hardening de servidores, "
-        "firewalls avanzados, posiblemente CompTIA Security+. Tengo base pero quiero más "
-        "profundidad. También estoy mejorando la comunicación técnica hacia perfiles no técnicos."
-    )),
-    (r'contratar|hire|por que|why.*hire|deberiamos', (
-        "Porque tengo base sólida en sistemas y redes con exposición real a entornos "
-        "corporativos (Intune, ServiceNow, VPN, Google Workspace — AMC Networks), y encima "
-        "sé automatizar con Ansible, contenerizar y desplegar en cloud. No soy solo un "
-        "administrador clásico: puedo montar un servidor Linux, configurar la red, "
-        "automatizar con Ansible, dockerizarlo, subirlo a GCP y poner CI/CD — todo yo. "
-        "Eso da mucha autonomía a cualquier equipo."
-    )),
-    (r'5 años|cinco años|futuro|donde.*ves|5 years|future', (
-        "En un rol de administrador de sistemas senior o arquitecto de infraestructura, "
-        "gestionando entornos complejos que combinen on-premise y cloud. Me interesa "
-        "especializarme en seguridad de sistemas e infraestructura como código "
-        "(Terraform, Ansible)."
-    )),
-    (r'año|experiencia|tiempo|how long|years|experience', (
-        "Tengo dos años de experiencia en soporte e infraestructura IT corporativa:\n"
+    (r'\bano|experiencia|tiempo|trayectoria', (
+        "Dos años de experiencia en soporte e infraestructura IT corporativa:\n"
         "- **AI System Configurator** — Infinity Neural (oct. 2025 – actualidad)\n"
         "- **IT Support Technician** — AMC Networks (mar. – oct. 2025)\n"
-        "- **Prácticas FCT en soporte IT** — Factorial (oct. 2023 – feb. 2024) e Instituto Escuela de Badalona (sept. 2021 – mar. 2022)\n"
-        "Además, proyectos propios de automatización con Docker, Ansible y Python."
+        "- **Prácticas FCT en soporte IT** — Factorial (oct. 2023 – feb. 2024) e Instituto Escuela de Badalona (sept. 2021 – mar. 2022)"
     )),
-    (r'salario|salary|sueldo|expectativa|pay', (
-        "Las expectativas salariales es algo que Eric prefiere tratar directamente. "
-        "Puedes contactarle en [LinkedIn]({CONTACT_LINKEDIN}) o por correo a **{CONTACT_EMAIL}**."
-    )),
-    (r'incorporar|cuando puedes|disponibl|buscando trabajo|busca trabajo|interesa.{0,20}puesto|puesto.{0,20}interesa|otras entrevistas|contactar|como.*contacto|datos de contacto', (
-        "Eso es algo que Eric prefiere tratar contigo directamente. "
-        "Puedes contactarle en [LinkedIn]({CONTACT_LINKEDIN}) o por correo a **{CONTACT_EMAIL}**."
+    (r'salario|sueldo|expectativa|incorpora|disponib|entrevista|contact|contratar', (
+        "Eso prefiere tratarlo directamente. Puedes contactar con Eric en [LinkedIn]({CONTACT_LINKEDIN}) "
+        "o por correo en **{CONTACT_EMAIL}**."
     )),
 ]
 
 FALLBACKS_EN = [
-    (r'about you|yourself|who are you|introduce', (
-        "I'm Eric C., an IT systems & support technician with two years of experience "
-        "in corporate IT support and infrastructure. "
-        "I currently work as AI System Configurator at Infinity Neural (Badalona), "
-        "configuring and evaluating AI systems in production. "
-        "My core is infrastructure: Linux, Windows Server, Active Directory, networking (TCP/IP, DNS, DHCP, VPN) "
-        "and endpoint management with MS Intune. On top of that I have Cloud & DevOps "
-        "(GCP, Ansible, Docker, Kubernetes, CI/CD) and automation with Python and Bash. "
-        "I'm also studying a Computer Engineering degree at UOC."
+    (r'about (you|him|eric)|yourself|who is|who are you|introduce|profile|summary', (
+        "**Eric Cid López** is an IT systems & support technician with two years of experience in corporate IT "
+        "support and infrastructure. He currently works as **AI System Configurator** at Infinity Neural "
+        "(Badalona), configuring and evaluating AI systems in production. Before that he was an **IT Support "
+        "Technician** at AMC Networks. His technical base is Linux, Windows Server, Active Directory and "
+        "networking, and he is studying a Computer Engineering degree at UOC."
     )),
-    (r'project|portfolio|built|work', (
-        "Key projects:\n"
-        "- **CV Bot** — publicly deployed conversational CV assistant (Python · Flask · Groq LLM · Docker)\n"
-        "- **Ansible Platform** — AWX-like web platform with real-time WebSocket output "
-        "(Python · FastAPI · Ansible · PostgreSQL · Celery · Redis · React · Docker)\n"
-        "- **Task API** — REST API with JWT auth, 18 automated tests and full CI/CD (Node.js · GitHub Actions)\n"
-        "- **RAG Chatbot** — chatbot with local embeddings, no GPU needed (Python · LangChain · ChromaDB)\n"
-        "- **Net Monitor** — network availability monitor with Telegram alerts (Python · SQLite)\n"
-        "- **Portscanner** — TCP port scanner for Windows, nmap-style (C · Winsock2)\n"
-        "All on github.com/Cid736"
+    (r'project|portfolio|github', (
+        "His featured technical project is **cv-bot**, this assistant, publicly deployed "
+        "(Python · Flask · Groq LLM · Docker). More automation projects are on github.com/Cid736."
     )),
-    (r'system|linux|windows server|network|tcp|vpn|tailscale|pihole|intune', (
-        "My core is systems & networking:\n"
-        "- **Linux/Ubuntu** — server admin, services, permissions\n"
-        "- **Windows Server** — corporate environments, Active Directory\n"
-        "- **TCP/IP, VPN** — network configuration and management\n"
-        "- **Tailscale** — mesh VPN over WireGuard for secure remote access\n"
-        "- **Pi-hole** — DNS server with network-level ad blocking\n"
-        "- **MS Intune** — corporate device and endpoint management"
+    (r'system|linux|windows|active directory|network|tcp|vpn|dns|dhcp|intune|servicenow|support', (
+        "Systems and support experience:\n"
+        "- **AMC Networks** (IT Support Technician, Mar–Oct 2025): about ten hardware, software and connectivity "
+        "incidents a day; employee onboarding/offboarding; endpoints with **Microsoft Intune**; tickets in "
+        "**ServiceNow** under SLA.\n"
+        "- Skills: Linux and Ubuntu, Windows Server, Active Directory, TCP/IP, DNS, DHCP and VPN.\n"
+        "- IT support internships (FCT) at Factorial and Instituto Escuela de Badalona."
     )),
-    (r'ansible|infrastructure as code|iac', (
-        "Ansible is one of my key tools:\n"
-        "- Configuration automation and infrastructure as code\n"
-        "- Built **Ansible Platform** — a full AWX-like web platform "
-        "(FastAPI · React · PostgreSQL · Celery · Redis · Docker) with playbook execution "
-        "and real-time output via WebSocket\n"
-        "- github.com/Cid736/ansible-platform"
+    (r'cloud|gcp|google cloud|kubernetes|docker|devops|ci.?cd|ansible', (
+        "His CV lists Google Cloud, Kubernetes, Docker, Ansible, CI/CD and GitHub Actions, used in personal "
+        "automation projects, plus the Google Cloud skill badges *Manage Kubernetes in Google Cloud*, *Load "
+        "Balancing on Compute Engine* and *Prompt Design in Vertex AI* (2025)."
     )),
-    (r'cloud|gcp|google cloud|kubernetes|docker|devops|ci.?cd', (
-        "In Cloud & DevOps:\n"
-        "- **Google Cloud Platform (GCP)** — service deployment, Cloud Run\n"
-        "- **Ansible** — infrastructure automation, IaC\n"
-        "- **Docker & Docker Compose** — containers and reproducible environments\n"
-        "- **Kubernetes** — container orchestration\n"
-        "- **GitHub Actions** — CI/CD pipelines: test, build and deploy\n"
-        "- **Celery + Redis** — async task queues"
+    (r'\bai\b|artificial intelligence|llm|prompt|rag|evaluat|infinity', (
+        "At **Infinity Neural** (AI System Configurator, since Oct 2025) he evaluates the response quality of AI "
+        "systems in production, analyses client business data for periodic reports, and configures and deploys "
+        "client AI systems, iterating on prompts and integrations."
     )),
-    (r'strength|skill|good at|best', (
-        "My strengths:\n"
-        "1. **End-to-end visibility** — from network config to cloud deployment\n"
-        "2. **Autonomy** — I set up, deploy and maintain systems independently\n"
-        "3. **Automation mindset** — if something repeats, I script it in Python, Bash or Ansible\n"
-        "4. **Fast learner** — in a few years: sysadmin → DevOps → Cloud → applied AI"
+    (r'education|stud|degree|uoc|asir|smr|certif', (
+        "Education:\n"
+        "- **Computer Engineering degree**, UOC (since 2024, in progress)\n"
+        "- **Higher VET in Networked IT Systems (ASIR)** and **VET in Microcomputer Systems (SMR)**, INS La Pineda (2020–2024)\n"
+        "- Certifications: Cisco *Introduction to Cybersecurity*, IBM *Cybersecurity Fundamentals*, Deloitte "
+        "*Cyber Job Simulation*, Google Cloud skill badges and Anthropic Claude Academy."
     )),
-    (r'weakness|improve|area', (
-        "I want to go deeper into systems security — server hardening, advanced firewalls, "
-        "possibly CompTIA Security+. I have the foundation but want more depth. "
-        "I'm also improving how I communicate technical concepts to non-technical stakeholders."
+    (r'language|english|spanish|catalan', (
+        "Native Spanish and Catalan; technical English at **B1–B2** level."
     )),
-    (r'hire|why.*you|should we', (
-        "Because I have a solid foundation in systems and networking with real corporate "
-        "exposure (Intune, ServiceNow, VPN, Google Workspace — AMC Networks), and on top of "
-        "that I can automate with Ansible, containerize and deploy to the cloud. I'm not "
-        "just a classic sysadmin: I can set up a Linux server, configure the network, "
-        "automate with Ansible, dockerize the service, push it to GCP and add CI/CD — "
-        "all by myself. That gives a team a lot of autonomy."
-    )),
-    (r'year|experience|how long|how many', (
+    (r'year|experience|how long|background|career', (
         "Two years of experience in corporate IT support and infrastructure:\n"
         "- **AI System Configurator** — Infinity Neural (Oct 2025 – present)\n"
         "- **IT Support Technician** — AMC Networks (Mar – Oct 2025)\n"
-        "- **IT support internships (FCT)** — Factorial (Oct 2023 – Feb 2024) and Instituto Escuela de Badalona (Sep 2021 – Mar 2022)\n"
-        "Plus personal automation projects with Docker, Ansible and Python."
+        "- **IT support internships (FCT)** — Factorial (Oct 2023 – Feb 2024) and Instituto Escuela de Badalona (Sep 2021 – Mar 2022)"
     )),
-    (r'salary|pay|compensation|expect', (
-        "Salary expectations are something Eric prefers to discuss directly. "
-        "You can reach him on [LinkedIn]({CONTACT_LINKEDIN}) or by email at **{CONTACT_EMAIL}**."
-    )),
-    (r'start|availab|looking for a job|interested in.{0,20}position|position.{0,20}interest|other interview|contact|how.*reach|get in touch|when can', (
-        "That's something Eric prefers to discuss with you directly. "
-        "You can reach him on [LinkedIn]({CONTACT_LINKEDIN}) or by email at **{CONTACT_EMAIL}**."
+    (r'salary|pay|compensation|availab|start|interview|contact|reach|hire', (
+        "Eric prefers to discuss that directly. You can reach him on [LinkedIn]({CONTACT_LINKEDIN}) "
+        "or by email at **{CONTACT_EMAIL}**."
     )),
 ]
 
@@ -549,14 +460,13 @@ def static_answer(question: str, lang: str) -> str:
             return answer
     if spanish:
         return (
-            "El asistente IA está temporalmente pausado por límite de uso de la API. "
-            "Puedes ver el perfil completo de Eric en **github.com/Cid736** o escribirle directamente. "
-            "Prueba con una pregunta más específica sobre proyectos, tecnologías o experiencia."
+            "Ahora mismo no puedo responder a esa pregunta con detalle. El perfil completo de Eric está en "
+            "esta misma página y puedes descargar su CV. Prueba con una pregunta sobre su experiencia, "
+            "formación, competencias o idiomas."
         )
     return (
-        "The AI assistant is temporarily paused due to API rate limits. "
-        "You can view Eric's full profile at **github.com/Cid736** or reach out directly. "
-        "Try a more specific question about projects, technologies or experience."
+        "I can't answer that in detail right now. Eric's full profile is on this page and you can "
+        "download his CV. Try asking about his experience, education, skills or languages."
     )
 
 

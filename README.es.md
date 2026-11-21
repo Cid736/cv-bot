@@ -52,6 +52,11 @@ docker run -p 5001:5001 -e GROQ_API_KEY=gsk_... cv-bot
 Edita `docs/perfil.txt` con tu propio perfil y reinicia. El LLM recibe el documento completo en cada petición.
 
 ## Historial de versiones
+**v0.11.0** — 2026-11-21
+- Más profesional: fuente Inter integrada (se ve igual en todos los dispositivos), la tabla de encaje usa etiquetas «Cumple / Parcial / No consta» en lugar de emojis, tarjeta de contacto al final («¿Encaja con tu vacante?»), vista previa al compartir el enlace (imagen Open Graph) y favicon, etiqueta Alpha discreta
+- Modo oscuro: sigue la preferencia del sistema del visitante, con un botón en la cabecera que se recuerda
+- Respuestas de respaldo reescritas en tercera persona, con el nombre completo y solo datos del CV
+
 **v0.10.0** — 2026-11-21
 - Rediseño pensado para reclutadores/RRHH: estilo claro y sobrio; la página empieza por el perfil (foto, puesto, ubicación, resumen, datos clave, experiencia, competencias, formación, idiomas y certificaciones) generado desde `docs/cv.json`
 - El asistente pasa a un panel lateral con dos pestañas: «Preguntar» y «Comprobar encaje con una oferta»

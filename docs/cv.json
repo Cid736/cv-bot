@@ -4,10 +4,22 @@
   "location": "Badalona, Barcelona",
   "summary": "Técnico de sistemas y soporte IT con dos años de experiencia en soporte e infraestructura IT corporativa, actualmente configurando y evaluando sistemas de IA en producción. Base en Linux, Windows Server, Active Directory y redes, ampliada con proyectos propios de automatización con Docker, Ansible y Python, y con formación continua en ciberseguridad.",
   "facts": [
-    {"label": "Experiencia", "value": "2 años en soporte e infraestructura IT"},
-    {"label": "Puesto actual", "value": "AI System Configurator · Infinity Neural"},
-    {"label": "Idiomas", "value": "Español y catalán nativos · Inglés B1–B2"},
-    {"label": "Otros", "value": "Permiso de conducir B"}
+    {
+      "label": "Experiencia",
+      "value": "2 años en soporte e infraestructura IT"
+    },
+    {
+      "label": "Puesto actual",
+      "value": "AI System Configurator · Infinity Neural"
+    },
+    {
+      "label": "Idiomas",
+      "value": "Español y catalán nativos · Inglés B1–B2"
+    },
+    {
+      "label": "Otros",
+      "value": "Permiso de conducir B"
+    }
   ],
   "experience": [
     {
@@ -40,7 +52,9 @@
       "place": "Barcelona",
       "dates": "oct. 2023 — feb. 2024",
       "internship": true,
-      "bullets": ["Prácticas del CFGS ASIR en startup tecnológica: soporte a usuarios y resolución de incidencias de conectividad."]
+      "bullets": [
+        "Prácticas del CFGS ASIR en startup tecnológica: soporte a usuarios y resolución de incidencias de conectividad."
+      ]
     },
     {
       "role": "Técnico de soporte IT (prácticas FCT)",
@@ -48,35 +62,133 @@
       "place": "Badalona",
       "dates": "sept. 2021 — mar. 2022",
       "internship": true,
-      "bullets": ["Prácticas del CFGM SMR en centro educativo: soporte a usuarios y mantenimiento de ordenadores y periféricos."]
+      "bullets": [
+        "Prácticas del CFGM SMR en centro educativo: soporte a usuarios y mantenimiento de ordenadores y periféricos."
+      ]
     }
   ],
   "skills": [
-    {"group": "Sistemas y redes", "items": ["Linux y Ubuntu", "Windows Server", "Active Directory", "TCP/IP", "DNS", "DHCP", "VPN", "Microsoft Intune"]},
-    {"group": "Cloud y contenedores", "items": ["Google Cloud", "Kubernetes", "Docker", "Ansible", "CI/CD", "GitHub Actions"]},
-    {"group": "IA y evaluación de modelos", "items": ["LLMs", "Evaluación de respuesta", "Prompt engineering", "RAG", "LangChain"]},
-    {"group": "Datos y programación", "items": ["Excel y Google Sheets", "SQL", "PostgreSQL", "Python", "Node.js", "Bash", "PowerShell"]},
-    {"group": "Herramientas", "items": ["ServiceNow", "Git", "Google Workspace", "VS Code"]}
+    {
+      "group": "Sistemas y redes",
+      "items": [
+        "Linux y Ubuntu",
+        "Windows Server",
+        "Active Directory",
+        "TCP/IP",
+        "DNS",
+        "DHCP",
+        "VPN",
+        "Microsoft Intune"
+      ]
+    },
+    {
+      "group": "Cloud y contenedores",
+      "items": [
+        "Google Cloud",
+        "Kubernetes",
+        "Docker",
+        "Ansible",
+        "CI/CD",
+        "GitHub Actions"
+      ]
+    },
+    {
+      "group": "IA y evaluación de modelos",
+      "items": [
+        "LLMs",
+        "Evaluación de respuesta",
+        "Prompt engineering",
+        "RAG",
+        "LangChain"
+      ]
+    },
+    {
+      "group": "Datos y programación",
+      "items": [
+        "Excel y Google Sheets",
+        "SQL",
+        "PostgreSQL",
+        "Python",
+        "Node.js",
+        "Bash",
+        "PowerShell"
+      ]
+    },
+    {
+      "group": "Herramientas",
+      "items": [
+        "ServiceNow",
+        "Git",
+        "Google Workspace",
+        "VS Code"
+      ]
+    }
   ],
   "education": [
-    {"title": "Grado en Ingeniería Informática", "school": "UOC", "dates": "desde 2024 · en curso"},
-    {"title": "CFGS — Administración de Sistemas Informáticos en Red (ASIR)", "school": "INS La Pineda", "dates": "2022 — 2024"},
-    {"title": "CFGM — Sistemas Microinformáticos y Redes (SMR)", "school": "INS La Pineda", "dates": "2020 — 2022"},
-    {"title": "Ciberseguridad", "school": "Formación continua", "dates": "en curso"}
+    {
+      "title": "Grado en Ingeniería Informática",
+      "school": "UOC",
+      "dates": "desde 2024 · en curso"
+    },
+    {
+      "title": "CFGS — Administración de Sistemas Informáticos en Red (ASIR)",
+      "school": "INS La Pineda",
+      "dates": "2022 — 2024"
+    },
+    {
+      "title": "CFGM — Sistemas Microinformáticos y Redes (SMR)",
+      "school": "INS La Pineda",
+      "dates": "2020 — 2022"
+    },
+    {
+      "title": "Ciberseguridad",
+      "school": "Formación continua",
+      "dates": "en curso"
+    }
   ],
   "certifications": [
-    {"group": "Ciberseguridad · 2026", "items": ["Introduction to Cybersecurity — Cisco Networking Academy", "Cybersecurity Fundamentals — IBM", "Cyber Job Simulation — Deloitte"]},
-    {"group": "Google Cloud Skill Badges · 2025", "items": ["Manage Kubernetes in Google Cloud", "Load Balancing on Compute Engine", "Prompt Design in Vertex AI"]},
-    {"group": "Anthropic · Claude Academy · 2026", "items": ["Claude Code in action", "Claude Platform 101", "Deploying Claude Enterprise"]}
+    {
+      "group": "Ciberseguridad · 2026",
+      "items": [
+        "Introduction to Cybersecurity — Cisco Networking Academy",
+        "Cybersecurity Fundamentals — IBM",
+        "Cyber Job Simulation — Deloitte"
+      ]
+    },
+    {
+      "group": "Google Cloud Skill Badges · 2025",
+      "items": [
+        "Manage Kubernetes in Google Cloud",
+        "Load Balancing on Compute Engine",
+        "Prompt Design in Vertex AI"
+      ]
+    },
+    {
+      "group": "Anthropic · Claude Academy · 2026",
+      "items": [
+        "Claude Code in action",
+        "Claude Platform 101",
+        "Deploying Claude Enterprise"
+      ]
+    }
   ],
   "languages": [
-    {"name": "Español", "level": "Nativo"},
-    {"name": "Catalán", "level": "Nativo"},
-    {"name": "Inglés", "level": "B1–B2 técnico"}
+    {
+      "name": "Español",
+      "level": "Nativo"
+    },
+    {
+      "name": "Catalán",
+      "level": "Nativo"
+    },
+    {
+      "name": "Inglés",
+      "level": "B1–B2 técnico"
+    }
   ],
   "project": {
     "name": "cv-bot",
-    "text": "Este asistente: responde preguntas sobre mi perfil en español e inglés y compara el perfil con ofertas de empleo.",
+    "text": "Este mismo asistente: responde preguntas sobre su perfil en varios idiomas y compara el perfil con ofertas de empleo.",
     "stack": "Python · Flask · Groq LLM · Docker"
   }
 }

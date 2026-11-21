@@ -81,10 +81,11 @@ class AppBehaviorTests(unittest.TestCase):
 
     def test_static_fallback_matches_whole_words_and_ignores_accents(self):
         cases = [
-            ("¿Cuánta experiencia tienes?", "Spanish", "dos años de experiencia"),
-            ("¿Por qué deberíamos contratarte?", "Spanish", "Porque tengo base"),
-            ("Cuéntame sobre ti", "Spanish", "Soy Eric C."),
-            ("Do you know networking?", "English", "systems & networking"),
+            ("¿Cuánta experiencia tiene?", "Spanish", "Dos años de experiencia"),
+            ("¿Por qué deberíamos contratarle?", "Spanish", "contactar con Eric"),
+            ("Cuéntame sobre él", "Spanish", "Eric Cid López"),
+            ("Does he know networking?", "English", "Systems and support"),
+            ("¿Qué nivel de inglés tiene?", "Spanish", "B1–B2"),
             ("How many years of experience?", "English", "Two years"),
         ]
         for question, lang, expected in cases:
@@ -96,13 +97,13 @@ class AppBehaviorTests(unittest.TestCase):
         err = app.APIConnectionError(request=httpx.Request("POST", "https://api.groq.com"))
         with patch.object(app, "_groq_chat", side_effect=err):
             response = app.app.test_client().post(
-                "/chat", json={"question": "Cuéntame sobre ti"},
+                "/chat", json={"question": "Cuéntame sobre él"},
                 environ_base={"REMOTE_ADDR": "test-client"},
             )
         self.assertEqual(response.status_code, 200)
         data = response.get_json()
         self.assertTrue(data["rate_limited"])
-        self.assertIn("Soy Eric C.", data["answer"])
+        self.assertIn("Eric Cid López", data["answer"])
 
     def test_chat_and_suggest_share_the_same_client_ip(self):
         headers = {"X-Real-IP": "1.1.1.1", "X-Forwarded-For": "2.2.2.2"}
@@ -163,7 +164,7 @@ class AppBehaviorTests(unittest.TestCase):
         self.assertIn("entire reply in English", prompts[-1])
 
     def test_catalan_rate_limit_falls_back_to_spanish_answers(self):
-        self.assertIn("dos años", app.static_answer("Quanta experiència té?", "Catalan"))
+        self.assertIn("Dos años", app.static_answer("Quanta experiència té?", "Catalan"))
 
     def test_index_pins_cdn_versions(self):
         html = app.app.test_client().get("/").get_data(as_text=True)
@@ -192,7 +193,7 @@ class AppBehaviorTests(unittest.TestCase):
         err = app.RateLimitError("Please try again in 7s.", response=httpx.Response(
             429, request=httpx.Request("POST", "https://api.groq.com")), body=None)
         with patch.object(app, "_groq_stream", side_effect=err):
-            res = self._post({"question": "Cuéntame sobre ti", "stream": True})
+            res = self._post({"question": "Cuéntame sobre él", "stream": True})
         data = res.get_json()
         self.assertTrue(data["rate_limited"])
         self.assertIn("7s", data["reset_msg"])
@@ -265,6 +266,17 @@ class AppBehaviorTests(unittest.TestCase):
         icons = json.loads(raw.replace("<\\/", "</"))
         for name in ("thumbs-up", "thumbs-down", "copy", "clipboard", "briefcase"):
             self.assertIn(name, icons)
+
+    def test_page_has_theme_toggle_share_preview_and_contact_card(self):
+        html = app.app.test_client().get("/").get_data(as_text=True)
+        self.assertIn('id="theme-toggle"', html)
+        self.assertIn('property="og:image"', html)
+        self.assertIn('favicon.svg', html)
+        self.assertIn("¿Encaja con tu vacante?", html)
+        self.assertIn("Eric Cid López", html)
+        self.assertNotIn("gpt-oss", html)  # no model name shown to recruiters
+        for asset in ("/static/og.png", "/static/favicon.svg", "/static/fonts/inter-latin.woff2", "/static/foto.webp"):
+            self.assertEqual(app.app.test_client().get(asset).status_code, 200, asset)
 
     def test_eval_checks(self):
         from evals.run_evals import check

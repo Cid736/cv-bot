@@ -60,6 +60,11 @@ docker run -p 5001:5001 -e GROQ_API_KEY=gsk_... cv-bot
 Edit `docs/perfil.txt` with your own profile and restart. The LLM sees the full document on every request.
 
 ## Changelog
+**v0.11.0** — 2026-11-21
+- More professional: self-hosted Inter font (same look on every device), job-offer table shows "Cumple / Parcial / No consta" labels instead of emojis, contact card at the end ("¿Encaja con tu vacante?"), link previews (Open Graph image) and favicon, neutral Alpha badge
+- Dark mode: follows the visitor's system setting, with a toggle in the header that is remembered
+- Fallback answers rewritten in third person, with the full name and only CV facts
+
 **v0.10.0** — 2026-11-21
 - Redesigned for recruiters/HR: light, sober look; the page now leads with the profile (photo, title, location, summary, key facts, experience timeline, skills, education, languages, certifications) rendered from `docs/cv.json`
 - The assistant moves to a side panel with two tabs: "Preguntar" and "Comprobar encaje con una oferta"
