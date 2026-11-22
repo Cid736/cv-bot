@@ -167,10 +167,13 @@
       "group": "Anthropic · Claude Academy · 2026",
       "items": [
         "Claude Code in action",
+        "Building with the Claude API",
         "Tool use with the Messages API",
         "Model Context Protocol (introducción y avanzado)",
         "Claude Platform 101",
-        "Deploying Claude Enterprise"
+        "Deploying Claude Enterprise",
+        "Claude on Google Cloud",
+        "Claude with Amazon Bedrock"
       ]
     }
   ],
