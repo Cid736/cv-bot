@@ -60,6 +60,9 @@ docker run -p 5001:5001 -e GROQ_API_KEY=gsk_... cv-bot
 Edit `docs/perfil.txt` with your own profile and restart. The LLM sees the full document on every request.
 
 ## Changelog
+**v0.14.4** — 2026-11-22
+- New Anthropic Claude Academy courses: Claude on Google Cloud, Building with the Claude API, Claude with Amazon Bedrock (assistant profile and page)
+
 **v0.14.3** — 2026-11-21
 - CV update: new Anthropic Claude Academy course "Model Context Protocol (intro and advanced)" (profile, page and downloadable PDF)
 

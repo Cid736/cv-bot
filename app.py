@@ -20,7 +20,7 @@ MAX_RATE_IPS = 10_000
 
 load_dotenv()
 
-APP_VERSION     = "0.14.3"
+APP_VERSION     = "0.14.4"
 DOCS_DIR        = Path("./docs")
 MODEL           = "openai/gpt-oss-120b"
 # Follow-up suggestions are a simple task: a smaller model is enough, and on

@@ -46,7 +46,7 @@ FORMACIÓN
 CERTIFICACIONES
 - Ciberseguridad (2026): Introduction to Cybersecurity (Cisco Networking Academy), Cybersecurity Fundamentals (IBM), Cyber Job Simulation (Deloitte).
 - Google Cloud Skill Badges (2025): Manage Kubernetes in Google Cloud, Load Balancing on Compute Engine, Prompt Design in Vertex AI.
-- Anthropic Claude Academy (2026): Claude Code in action, Tool use with the Messages API, Model Context Protocol (introducción y avanzado), Claude Platform 101, Deploying Claude Enterprise.
+- Anthropic Claude Academy (2026): Claude Code in action, Building with the Claude API, Tool use with the Messages API, Model Context Protocol (introducción y avanzado), Claude Platform 101, Deploying Claude Enterprise, Claude on Google Cloud, Claude with Amazon Bedrock.
 
 IDIOMAS: español y catalán nativos; inglés B1–B2 técnico.
 

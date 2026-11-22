@@ -52,6 +52,9 @@ docker run -p 5001:5001 -e GROQ_API_KEY=gsk_... cv-bot
 Edita `docs/perfil.txt` con tu propio perfil y reinicia. El LLM recibe el documento completo en cada petición.
 
 ## Historial de versiones
+**v0.14.4** — 2026-11-22
+- Nuevos cursos de Anthropic Claude Academy: Claude on Google Cloud, Building with the Claude API y Claude with Amazon Bedrock (perfil del asistente y página)
+
 **v0.14.3** — 2026-11-21
 - CV actualizado: nuevo curso de Anthropic Claude Academy «Model Context Protocol (introducción y avanzado)» (perfil, página y PDF descargable)
 
